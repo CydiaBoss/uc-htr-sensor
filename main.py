@@ -13,16 +13,20 @@ class Window(Ui_MainWindow):
         self.setupUi(self)
 
 if __name__ == "__main__":
-    # # Update App ID if Windows
-    # myappid = 'medal.sensorfusion.h2'
-    # if os.name == "nt":
-    #     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    # Update App ID if Windows
+    myappid = 'medal.sensorfusion.h2'
+    if os.name == "nt":
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-    # # Prep App Launch
-    # app = QApplication(sys.argv)
-    # win = Window()
-    # win.show()
-    # sys.exit(app.exec())
+    # Prep App Launch
+    app = QApplication(sys.argv)
+    win = Window()
+    win.show()
+
+    # Main Logic
+
+    # End
+    sys.exit(app.exec())
 
     # Make data directory if not already
     Path("data/").mkdir(parents=True, exist_ok=True)
