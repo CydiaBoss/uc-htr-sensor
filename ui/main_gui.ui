@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>643</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Sensor Fusion</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>resources/logo.png</normaloff>resources/logo.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="minimumSize">
+    <size>
+     <width>1000</width>
+     <height>600</height>
+    </size>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1001</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Resistance</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Humidity</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Temperature</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>40</y>
+      <width>1001</width>
+      <height>341</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3"/>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menu_Export">
+     <property name="title">
+      <string>&amp;Export</string>
+     </property>
+     <addaction name="action_All"/>
+     <addaction name="separator"/>
+     <addaction name="action_Resistance"/>
+     <addaction name="action_Humidity"/>
+     <addaction name="action_Temperature"/>
+    </widget>
+    <addaction name="action_Connect"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Export"/>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <widget class="QMenu" name="menu_Update">
+     <property name="title">
+      <string>&amp;Update References</string>
+     </property>
+     <addaction name="action_Resistor"/>
+     <addaction name="action_Voltage"/>
+    </widget>
+    <addaction name="menu_Update"/>
+    <addaction name="separator"/>
+    <addaction name="action_Reset_Recorded_Data"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Connect">
+   <property name="text">
+    <string>&amp;Connect</string>
+   </property>
+  </action>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit the program</string>
+   </property>
+  </action>
+  <action name="action_Resistor">
+   <property name="text">
+    <string>&amp;Resistor</string>
+   </property>
+   <property name="toolTip">
+    <string>Update the reference resistor</string>
+   </property>
+  </action>
+  <action name="action_Voltage">
+   <property name="text">
+    <string>&amp;Voltage</string>
+   </property>
+   <property name="toolTip">
+    <string>Update the reference voltage</string>
+   </property>
+  </action>
+  <action name="action_Reset_Recorded_Data">
+   <property name="text">
+    <string>&amp;Reset Recorded Data</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset the recorded data up to this point</string>
+   </property>
+  </action>
+  <action name="action_All">
+   <property name="text">
+    <string>&amp;All</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports all data</string>
+   </property>
+  </action>
+  <action name="action_Resistance">
+   <property name="text">
+    <string>&amp;Resistance</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports resistance data only</string>
+   </property>
+  </action>
+  <action name="action_Humidity">
+   <property name="text">
+    <string>&amp;Humidity</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports humidity data only</string>
+   </property>
+  </action>
+  <action name="action_Temperature">
+   <property name="text">
+    <string>&amp;Temperature</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports temperature data only</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
