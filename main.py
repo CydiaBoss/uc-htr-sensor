@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
 
     # Header
-    export.write(f'"Resistance ({data.group(1)}Ω)","Humidity (%RH)","Temperature (°C)"\n')
+    export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n')
 
     # Flush counter
     f_counter = 1
