@@ -9,7 +9,10 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QResizeEvent
-from pyqtgraph import PlotWidget
+
+from pglive.sources.data_connector import DataConnector
+from pglive.sources.live_plot import LiveLinePlot
+from pglive.sources.live_plot_widget import LivePlotWidget
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -81,7 +84,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
 
         # Resistance Plot
-        self.resist_plot = PlotWidget(self.widget1)
+        self.resist_plot = LivePlotWidget(self.widget1)
+        self.resist_curve = LiveLinePlot()
+        self.resist_plot.addItem(self.resist_curve)
+        self.resist_data = DataConnector(self.resist_curve, max_points=150, update_rate=1.0)
         self.verticalLayout_3.addWidget(self.resist_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
@@ -89,7 +95,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
 
         # Humidity Plot
-        self.humidity_plot = PlotWidget(self.widget1)
+        self.humidity_plot = LivePlotWidget(self.widget1)
+        self.humidity_curve = LiveLinePlot()
+        self.humidity_plot.addItem(self.humidity_curve)
+        self.humidity_data = DataConnector(self.humidity_curve, max_points=150, update_rate=1.0)
         self.verticalLayout_2.addWidget(self.humidity_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -97,7 +106,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.setObjectName("verticalLayout")
 
         # Temperature Plot
-        self.temperature_plot = PlotWidget(self.widget1)
+        self.temperature_plot = LivePlotWidget(self.widget1)
+        self.temperature_curve = LiveLinePlot()
+        self.temperature_plot.addItem(self.temperature_curve)
+        self.temperature_data = DataConnector(self.temperature_curve, max_points=150, update_rate=1.0)
         self.verticalLayout.addWidget(self.temperature_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout)
