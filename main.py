@@ -1,4 +1,6 @@
+from io import TextIOWrapper
 from threading import Thread
+from constants import AUTO_EXPORT, AUTO_FLUSH, BAUD, DATA_PARSE, TIMEOUT
 from controller import SensorCtrl
 
 from PyQt5.QtWidgets import QApplication
@@ -15,18 +17,20 @@ class Window(Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
 
-def data_collection(ctrl : SensorCtrl, resist_data : DataConnector, humidity_data : DataConnector, temperature_data : DataConnector):
+def data_collection(ctrl : SensorCtrl, export : TextIOWrapper, resist_data : DataConnector, humidity_data : DataConnector, temperature_data : DataConnector):
     '''
-    Update the graphs on the GUI
+    Update the graphs on the GUI and handles auto export if needed
     '''
     # Counter
     x = 0
+
+    # Loop
     while True:
         # Grab next row
         row = ctrl.read_from()
 
         # Parse Data row
-        data = re.search(r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})", row)
+        data = re.search(DATA_PARSE, row)
 
         # Update Graph if not None
         if data is not None:
@@ -35,6 +39,17 @@ def data_collection(ctrl : SensorCtrl, resist_data : DataConnector, humidity_dat
                 resist_data.cb_append_data_point(float(data.group(2)), x)
             humidity_data.cb_append_data_point(float(data.group(3)), x)
             temperature_data.cb_append_data_point(float(data.group(4)), x)
+
+        if AUTO_EXPORT and data is not None:
+            # Write last row of data
+            export.write(f'"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+
+            # Output
+            print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
+
+            # Auto Flush
+            if x % AUTO_FLUSH == 0:
+                export.flush()
 
         # Delay a bit
         time.sleep(1)
@@ -54,52 +69,31 @@ if __name__ == "__main__":
 
     # Main Logic
     # Connection to Sensors
-    ctrl = SensorCtrl(port="COM5", baud=9600, timeout=.1)
+    ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=TIMEOUT)
 
-    win.show()
+    # Auto Export Setup
+    if AUTO_EXPORT:
+        # Make data directory if not already
+        Path("data/").mkdir(parents=True, exist_ok=True)
+
+        # Look for export file
+        export = open(f"data/data-{int(time.time())}.csv", "w", encoding="utf-8")
+        atexit.register(lambda : export.close())
     
-    Thread(target=data_collection, args=(ctrl, win.resist_data, win.humidity_data, win.temperature_data)).start()
-
-    # End
-    sys.exit(app.exec())
-
-    # Make data directory if not already
-    Path("data/").mkdir(parents=True, exist_ok=True)
-
-    # Look for export file
-    export = open(f"data/data-{int(time.time())}.csv", "w", encoding="utf-8")
-    atexit.register(lambda : export.close())
-    
-    # Grab latest data from sensors to make header in csv
-    row = ctrl.read_from()
-
-    # Parse Data row
-    data = re.search(r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})", row)
-    print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
-
-    # Header
-    export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n')
-
-    # Flush counter
-    f_counter = 1
-
-    # Serial Monitor
-    while True:
-        # Write last row of data
-        export.write(f'"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
-        f_counter += 1
-
-        # Grab latest data from sensors
+        # Grab latest data from sensors to make header in csv
         row = ctrl.read_from()
 
         # Parse Data row
-        data = re.search(r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})", row)
+        data = re.search(DATA_PARSE, row)
         print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
 
-        # Flush every 50 rows
-        if f_counter >= 50:
-            export.flush()
-            f_counter = 0
+        # Header
+        export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
 
-        # Delay a bit
-        time.sleep(1.5)
+    win.show()
+    
+    # Initialize Data Collection
+    Thread(target=data_collection, args=(ctrl, export, win.resist_data, win.humidity_data, win.temperature_data)).start()
+
+    # End
+    sys.exit(app.exec())
