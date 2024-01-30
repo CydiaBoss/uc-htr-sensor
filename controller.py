@@ -6,6 +6,7 @@ import time, atexit, sys, glob
 from serial.tools import list_ports
 
 from constants import READ_TIMEOUT
+from tools import active_ports
 
 class SensorCtrl:
     '''
@@ -14,7 +15,7 @@ class SensorCtrl:
 
     def __init__(self, port : str="", baud : int=9600, timeout=0.1):
         # Look for used ports
-        self.update_serial_ports()
+        self.ports = active_ports()
 
         # Open first port or specified port
         self.sensor = Serial(port=port if port != "" else self.ports[0], baudrate=baud, timeout=timeout)
@@ -79,26 +80,3 @@ class SensorCtrl:
         Read from the sensor
         '''
         return self.sensor.readline().decode("utf-8")
-    
-    def update_serial_ports(self):
-        """ 
-        update list of used ports
-        """
-        if sys.platform.startswith('win'):
-            ports = ['COM%s' % (i + 1) for i in range(256)]
-        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-            # this excludes your current terminal "/dev/tty"
-            ports = glob.glob('/dev/tty[A-Za-z]*')
-        elif sys.platform.startswith('darwin'):
-            ports = glob.glob('/dev/tty.*')
-        else:
-            raise EnvironmentError('Unsupported platform')
-
-        self.ports = []
-        for port in ports:
-            try:
-                s = Serial(port)
-                s.close()
-                self.ports.append(port)
-            except (OSError, SerialException):
-                pass
