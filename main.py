@@ -66,35 +66,35 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()
 
-    # # Main Logic
-    # # Connection to Sensors
-    # ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=SENSOR_TIMEOUT)
-    # ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-    # ctrl.update_ref_volt(REF_VOLT)
+    # Main Logic
+    # Connection to Sensors
+    ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=SENSOR_TIMEOUT)
+    ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+    ctrl.update_ref_volt(REF_VOLT)
 
-    # # Auto Export Setup
-    # if AUTO_EXPORT:
-    #     # Make data directory if not already
-    #     Path("data/").mkdir(parents=True, exist_ok=True)
+    # Auto Export Setup
+    if AUTO_EXPORT:
+        # Make data directory if not already
+        Path("data/").mkdir(parents=True, exist_ok=True)
 
-    #     # Look for export file
-    #     export = open(f"data/data-{int(time.time())}.csv", "w", encoding="utf-8")
-    #     atexit.register(lambda : export.close())
+        # Look for export file
+        export = open(f"data/data-{int(time.time())}.csv", "w", encoding="utf-8")
+        atexit.register(lambda : export.close())
     
-    #     # Grab latest data from sensors to make header in csv
-    #     row = ctrl.read_from()
+        # Grab latest data from sensors to make header in csv
+        row = ctrl.read_from()
 
-    #     # Parse Data row
-    #     data = re.search(DATA_PARSE, row)
-    #     print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
+        # Parse Data row
+        data = re.search(DATA_PARSE, row)
+        print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
 
-    #     # Header
-    #     export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+        # Header
+        export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
 
     win.show()
     
     # Initialize Data Collection
-    # Thread(target=data_collection, args=(ctrl, export, win.resist_data, win.humidity_data, win.temperature_data)).start()
+    Thread(target=data_collection, args=(ctrl, export, win.resist_data, win.humidity_data, win.temperature_data)).start()
 
     # End
     sys.exit(app.exec())

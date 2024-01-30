@@ -10,8 +10,8 @@
 from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QResizeEvent
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QCloseEvent, QResizeEvent
+from PyQt5.QtWidgets import QMessageBox
 
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
@@ -251,6 +251,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.action_ports.append(temp_port_action)
             self.menu_Connect.addAction(temp_port_action)
 
+    # Events
+
     def resizeEvent(self, a0: QResizeEvent) -> None:
         '''
         Update Widgets in resizing
@@ -259,3 +261,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.widget.setGeometry(QtCore.QRect(0, 0, new_width, 40))
         self.widget1.setGeometry(QtCore.QRect(0, 40, new_width, 340))
         return super().resizeEvent(a0)
+        
+    def closeEvent(self, a0: QCloseEvent | None) -> None:
+        # Ask for confirmation before closing
+        confirmation = QMessageBox.question(self, "Confirmation", "Are you sure you want to close the application?", QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.Yes:
+            a0.accept()
+        else:
+            a0.ignore() 
+    
+    # Slots
+
+    @QtCore.pyqtSlot()
+    def on_action_Quit_clicked(self):
+        print("boop")
