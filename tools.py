@@ -1,7 +1,9 @@
 import sys, glob
+import operator
+from typing import List
 from serial import Serial, SerialException
 
-def active_ports():
+def active_ports() -> List[str]:
 	""" 
 	Gathers a list of used ports and returns them
 	"""
@@ -25,3 +27,14 @@ def active_ports():
 			pass
 
 	return results
+
+def identical_list(a : list, b : list) -> bool:
+	"""
+	Check if two lists are identical
+	"""
+	for i in a:
+		if operator.countOf(a, i) != operator.countOf(b, i):
+			return False
+	if(len(a) != len(b)):
+		return False
+	return True

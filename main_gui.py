@@ -17,7 +17,7 @@ from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
 from pglive.sources.live_plot_widget import LivePlotWidget
 
-from tools import active_ports
+from tools import active_ports, identical_list
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
@@ -32,6 +32,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("ui\\resources/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
+        self.mainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setMinimumSize(QtCore.QSize(1000, 600))
         self.centralwidget.setObjectName("centralwidget")
@@ -169,6 +170,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             temp_port_action = QtWidgets.QAction(MainWindow)
             temp_port_action.setObjectName(port)
             self.action_ports.append(temp_port_action)
+            self.menu_Connect.addAction(temp_port_action)
 
         self.menu_Export.addAction(self.action_All)
         self.menu_Export.addSeparator()
@@ -226,7 +228,30 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             action_port.setText(_translate("MainWindow", action_port.objectName().upper()))
             action_port.setToolTip(_translate("MainWindow", "Switches to this port"))
 
-    def resizeEvent(self, a0: QResizeEvent | None) -> None:
+    def updatePorts(self):
+        """
+        Update available ports to select
+        """
+        old_ports = self.ports
+        self.ports = active_ports()
+
+        # Ignore if nothing changed
+        if identical_list(old_ports, self.ports):
+            return
+        
+        # Remove all menu items
+        for action_port in self.action_ports:
+            self.menu_Connect.removeAction(action_port)
+
+        # Add New COM Menu
+        self.action_ports : List[QtWidgets.QAction] = []
+        for port in self.ports:
+            temp_port_action = QtWidgets.QAction(self.mainWindow)
+            temp_port_action.setObjectName(port)
+            self.action_ports.append(temp_port_action)
+            self.menu_Connect.addAction(temp_port_action)
+
+    def resizeEvent(self, a0: QResizeEvent) -> None:
         '''
         Update Widgets in resizing
         '''
