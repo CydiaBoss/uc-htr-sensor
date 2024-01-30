@@ -1,15 +1,14 @@
 from io import TextIOWrapper
 from threading import Thread
-from constants import AUTO_EXPORT, AUTO_FLUSH, BAUD, DATA_PARSE, TIMEOUT
 from controller import SensorCtrl
+from pathlib import Path
+import sys, ctypes, os, time, re, atexit
 
 from PyQt5.QtWidgets import QApplication
-
 from pglive.sources.data_connector import DataConnector
 
 from main_gui import Ui_MainWindow
-import sys, ctypes, os, time, re, atexit
-from pathlib import Path
+from constants import *
 
 class Window(Ui_MainWindow):
 
@@ -52,7 +51,7 @@ def data_collection(ctrl : SensorCtrl, export : TextIOWrapper, resist_data : Dat
                 export.flush()
 
         # Delay a bit
-        time.sleep(1)
+        time.sleep(READ_DELAY)
 
         # Update x
         x += 1
@@ -69,7 +68,9 @@ if __name__ == "__main__":
 
     # Main Logic
     # Connection to Sensors
-    ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=TIMEOUT)
+    ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=SENSOR_TIMEOUT)
+    ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+    ctrl.update_ref_volt(REF_VOLT)
 
     # Auto Export Setup
     if AUTO_EXPORT:

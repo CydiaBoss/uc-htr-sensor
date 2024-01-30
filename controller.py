@@ -5,6 +5,8 @@ from serial import Serial
 import time
 import atexit
 
+from constants import READ_TIMEOUT
+
 class SensorCtrl:
     '''
     Class of sensor controls
@@ -17,7 +19,7 @@ class SensorCtrl:
         tick_to_timeout = 0
         while "Running" not in self.read_from():
             # Timeout
-            if tick_to_timeout > 15:
+            if tick_to_timeout > READ_TIMEOUT:
                 print("System failed to start. Closing.")
                 self.sensor.close()
                 exit(code=404)
@@ -42,11 +44,31 @@ class SensorCtrl:
         '''
         self.send_to(f'r{resist}{mult}')
 
+        # Wait for OK Message
+        tick_to_timeout = 0
+        while "ok" not in self.read_from():
+            # Timeout
+            if tick_to_timeout > READ_TIMEOUT:
+                print("Reference resistor failed to update")
+                break
+            tick_to_timeout += 1
+            time.sleep(1)
+
     def update_ref_volt(self, volt : float) -> bool:
         '''
         Updates the reference voltage on the sensor
         '''
         self.send_to(f'v{volt}')
+
+        # Wait for OK Message
+        tick_to_timeout = 0
+        while "ok" not in self.read_from():
+            # Timeout
+            if tick_to_timeout > READ_TIMEOUT:
+                print("Reference voltage failed to update")
+                break
+            tick_to_timeout += 1
+            time.sleep(1)
 
     def read_from(self):
         '''
