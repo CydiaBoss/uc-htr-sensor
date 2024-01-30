@@ -2,7 +2,7 @@ from io import TextIOWrapper
 from threading import Thread
 from controller import SensorCtrl
 from pathlib import Path
-import sys, ctypes, os, time, re, atexit
+import sys, ctypes, time, re, atexit
 
 from PyQt5.QtWidgets import QApplication
 from pglive.sources.data_connector import DataConnector
@@ -59,7 +59,7 @@ def data_collection(ctrl : SensorCtrl, export : TextIOWrapper, resist_data : Dat
 if __name__ == "__main__":
     # Update App ID if Windows
     myappid = 'medal.sensorfusion.h2'
-    if os.name == "nt":
+    if sys.platform.startswith('win'):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     # Prep App Launch
