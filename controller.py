@@ -1,9 +1,8 @@
 # ================================ #
 # Code to communicate with sensors #
 # ================================ #
-from serial import Serial, SerialException
-import time, atexit, sys, glob
-from serial.tools import list_ports
+from serial import Serial
+import time, atexit
 
 from constants import READ_TIMEOUT
 from tools import active_ports
@@ -32,7 +31,7 @@ class SensorCtrl:
             time.sleep(1)
 
         # Success
-        print("Sensors connected!")
+        print(f"Sensors connected at port {self.sensor.port}!")
 
         # Prep for exit
         atexit.register(lambda : self.sensor.close())

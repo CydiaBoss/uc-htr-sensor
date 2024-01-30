@@ -9,7 +9,7 @@ READ_DELAY = 1.0
 # References
 REF_RESIST = 1.2
 REF_RESIST_UNIT = 'k'
-REF_VOLT = 5.091
+REF_VOLT = 5.099
 
 # Internal Usage
 DATA_PARSE = r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})"

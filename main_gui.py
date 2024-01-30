@@ -9,9 +9,10 @@
 
 from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCloseEvent, QResizeEvent
 from PyQt5.QtWidgets import QMessageBox
+
+import pyqtgraph as pq
 
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
@@ -94,10 +95,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
 
         # Resistance Plot
-        self.resist_plot = LivePlotWidget(self.widget1)
-        self.resist_curve = LiveLinePlot()
+        self.resist_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": "Resistance (kΩ)"})
+        self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
-        self.resist_data = DataConnector(self.resist_curve, max_points=150, update_rate=1.0)
+        self.resist_data = DataConnector(self.resist_curve, max_points=600, update_rate=1.0)
         self.verticalLayout_3.addWidget(self.resist_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
@@ -105,10 +106,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
 
         # Humidity Plot
-        self.humidity_plot = LivePlotWidget(self.widget1)
-        self.humidity_curve = LiveLinePlot()
+        self.humidity_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": "Humidity (%RH)"})
+        self.humidity_curve = LiveLinePlot(brush="green", pen="green")
         self.humidity_plot.addItem(self.humidity_curve)
-        self.humidity_data = DataConnector(self.humidity_curve, max_points=150, update_rate=1.0)
+        self.humidity_data = DataConnector(self.humidity_curve, max_points=600, update_rate=1.0)
         self.verticalLayout_2.addWidget(self.humidity_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -116,10 +117,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.setObjectName("verticalLayout")
 
         # Temperature Plot
-        self.temperature_plot = LivePlotWidget(self.widget1)
-        self.temperature_curve = LiveLinePlot()
+        self.temperature_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": "Temperature (°C)"})
+        self.temperature_curve = LiveLinePlot(brush="blue", pen="blue")
         self.temperature_plot.addItem(self.temperature_curve)
-        self.temperature_data = DataConnector(self.temperature_curve, max_points=150, update_rate=1.0)
+        self.temperature_data = DataConnector(self.temperature_curve, max_points=600, update_rate=1.0)
         self.verticalLayout.addWidget(self.temperature_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -258,8 +259,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         Update Widgets in resizing
         '''
         new_width = a0.size().width()
+        new_height = a0.size().height()
         self.widget.setGeometry(QtCore.QRect(0, 0, new_width, 40))
-        self.widget1.setGeometry(QtCore.QRect(0, 40, new_width, 340))
+        self.widget1.setGeometry(QtCore.QRect(0, 40, new_width, int(new_height*340/600)))
         return super().resizeEvent(a0)
         
     def closeEvent(self, a0: QCloseEvent | None) -> None:
@@ -273,5 +275,5 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     # Slots
 
     @QtCore.pyqtSlot()
-    def on_action_Quit_clicked(self):
-        print("boop")
+    def on_action_Quit_triggered(self):
+        self.close()
