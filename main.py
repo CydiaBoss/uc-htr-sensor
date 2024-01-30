@@ -114,7 +114,7 @@ if __name__ == "__main__":
     win.show()
     
     # Initialize Data Collection
-    data_collect = Thread(daemon=True, target=data_collection, args=(ctrl, win, export, win.resist_data, win.humidity_data, win.temperature_data))
+    data_collect = Thread(daemon=True, target=data_collection, args=(ctrl, win, export))
     data_collect.start()
 
     # End
