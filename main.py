@@ -1,14 +1,12 @@
 from io import TextIOWrapper
 from threading import Thread
 
-from numpy import ndarray
 import numpy as np
 from controller import SensorCtrl
 from pathlib import Path
 import sys, ctypes, time, re, atexit
 
 from PyQt5.QtWidgets import QApplication
-from pglive.sources.data_connector import DataConnector
 
 from main_gui import Ui_MainWindow
 from constants import *
@@ -17,9 +15,9 @@ from constants import *
 run_data_collect = True
 
 # Data Storage
-resistance = ndarray([])
-humidity = ndarray([])
-temperature = ndarray([])
+resistance = []
+humidity = []
+temperature = []
 
 class Window(Ui_MainWindow):
 
@@ -48,7 +46,15 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
             if data.group(2) != "inf":
                 r_data = float(data.group(2))
                 win.resist_data.cb_append_data_point(r_data, x)
-                np.append(resistance, r_data)
+                resistance.append(r_data)
+
+                # Calculate AVG
+                resist_size = len(resistance)
+                win.resist_avg_sig.emit(str(round(sum(resistance)/resist_size, 2)) + f" {data.group(1)}Ω")
+                if resist_size > 15:
+                    win.resist_avg_15_sig.emit(str(round(sum(resistance[-15:])/15, 2)) + f" {data.group(1)}Ω")
+                if resist_size > 50:
+                    win.resist_avg_50_sig.emit(str(round(sum(resistance[-50:])/50)) + f" {data.group(1)}Ω")
 
             h_data = float(data.group(3))
             t_data = float(data.group(4))
@@ -56,8 +62,8 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
             win.humidity_data.cb_append_data_point(h_data, x)
             win.temperature_data.cb_append_data_point(t_data, x)
 
-            np.append(humidity, h_data)
-            np.append(temperature, t_data)
+            humidity.append(h_data)
+            temperature.append(t_data)
 
         if AUTO_EXPORT and data is not None:
             # Write last row of data

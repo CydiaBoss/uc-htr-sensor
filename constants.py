@@ -7,8 +7,8 @@ READ_TIMEOUT = 15
 READ_DELAY = 1.0
 
 # References
-REF_RESIST = 1.2
-REF_RESIST_UNIT = 'k'
+REF_RESIST = 10
+REF_RESIST_UNIT = ' '
 REF_VOLT = 5.099
 
 # Internal Usage
