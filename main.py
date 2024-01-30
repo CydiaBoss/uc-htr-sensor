@@ -50,11 +50,18 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
 
                 # Calculate AVG
                 resist_size = len(resistance)
+                
                 win.resist_avg_sig.emit(str(round(sum(resistance)/resist_size, 2)) + f" {data.group(1)}Ω")
+
                 if resist_size > 15:
                     win.resist_avg_15_sig.emit(str(round(sum(resistance[-15:])/15, 2)) + f" {data.group(1)}Ω")
+                else:
+                    win.resist_avg_15_sig.emit("N/A")
+
                 if resist_size > 50:
-                    win.resist_avg_50_sig.emit(str(round(sum(resistance[-50:])/50)) + f" {data.group(1)}Ω")
+                    win.resist_avg_50_sig.emit(str(round(sum(resistance[-50:])/50, 2)) + f" {data.group(1)}Ω")
+                else:
+                    win.resist_avg_50_sig.emit("N/A")
 
             h_data = float(data.group(3))
             t_data = float(data.group(4))

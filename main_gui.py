@@ -144,7 +144,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         node_font.setWeight(75)
         node_value_font = QtGui.QFont()
         node_value_font.setPointSize(10)
-        node_value_font.setWeight(75)
+        node_value_font.setWeight(30)
 
         # Resistance Nodes
         self.verticalLayout_8 = QtWidgets.QVBoxLayout()
