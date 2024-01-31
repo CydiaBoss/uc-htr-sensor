@@ -104,7 +104,7 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
 
         if AUTO_EXPORT and data is not None:
             # Write last row of data
-            export.write(f'"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+            export.write(f'"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
 
             # Output
             print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     # Prep App Launch
     app = QApplication(sys.argv)
-    win = Window()\
+    win = Window()
     
     # Show
     win.show()
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     # Main Logic
     # Connection to Sensors
     win.statusBar().showMessage("Looking for sensor controller...")
-    ctrl = SensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
+    ctrl = SensorCtrl(port="COM5", baud=BAUD, timeout=SENSOR_TIMEOUT)
     win.statusBar().clearMessage()
 
     # Auto Start if connected
@@ -164,7 +164,7 @@ if __name__ == "__main__":
             print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
 
             # Header
-            export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+            export.write(f'"Time","Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
 
             win.statusBar().clearMessage()
             win.statusBar().showMessage(f"Auto export enabled. Exporting to file {filename} in data folder.", 2500)
