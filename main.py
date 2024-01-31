@@ -127,38 +127,54 @@ if __name__ == "__main__":
 
     # Prep App Launch
     app = QApplication(sys.argv)
-    win = Window()
+    win = Window()\
+    
+    # Show
+    win.show()
 
     # Main Logic
     # Connection to Sensors
+    win.statusBar().showMessage("Looking for sensor controller...")
     ctrl = SensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
-    ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-    ctrl.update_ref_volt(REF_VOLT)
+    win.statusBar().clearMessage()
 
-    # Auto Export Setup
-    if AUTO_EXPORT:
-        # Make data directory if not already
-        Path("data/").mkdir(parents=True, exist_ok=True)
+    # Auto Start if connected
+    if ctrl.connected:
+        win.statusBar().showMessage(f"Connected to sensor at port {ctrl.sensor.port}!")
+        ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+        ctrl.update_ref_volt(REF_VOLT)
+        win.statusBar().clearMessage()
+        win.statusBar().showMessage("Reference values configured.", 2500)
 
-        # Look for export file
-        export = open(f"data/data-{int(time.time())}.csv", "w", encoding="utf-8")
-        atexit.register(lambda : export.close())
+        # Auto Export Setup
+        if AUTO_EXPORT:
+            # Make data directory if not already
+            Path("data/").mkdir(parents=True, exist_ok=True)
+
+            # Look for export file
+            filename = f"data-{int(time.time())}.csv"
+            export = open(f"data/{filename}", "w", encoding="utf-8")
+            atexit.register(lambda : export.close())
+        
+            # Grab latest data from sensors to make header in csv
+            row = ctrl.read_from()
+
+            # Parse Data row
+            data = re.search(DATA_PARSE, row)
+            print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
+
+            # Header
+            export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+
+            win.statusBar().clearMessage()
+            win.statusBar().showMessage(f"Auto export enabled. Exporting to file {filename} in data folder.", 2500)
     
-        # Grab latest data from sensors to make header in csv
-        row = ctrl.read_from()
+        # Initialize Data Collection
+        data_collect = Thread(daemon=True, target=data_collection, args=(ctrl, win, export))
+        data_collect.start()
 
-        # Parse Data row
-        data = re.search(DATA_PARSE, row)
-        print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
-
-        # Header
-        export.write(f'"Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
-
-    win.show()
-    
-    # Initialize Data Collection
-    data_collect = Thread(daemon=True, target=data_collection, args=(ctrl, win, export))
-    data_collect.start()
+    else:
+        win.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
 
     # End
     sys.exit(app.exec())

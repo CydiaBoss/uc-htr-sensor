@@ -16,6 +16,13 @@ class SensorCtrl:
         # Look for used ports
         self.ports = active_ports()
 
+        # Inactive mode if nothing
+        self.connected = True
+        if port == "" and len(self.ports) <= 0:
+            self.connected = False
+            print("No open ports detected.")
+            return
+
         # Open first port or specified port
         self.sensor = Serial(port=port if port != "" else self.ports[0], baudrate=baud, timeout=timeout)
 

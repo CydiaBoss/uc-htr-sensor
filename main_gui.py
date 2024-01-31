@@ -24,8 +24,6 @@ from tools import active_ports, identical_list
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # Signals
-    
-    # Set up Data Collection Signals
     resist_avg_sig = QtCore.pyqtSignal(str)
     resist_avg_15_sig = QtCore.pyqtSignal(str)
     resist_avg_50_sig = QtCore.pyqtSignal(str)
@@ -150,7 +148,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # Bottom Widgets
         self.widget2 = QtWidgets.QWidget(self.centralwidget)
-        self.widget2.setGeometry(QtCore.QRect(0, 380, 1000, 100))
+        self.widget2.setGeometry(QtCore.QRect(0, 380, 1000, 75))
         self.widget2.setObjectName("widget3")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.widget2)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -292,6 +290,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.horizontalLayout_3.addLayout(self.verticalLayout_16)
 
         MainWindow.setCentralWidget(self.centralwidget)
+
+        # Action Stuff
+        
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
         self.menubar.setObjectName("menubar")
@@ -336,6 +337,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.action_ports : List[QtWidgets.QAction] = []
         for port in self.ports:
             temp_port_action = QtWidgets.QAction(MainWindow)
+            temp_port_action.setCheckable(True)
             temp_port_action.setObjectName(port)
             self.action_ports.append(temp_port_action)
             self.menu_Connect.addAction(temp_port_action)
