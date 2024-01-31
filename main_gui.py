@@ -26,9 +26,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     # Signals
     
     # Set up Data Collection Signals
-    resist_avg_sig = QtCore.pyqtSignal('QString')
-    resist_avg_15_sig = QtCore.pyqtSignal('QString')
-    resist_avg_50_sig = QtCore.pyqtSignal('QString')
+    resist_avg_sig = QtCore.pyqtSignal(str)
+    resist_avg_15_sig = QtCore.pyqtSignal(str)
+    resist_avg_50_sig = QtCore.pyqtSignal(str)
+
+    humd_avg_sig = QtCore.pyqtSignal(str)
+    humd_avg_15_sig = QtCore.pyqtSignal(str)
+    humd_avg_50_sig = QtCore.pyqtSignal(str)
+
+    temp_avg_sig = QtCore.pyqtSignal(str)
+    temp_avg_15_sig = QtCore.pyqtSignal(str)
+    temp_avg_50_sig = QtCore.pyqtSignal(str)
 
     def setupUi(self, MainWindow):
         # Look for ports for menu stuff
@@ -38,6 +46,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.resist_avg_sig.connect(self.update_resist_avg)
         self.resist_avg_15_sig.connect(self.update_resist_avg_15)
         self.resist_avg_50_sig.connect(self.update_resist_avg_50)
+
+        self.humd_avg_sig.connect(self.update_humd_avg)
+        self.humd_avg_15_sig.connect(self.update_humd_avg_15)
+        self.humd_avg_50_sig.connect(self.update_humd_avg_50)
+
+        self.temp_avg_sig.connect(self.update_temp_avg)
+        self.temp_avg_15_sig.connect(self.update_temp_avg_15)
+        self.temp_avg_50_sig.connect(self.update_temp_avg_50)
 
         # Main Window Functions
         MainWindow.setObjectName("MainWindow")
@@ -189,6 +205,92 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_10.addWidget(self.resistance_avg_15)
         self.horizontalLayout_3.addLayout(self.verticalLayout_10)
 
+        # Humidity Nodes
+        self.verticalLayout_11 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_11.setObjectName("verticalLayout_11")
+        self.label_7 = QtWidgets.QLabel(self.widget2)
+        self.label_7.setFont(node_font)
+        self.label_7.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_7.setObjectName("label_7")
+        self.humidity_avg = QtWidgets.QLabel(self.widget2)
+        self.humidity_avg.setFont(node_value_font)
+        self.humidity_avg.setAlignment(QtCore.Qt.AlignHCenter)
+        self.humidity_avg.setObjectName("humidity_avg")
+        self.verticalLayout_11.addWidget(self.label_7)
+        self.verticalLayout_11.addWidget(self.humidity_avg)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_11)
+        
+        self.verticalLayout_12 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_12.setObjectName("verticalLayout_12")
+        self.label_8 = QtWidgets.QLabel(self.widget2)
+        self.label_8.setFont(node_font)
+        self.label_8.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_8.setObjectName("label_8")
+        self.humidity_avg_50 = QtWidgets.QLabel(self.widget2)
+        self.humidity_avg_50.setFont(node_value_font)
+        self.humidity_avg_50.setAlignment(QtCore.Qt.AlignHCenter)
+        self.humidity_avg_50.setObjectName("humidity_avg_50")
+        self.verticalLayout_12.addWidget(self.label_8)
+        self.verticalLayout_12.addWidget(self.humidity_avg_50)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_12)
+        
+        self.verticalLayout_13 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.label_9 = QtWidgets.QLabel(self.widget2)
+        self.label_9.setFont(node_font)
+        self.label_9.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_9.setObjectName("label_9")
+        self.humidity_avg_15 = QtWidgets.QLabel(self.widget2)
+        self.humidity_avg_15.setFont(node_value_font)
+        self.humidity_avg_15.setAlignment(QtCore.Qt.AlignHCenter)
+        self.humidity_avg_15.setObjectName("humidity_avg_15")
+        self.verticalLayout_13.addWidget(self.label_9)
+        self.verticalLayout_13.addWidget(self.humidity_avg_15)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_13)
+
+        # Temperature Nodes
+        self.verticalLayout_14 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_14.setObjectName("verticalLayout_14")
+        self.label_10 = QtWidgets.QLabel(self.widget2)
+        self.label_10.setFont(node_font)
+        self.label_10.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_10.setObjectName("label_10")
+        self.temperature_avg = QtWidgets.QLabel(self.widget2)
+        self.temperature_avg.setFont(node_value_font)
+        self.temperature_avg.setAlignment(QtCore.Qt.AlignHCenter)
+        self.temperature_avg.setObjectName("temperature_avg")
+        self.verticalLayout_14.addWidget(self.label_10)
+        self.verticalLayout_14.addWidget(self.temperature_avg)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_14)
+        
+        self.verticalLayout_15 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_15.setObjectName("verticalLayout_15")
+        self.label_11 = QtWidgets.QLabel(self.widget2)
+        self.label_11.setFont(node_font)
+        self.label_11.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_11.setObjectName("label_11")
+        self.temperature_avg_50 = QtWidgets.QLabel(self.widget2)
+        self.temperature_avg_50.setFont(node_value_font)
+        self.temperature_avg_50.setAlignment(QtCore.Qt.AlignHCenter)
+        self.temperature_avg_50.setObjectName("temperature_avg_50")
+        self.verticalLayout_15.addWidget(self.label_11)
+        self.verticalLayout_15.addWidget(self.temperature_avg_50)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_15)
+        
+        self.verticalLayout_16 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_16.setObjectName("verticalLayout_16")
+        self.label_12 = QtWidgets.QLabel(self.widget2)
+        self.label_12.setFont(node_font)
+        self.label_12.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.label_12.setObjectName("label_12")
+        self.temperature_avg_15 = QtWidgets.QLabel(self.widget2)
+        self.temperature_avg_15.setFont(node_value_font)
+        self.temperature_avg_15.setAlignment(QtCore.Qt.AlignHCenter)
+        self.temperature_avg_15.setObjectName("temperature_avg_15")
+        self.verticalLayout_16.addWidget(self.label_12)
+        self.verticalLayout_16.addWidget(self.temperature_avg_15)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_16)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
@@ -265,9 +367,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.label.setText(_translate("MainWindow", "Live Resistance Data"))
         self.label_2.setText(_translate("MainWindow", "Live Humidity Data"))
         self.label_3.setText(_translate("MainWindow", "Live Temperature Data"))
-        self.label_4.setText(_translate("MainWindow", "Average Resistance"))
-        self.label_5.setText(_translate("MainWindow", "Average Resistance (Last 50)"))
-        self.label_6.setText(_translate("MainWindow", "Average Resistance (Last 15)"))
+        self.label_4.setText(_translate("MainWindow", "AVG Resistance"))
+        self.label_5.setText(_translate("MainWindow", "AVG Resist. (Last 50)"))
+        self.label_6.setText(_translate("MainWindow", "AVG Resist. (Last 15)"))
+        self.label_7.setText(_translate("MainWindow", "AVG Humidity"))
+        self.label_8.setText(_translate("MainWindow", "AVG Humid. (Last 50)"))
+        self.label_9.setText(_translate("MainWindow", "AVG Humid. (Last 15)"))
+        self.label_10.setText(_translate("MainWindow", "AVG Temperature"))
+        self.label_11.setText(_translate("MainWindow", "AVG Temp. (Last 50)"))
+        self.label_12.setText(_translate("MainWindow", "AVG Temp. (Last 15)"))
         self.menu_File.setTitle(_translate("MainWindow", "&File"))
         self.menu_Export.setTitle(_translate("MainWindow", "&Export"))
         self.menu_Edit.setTitle(_translate("MainWindow", "&Edit"))
@@ -365,3 +473,31 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot(str)
     def update_resist_avg_50(self, value):
         self.resistance_avg_50.setText(value)
+
+    # Humidity Stuff
+
+    @QtCore.pyqtSlot(str)
+    def update_humd_avg(self, value):
+        self.humidity_avg.setText(value)
+
+    @QtCore.pyqtSlot(str)
+    def update_humd_avg_15(self, value):
+        self.humidity_avg_15.setText(value)
+
+    @QtCore.pyqtSlot(str)
+    def update_humd_avg_50(self, value):
+        self.humidity_avg_50.setText(value)
+
+    # Temperature Stuff
+
+    @QtCore.pyqtSlot(str)
+    def update_temp_avg(self, value):
+        self.temperature_avg.setText(value)
+
+    @QtCore.pyqtSlot(str)
+    def update_temp_avg_15(self, value):
+        self.temperature_avg_15.setText(value)
+
+    @QtCore.pyqtSlot(str)
+    def update_temp_avg_50(self, value):
+        self.temperature_avg_50.setText(value)

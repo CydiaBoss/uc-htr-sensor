@@ -48,9 +48,9 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
                 win.resist_data.cb_append_data_point(r_data, x)
                 resistance.append(r_data)
 
-                # Calculate AVG
+                # Calculate Resist AVG
                 resist_size = len(resistance)
-                
+
                 win.resist_avg_sig.emit(str(round(sum(resistance)/resist_size, 2)) + f" {data.group(1)}Ω")
 
                 if resist_size > 15:
@@ -71,6 +71,36 @@ def data_collection(ctrl : SensorCtrl, win : Window, export : TextIOWrapper):
 
             humidity.append(h_data)
             temperature.append(t_data)
+
+            # Calculate Humidity AVG
+            humd_size = len(humidity)
+            
+            win.humd_avg_sig.emit(str(round(sum(humidity)/humd_size, 2)) + "%RH")
+
+            if humd_size > 15:
+                win.humd_avg_15_sig.emit(str(round(sum(humidity[-15:])/15, 2)) + "%RH")
+            else:
+                win.humd_avg_15_sig.emit("N/A")
+
+            if humd_size > 50:
+                win.humd_avg_50_sig.emit(str(round(sum(humidity[-50:])/50, 2)) + "%RH")
+            else:
+                win.humd_avg_50_sig.emit("N/A")
+
+            # Calculate Temperature AVG
+            temp_size = len(temperature)
+            
+            win.temp_avg_sig.emit(str(round(sum(temperature)/temp_size, 2)) + "°C")
+
+            if temp_size > 15:
+                win.temp_avg_15_sig.emit(str(round(sum(temperature[-15:])/15, 2)) + "°C")
+            else:
+                win.temp_avg_15_sig.emit("N/A")
+
+            if temp_size > 50:
+                win.temp_avg_50_sig.emit(str(round(sum(temperature[-50:])/50, 2)) + "°C")
+            else:
+                win.temp_avg_50_sig.emit("N/A")
 
         if AUTO_EXPORT and data is not None:
             # Write last row of data
