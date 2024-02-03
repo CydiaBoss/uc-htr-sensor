@@ -25,23 +25,29 @@ class SensorCtrl:
 
         # Open first port or specified port
         self.sensor = Serial(port=port if port != "" else self.ports[0], baudrate=baud, timeout=timeout)
+        if self.sensor.is_open:
+            self.connected = False
+            print("No open ports detected.")
+            return
 
         # Wait for Launch Message
         tick_to_timeout = 0
         while "Running" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                print("System failed to start. Closing.")
+                print("Could not connect to any ports.")
                 self.sensor.close()
-                exit(code=404)
+                self.connected = False
+                break
             tick_to_timeout += 1
             time.sleep(1)
 
-        # Success
-        print(f"Sensors connected at port {self.sensor.port}!")
+        if self.connected:
+            # Success
+            print(f"Sensors connected at port {self.sensor.port}!")
 
-        # Prep for exit
-        atexit.register(lambda : self.sensor.close())
+            # Prep for exit
+            atexit.register(lambda : self.sensor.close())
 
     def send_to(self, msg : str):
         '''

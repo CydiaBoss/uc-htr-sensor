@@ -12,14 +12,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QCloseEvent, QResizeEvent
 from PyQt5.QtWidgets import QMessageBox
 
-import pyqtgraph as pq
-
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
 from pglive.sources.live_plot_widget import LivePlotWidget
 from constants import REF_RESIST_UNIT
 
-from tools import active_ports, identical_list
+from tools import active_ports
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
@@ -119,7 +117,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.resist_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": f"Resistance ({REF_RESIST_UNIT}Ω)"})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
-        self.resist_data = DataConnector(self.resist_curve, update_rate=1.0)
+        self.resist_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
+        self.resist_plot.setBackground(background="w")
         self.verticalLayout_3.addWidget(self.resist_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
@@ -130,7 +129,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.humidity_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": "Humidity (%RH)"})
         self.humidity_curve = LiveLinePlot(brush="green", pen="green")
         self.humidity_plot.addItem(self.humidity_curve)
-        self.humidity_data = DataConnector(self.humidity_curve, update_rate=1.0)
+        self.humidity_data = DataConnector(self.humidity_curve, max_points=300, update_rate=1.0)
+        self.humidity_plot.setBackground(background="w")
         self.verticalLayout_2.addWidget(self.humidity_plot)
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -141,9 +141,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.temperature_plot = LivePlotWidget(self.widget1, labels={"bottom": "Time since Connection", "left": "Temperature (°C)"})
         self.temperature_curve = LiveLinePlot(brush="blue", pen="blue")
         self.temperature_plot.addItem(self.temperature_curve)
-        self.temperature_data = DataConnector(self.temperature_curve, update_rate=1.0)
+        self.temperature_data = DataConnector(self.temperature_curve, max_points=300, update_rate=1.0)
+        self.temperature_plot.setBackground(background="w")
         self.verticalLayout.addWidget(self.temperature_plot)
-
         self.horizontalLayout.addLayout(self.verticalLayout)
 
         # Bottom Widgets
@@ -407,30 +407,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             action_port.setText(_translate("MainWindow", action_port.objectName().upper()))
             action_port.setToolTip(_translate("MainWindow", "Switches to this port"))
 
-    def updatePorts(self):
-        """
-        Update available ports to select
-        """
-        old_ports = self.ports
-        self.ports = active_ports()
-        self.ports.append()
-
-        # Ignore if nothing changed
-        if identical_list(old_ports, self.ports):
-            return
-        
-        # Remove all menu items
-        for action_port in self.action_ports:
-            self.menu_Connect.removeAction(action_port)
-
-        # Add New COM Menu
-        self.action_ports : List[QtWidgets.QAction] = []
-        for port in self.ports:
-            temp_port_action = QtWidgets.QAction(self.mainWindow)
-            temp_port_action.setObjectName(port)
-            self.action_ports.append(temp_port_action)
-            self.menu_Connect.addAction(temp_port_action)
-
     # Events
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
@@ -451,16 +427,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             a0.accept()
         else:
             a0.ignore() 
-    
-    # Slots
-
-    @QtCore.pyqtSlot()
-    def on_action_Quit_triggered(self):
-        self.close()
-
-    @QtCore.pyqtSlot()
-    def on_action_Refresh_triggered(self):
-        self.updatePorts()
 
     # Resistance Stuff
 
