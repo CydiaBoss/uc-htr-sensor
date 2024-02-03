@@ -10,13 +10,14 @@ from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
-from openQCM.util.ReadLine import ReadLine as rl
 from time import time as tm
-from progressbar import Bar, Percentage, ProgressBar, RotatingMarker,Timer
 from numpy import loadtxt
 from time import sleep
 
 from numpy import loadtxt
+
+import pywt
+from statsmodels.robust import mad
 
 TAG = ""#"[Serial]"
 
@@ -326,8 +327,6 @@ class SerialProcess(multiprocessing.Process):
         
         ###################
         def waveletSmooth(x, wavelet="db4", level=1, title=None):
-            import pywt
-            from statsmodels.robust import mad
             # calculate the wavelet coefficients
             coeff = pywt.wavedec( x, wavelet, mode="per")
             # calculate a threshold
