@@ -21,6 +21,10 @@ from tools import active_ports
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
+    # Windows Dimension
+    HEIGHT = 780
+    WIDTH = 1240
+
     # Signals
     resist_avg_sig = QtCore.pyqtSignal(str)
     resist_avg_15_sig = QtCore.pyqtSignal(str)
@@ -53,19 +57,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # Main Window Functions
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1000, 600)
-        MainWindow.setMinimumSize(QtCore.QSize(1000, 600))
+        MainWindow.resize(self.WIDTH, self.HEIGHT)
+        MainWindow.setMinimumSize(QtCore.QSize(self.WIDTH, self.HEIGHT))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("ui\\resources/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.mainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setMinimumSize(QtCore.QSize(1000, 600))
+        self.centralwidget.setMinimumSize(QtCore.QSize(self.WIDTH, self.HEIGHT))
         self.centralwidget.setObjectName("centralwidget")
 
         # Upper Widget
         self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(0, 0, 1000, 40))
+        self.widget.setGeometry(QtCore.QRect(0, 0, self.WIDTH, 40))
         self.widget.setObjectName("widget")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widget)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -105,7 +109,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # Graphing Widget
         self.widget1 = QtWidgets.QWidget(self.centralwidget)
-        self.widget1.setGeometry(QtCore.QRect(0, 40, 1000, 340))
+        self.widget1.setGeometry(QtCore.QRect(0, 40, self.WIDTH, 340))
         self.widget1.setObjectName("widget1")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget1)
         self.horizontalLayout.setContentsMargins(5, 0, 5, 0)
@@ -148,7 +152,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # Bottom Widgets
         self.widget2 = QtWidgets.QWidget(self.centralwidget)
-        self.widget2.setGeometry(QtCore.QRect(0, 380, 1000, 75))
+        self.widget2.setGeometry(QtCore.QRect(0, 380, self.WIDTH, 75))
         self.widget2.setObjectName("widget3")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.widget2)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -289,20 +293,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_16.addWidget(self.temperature_avg_15)
         self.horizontalLayout_3.addLayout(self.verticalLayout_16)
 
-        # Start Button
-        self.widget3 = QtWidgets.QWidget(self.centralwidget)
-        self.widget3.setGeometry(QtCore.QRect(0, 455, 1000, 90))
-        self.widget3.setContentsMargins(5, 5, 5, 5)
-        self.widget3.setObjectName("widget3")
-        self.startButton = QPushButton(self.widget3)
+        # Lower Graphs Widgets
+
+
+        # Ctrl Widget
+        self.widget4 = QtWidgets.QWidget(self.centralwidget)
+        self.widget4.setGeometry(QtCore.QRect(0, 455, self.WIDTH, 90))
+        self.widget4.setContentsMargins(5, 5, 5, 5)
+        self.widget4.setObjectName("widget4")
+        self.startButton = QPushButton(self.widget4)
         self.startButton.setGeometry(QtCore.QRect(900, 60, 90, 25))
+        self.startButton.setObjectName("startButton")
+        self.startButton.setEnabled(False)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
         # Action Stuff
         
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1000, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, self.WIDTH, 22))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtWidgets.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
@@ -426,8 +435,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         new_width = a0.size().width()
         new_height = a0.size().height()
         self.widget.setGeometry(QtCore.QRect(0, 0, new_width, 40))
-        self.widget1.setGeometry(QtCore.QRect(0, 40, new_width, int(new_height*340/600)))
-        self.widget2.setGeometry(QtCore.QRect(0, 40 + int(new_height*340/600), new_width, int(new_height*100/600)))
+        self.widget1.setGeometry(QtCore.QRect(0, 40, new_width, int(new_height*340/self.HEIGHT)))
+        self.widget2.setGeometry(QtCore.QRect(0, 40 + int(new_height*340/self.HEIGHT), new_width, int(new_height*100/self.HEIGHT)))
+        self.widget4.setGeometry(QtCore.QRect(0, 40 + int(new_height*340/self.HEIGHT) + int(new_height*100/self.HEIGHT), new_width, int(new_height*90/self.HEIGHT)))
         return super().resizeEvent(a0)
         
     def closeEvent(self, a0: QCloseEvent | None) -> None:

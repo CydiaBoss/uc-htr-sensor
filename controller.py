@@ -67,7 +67,7 @@ class HTRSensorCtrl:
             print(f"Sensors connected at port {self.sensor.port}!")
 
             # Prep for exit
-            atexit.register(lambda : self.sensor.close())
+            atexit.register(self.sensor.close)
 
     def send_to(self, msg : str):
         '''

@@ -36,6 +36,7 @@ class Window(Ui_MainWindow):
         self.statusBar().showMessage("Looking for sensor controller...")
         self.ctrl = HTRSensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
         self.statusBar().clearMessage()
+        self.htr_thread = None
 
         # Auto Start if connected
         if self.ctrl.connected:
@@ -44,33 +45,7 @@ class Window(Ui_MainWindow):
             self.ctrl.update_ref_volt(REF_VOLT)
             self.statusBar().clearMessage()
             self.statusBar().showMessage("Reference values configured.", 2500)
-
-            # Auto Export Setup
-            if AUTO_EXPORT:
-                # Make data directory if not already
-                Path("data/").mkdir(parents=True, exist_ok=True)
-
-                # Look for export file
-                filename = f"data-{int(time.time())}.csv"
-                export = open(f"data/{filename}", "w", encoding="utf-8")
-                atexit.register(lambda : export.close())
-            
-                # Grab latest data from sensors to make header in csv
-                row = self.ctrl.read_from()
-
-                # Parse Data row
-                data = re.search(DATA_PARSE, row)
-                print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
-
-                # Header
-                export.write(f'"Time","Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
-
-                self.statusBar().clearMessage()
-                self.statusBar().showMessage(f"Auto export enabled. Exporting to file {filename} in data folder.", 2500)
-        
-            # Initialize Data Collection
-            data_collect = Thread(daemon=True, target=self.data_collection, args=(export,))
-            data_collect.start()
+            self.startButton.setEnabled(True)
 
         else:
             self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
@@ -175,7 +150,7 @@ class Window(Ui_MainWindow):
         """
         old_ports = self.ports
         self.ports = active_ports()
-        if self.ctrl.sensor.is_open:
+        if not self.ctrl.sensor.is_open and self.ctrl.sensor.port is not None:
             self.ports.append(self.ctrl.sensor.port)
 
         # Ignore if nothing changed
@@ -196,6 +171,47 @@ class Window(Ui_MainWindow):
             temp_port_action.setToolTip(_translate("MainWindow", "Switches to this port"))
             self.action_ports.append(temp_port_action)
             self.menu_Connect.addAction(temp_port_action)
+
+    def start_htr(self):
+        # Ensure connected
+        if not self.ctrl.connected:
+            self.statusBar().showMessage("No sensor connected to start HTR")
+            return
+        
+        # Ensure not already running
+        if self.htr_thread is not None:
+            self.statusBar().showMessage("Already running HTR data collection")
+            return
+        
+        # Auto Export Setup
+        if AUTO_EXPORT:
+            # Make data directory if not already
+            Path("data/").mkdir(parents=True, exist_ok=True)
+
+            # Look for export file
+            filename = f"data-{int(time.time())}.csv"
+            export = open(f"data/{filename}", "w", encoding="utf-8")
+            atexit.register(lambda : export.close())
+        
+            # Grab latest data from sensors to make header in csv
+            row = self.ctrl.read_from()
+
+            # Parse Data row
+            data = re.search(DATA_PARSE, row)
+            print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
+
+            # Header
+            export.write(f'"Time","Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
+
+            self.statusBar().clearMessage()
+            self.statusBar().showMessage(f"Auto export enabled. Exporting to file {filename} in data folder.", 2500)
+    
+        # Initialize Data Collection
+        self.htr_thread = Thread(daemon=True, target=self.data_collection, args=(export,))
+        self.htr_thread.start()
+
+        # Disable start button
+        self.startButton.setEnabled(False)
     
     # Slots
 
@@ -206,6 +222,10 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Refresh_triggered(self):
         self.updatePorts()
+
+    @QtCore.pyqtSlot()
+    def on_startButton_clicked(self):
+        self.start_htr()
 
 if __name__ == "__main__":
     # Update App ID if Windows
