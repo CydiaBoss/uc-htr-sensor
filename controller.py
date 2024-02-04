@@ -7,9 +7,9 @@ import time, atexit
 from constants import READ_TIMEOUT
 from tools import active_ports
 
-class SensorCtrl:
+class HTRSensorCtrl:
     '''
-    Class of sensor controls
+    Class of sensor controls for the HTR system
     '''
 
     def __init__(self, port : str="", baud : int=9600, timeout=0.1):
@@ -23,24 +23,44 @@ class SensorCtrl:
             print("No open ports detected.")
             return
 
-        # Open first port or specified port
-        self.sensor = Serial(port=port if port != "" else self.ports[0], baudrate=baud, timeout=timeout)
-        if self.sensor.is_open:
-            self.connected = False
-            print("No open ports detected.")
-            return
+        # Open specified port or all detected ports
+        if port != "":
+            print("Opening port " + port)
+            self.sensor = Serial(port=port, baudrate=baud, timeout=timeout)
 
-        # Wait for Launch Message
-        tick_to_timeout = 0
-        while "Running" not in self.read_from():
-            # Timeout
-            if tick_to_timeout > READ_TIMEOUT:
-                print("Could not connect to any ports.")
-                self.sensor.close()
-                self.connected = False
-                break
-            tick_to_timeout += 1
-            time.sleep(1)
+            # Wait for Launch Message
+            tick_to_timeout = 0
+            while "Running" not in self.read_from():
+                # Timeout
+                if tick_to_timeout > READ_TIMEOUT:
+                    print("Could not connect to specified port")
+                    self.sensor.close()
+                    self.connected = False
+                    break
+                tick_to_timeout += 1
+                time.sleep(1)
+        else:
+            for p in self.ports:
+                print("Opening port " + p)
+                self.sensor = Serial(port=p, baudrate=baud, timeout=timeout)
+
+                # Wait for Launch Message
+                tick_to_timeout = 0
+                while "Running" not in self.read_from():
+                    # Timeout
+                    if tick_to_timeout > READ_TIMEOUT:
+                        print(f"Could not connect to port {p}")
+                        self.sensor.close()
+                        break
+                    tick_to_timeout += 1
+                    time.sleep(1)
+
+                # Connect Check
+                if tick_to_timeout > READ_TIMEOUT:
+                    self.connected = False
+                else:
+                    self.connected = True
+                    break
 
         if self.connected:
             # Success

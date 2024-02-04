@@ -3,7 +3,7 @@ from threading import Thread
 from typing import List
 
 import numpy as np
-from controller import SensorCtrl
+from controller import HTRSensorCtrl
 from pathlib import Path
 import sys, ctypes, time, re, atexit
 
@@ -34,13 +34,7 @@ class Window(Ui_MainWindow):
         # Main Logic
         # Connection to Sensors
         self.statusBar().showMessage("Looking for sensor controller...")
-
-        # Start setup if sensor detected
-        if len(self.ports) <= 0:
-            self.statusBar().showMessage("No sensors found")
-            return
-
-        self.ctrl = SensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
+        self.ctrl = HTRSensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
         self.statusBar().clearMessage()
 
         # Auto Start if connected

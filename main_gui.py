@@ -10,7 +10,7 @@
 from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QCloseEvent, QResizeEvent
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QPushButton
 
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
@@ -289,6 +289,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout_16.addWidget(self.temperature_avg_15)
         self.horizontalLayout_3.addLayout(self.verticalLayout_16)
 
+        # Start Button
+        self.widget3 = QtWidgets.QWidget(self.centralwidget)
+        self.widget3.setGeometry(QtCore.QRect(0, 455, 1000, 90))
+        self.widget3.setContentsMargins(5, 5, 5, 5)
+        self.widget3.setObjectName("widget3")
+        self.startButton = QPushButton(self.widget3)
+        self.startButton.setGeometry(QtCore.QRect(900, 60, 90, 25))
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         # Action Stuff
@@ -378,6 +386,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.label_10.setText(_translate("MainWindow", "AVG Temperature"))
         self.label_11.setText(_translate("MainWindow", "AVG Temp. (Last 50)"))
         self.label_12.setText(_translate("MainWindow", "AVG Temp. (Last 15)"))
+        self.startButton.setText(_translate("MainWindow", "&Start"))
+        self.startButton.setToolTip(_translate("MainWindow", "Start the process"))
         self.menu_File.setTitle(_translate("MainWindow", "&File"))
         self.menu_Export.setTitle(_translate("MainWindow", "&Export"))
         self.menu_Edit.setTitle(_translate("MainWindow", "&Edit"))
