@@ -5,6 +5,7 @@ from serial import Serial
 import time, atexit
 
 from constants import READ_TIMEOUT
+from openqcm.core.worker import Worker
 from tools import active_ports
 
 class HTRSensorCtrl:
@@ -112,3 +113,12 @@ class HTRSensorCtrl:
         Read from the sensor
         '''
         return self.sensor.readline().decode("utf-8")
+    
+class QCMSensorCtrl:
+    '''
+    Class of sensor controllers for the QCM system
+    '''
+
+    def __init__(self) -> None:
+        # Create QCM worker
+        self.worker = Worker()

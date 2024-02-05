@@ -1,14 +1,13 @@
 from multiprocessing import Queue
 
-from openQCM.core.constants import Constants, SourceType
-from openQCM.processors.Parser import ParserProcess
-from openQCM.processors.Serial import SerialProcess
-from openQCM.processors.SocketClient import SocketProcess
-from openQCM.processors.Calibration import CalibrationProcess
-from openQCM.processors.Multiscan import MultiscanProcess
-from openQCM.common.fileStorage import FileStorage
-from openQCM.common.logger import Logger as Log
-from openQCM.core.ringBuffer import RingBuffer
+from openqcm.core.constants import Constants, SourceType
+from openqcm.processes.parser import ParserProcess
+from openqcm.processes.serial import SerialProcess
+from openqcm.processes.calibration import CalibrationProcess
+from openqcm.processes.multiscan import MultiscanProcess
+from openqcm.common.fileStorage import FileStorage
+from openqcm.common.logger import Logger as Log
+from openqcm.core.ringBuffer import RingBuffer
 import numpy as np
 from time import time
 from numpy import loadtxt
@@ -217,29 +216,6 @@ class Worker:
                 SG_window_size, 
                 spline_points, 
                 spline_factor) = self._acquisition_process.get_frequencies(self._samples)
-# =============================================================================
-#                
-#                #print(TAG, "Quartz Crystal Sensor installed: {}".format(self._QCS_on))
-#                print("")
-#                print(TAG, "DATA MAIN INFORMATION")
-#                print(TAG, "Selected frequency: {} - {}Hz".format(self._overtone_name,self._overtone_value))
-#                print(TAG, "Frequency start: {}Hz".format(self._readFREQ[0]))
-#                print(TAG, "Frequency stop:  {}Hz".format(self._readFREQ[-1]))
-#                print(TAG, "Frequency range: {}Hz".format(self._readFREQ[-1]-self._readFREQ[0]))
-#                print(TAG, "Number of samples: {}".format(self._samples-1))
-#                print(TAG, "Sample rate: {}Hz".format(self._fStep))
-#                print(TAG, "History buffer size: 180 min\n")
-#                print(TAG, "MAIN PROCESSING INFORMATION")
-#                print(TAG, "Method for baseline estimation and correction:")
-#                print(TAG, "Least Squares Polynomial Fit (LSP)")
-#                #print(TAG, "Degree of the fitting polynomial: 8")
-#                print(TAG, "Savitzky-Golay Filtering")
-#                print(TAG, "Order of the polynomial fit: {}".format(Constants.SG_order))
-#                print(TAG, "Size of data window (in samples): {}".format(SG_window_size))
-#                print(TAG, "Oversampling using spline interpolation")
-#                print(TAG, "Spline points (in samples): {}".format(spline_points-1))
-#                print(TAG, "Resolution after oversampling: {}Hz".format((self._readFREQ[-1]-self._readFREQ[0])/(spline_points-1)))
-# =============================================================================
                
             # CALIBRATION
             elif self._source == SourceType.calibration:
