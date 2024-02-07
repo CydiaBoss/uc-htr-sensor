@@ -8,13 +8,13 @@
     <x>0</x>
     <y>0</y>
     <width>1080</width>
-    <height>650</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1080</width>
-    <height>650</height>
+    <height>675</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
      <height>600</height>
     </size>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_6">
+   <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>5</number>
     </property>
@@ -44,7 +44,39 @@
     <property name="bottomMargin">
      <number>5</number>
     </property>
-    <item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;HTR &amp;amp; QCM Sensor Fusion Controller&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="margin">
+       <number>18</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label_36">
+      <property name="maximumSize">
+       <size>
+        <width>275</width>
+        <height>64</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources/main.qrc">:/main/medal.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
      <widget class="QSplitter" name="splitter_4">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -65,7 +97,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" name="qcm_layout">
+         <layout class="QGridLayout" name="qcm_layout" columnminimumwidth="300,300">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="amp_plot" native="true"/>
           </item>
@@ -92,6 +124,9 @@
        <widget class="QSplitter" name="splitter_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
+        </property>
+        <property name="handleWidth">
+         <number>2</number>
         </property>
         <widget class="QWidget" name="layoutWidget">
          <layout class="QGridLayout" name="gridLayout_15">
@@ -517,7 +552,13 @@
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="lineWidth">
+         <number>16</number>
+        </property>
+        <property name="midLineWidth">
+         <number>6</number>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="leftMargin">
@@ -712,8 +753,8 @@
                    <string>Start</string>
                   </property>
                   <property name="icon">
-                   <iconset>
-                    <normaloff>resources/start.png</normaloff>resources/start.png</iconset>
+                   <iconset resource="resources/main.qrc">
+                    <normaloff>:/main/start.png</normaloff>:/main/start.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -732,8 +773,8 @@
                    <string>Stop</string>
                   </property>
                   <property name="icon">
-                   <iconset>
-                    <normaloff>resources/stop.png</normaloff>resources/stop.png</iconset>
+                   <iconset resource="resources/main.qrc">
+                    <normaloff>:/main/stop.png</normaloff>:/main/stop.png</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -907,8 +948,8 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset>
-                    <normaloff>resources/folder.png</normaloff>resources/folder.png</iconset>
+                   <iconset resource="resources/main.qrc">
+                    <normaloff>:/main/folder.png</normaloff>:/main/folder.png</iconset>
                   </property>
                  </widget>
                 </item>
@@ -1125,7 +1166,9 @@
   <tabstop>diss_d3</tabstop>
   <tabstop>diss_d1</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources/main.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>auto_export</sender>
