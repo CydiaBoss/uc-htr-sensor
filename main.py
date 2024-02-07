@@ -10,7 +10,6 @@ import sys, ctypes, time, re, atexit
 from PyQt5.QtWidgets import QApplication, QAction
 from PyQt5 import QtCore
 
-# from main_gui import Ui_MainWindow
 from main_gui_new import Ui_MainWindow
 from constants import *
 from tools import active_ports, identical_list
@@ -19,6 +18,8 @@ from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
 from pglive.sources.live_plot_widget import LivePlotWidget
 from pglive.sources.live_axis import LiveAxis
+
+import main_rc
 
 # Translate Component
 _translate = QtCore.QCoreApplication.translate
@@ -34,55 +35,131 @@ temperature = []
 class Window(Ui_MainWindow):
 
     def __init__(self, parent=None):
+        # Setup Basic Stuff
+        main_rc.qInitResources()
         super().__init__(parent)
         self.setupUi(self)
 
-        # Show GUI
-        self.show()
+        # Setup Graphs
+        self.setup_plots()
+
+        # Setup Ports
+        self.htr_port : str = None
+        self.qcm_port : str = None
+
+        # Setup Dropdowns
+        self.ports = []
+        self.update_ports()
 
         # Main Logic
         # Connection to Sensors
-        self.statusBar().showMessage("Looking for sensor controller...")
-        self.ctrl = HTRSensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
-        self.statusBar().clearMessage()
-        self.htr_thread = None
+        # self.statusBar().showMessage("Looking for sensor controller...")
+        # self.ctrl = HTRSensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
+        # self.statusBar().clearMessage()
+        # self.htr_thread = None
 
-        # Auto Start if connected
-        if self.ctrl.connected:
-            self.statusBar().showMessage(f"Connected to sensor at port {self.ctrl.sensor.port}!")
-            self.ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-            self.ctrl.update_ref_volt(REF_VOLT)
-            self.statusBar().clearMessage()
-            self.statusBar().showMessage("Reference values configured.", 2500)
-            self.start_btn.setEnabled(True)
+        # # Auto Start if connected
+        # if self.ctrl.connected:
+        #     self.statusBar().showMessage(f"Connected to sensor at port {self.ctrl.sensor.port}!")
+        #     self.ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+        #     self.ctrl.update_ref_volt(REF_VOLT)
+        #     self.statusBar().clearMessage()
+        #     self.statusBar().showMessage("Reference values configured.", 2500)
+        #     self.start_btn.setEnabled(True)
 
-        else:
-            self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
+        # else:
+        #     self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
 
     def setup_plots(self):
         '''
         Setups the graphs for live data collectrion
         '''
         # Setup Resistance Graph
-        self.resist_axis = LiveAxis('left', text=_translate("Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT.strip())
-        self.resist_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Resistance") + f" ({REF_RESIST_UNIT}Ohm)","bottom": _translate("Time")})
+        self.htr_layout.removeWidget(self.resist_plot)
+        self.resist_plot.setParent(None)
+        self.resist_plot.deleteLater()
+        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT.strip())
+        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT}Ohm)", "bottom": _translate("MainWindow", "Time")})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
+        self.resist_plot.setBackground(background="w")
+        self.resist_plot.show_crosshair()
         self.resist_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
+        self.htr_layout.addWidget(self.resist_plot)
         
         # Setup Humidity Graph
-        self.humd_axis = LiveAxis('left', text=_translate("Humidity"), units="%RH")
-        self.humd_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Humidity"), axisItems={"left": self.humd_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Humidity") + " (%RH)","bottom": _translate("Time")})
-        self.humd_curve = LiveLinePlot(brush="red", pen="red")
+        self.htr_layout.removeWidget(self.humd_plot)
+        self.humd_plot.setParent(None)
+        self.humd_plot.deleteLater()
+        self.humd_axis = LiveAxis('left', text=_translate("MainWindow", "Humidity"), units="%RH")
+        self.humd_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Humidity"), axisItems={"left": self.humd_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Humidity") + " (%RH)", "bottom": _translate("MainWindow", "Time")})
+        self.humd_curve = LiveLinePlot(brush="green", pen="green")
         self.humd_plot.addItem(self.humd_curve)
+        self.humd_plot.setBackground(background="w")
+        self.humd_plot.show_crosshair()
         self.humd_data = DataConnector(self.humd_curve, max_points=300, update_rate=1.0)
+        self.htr_layout.addWidget(self.humd_plot)
         
         # Setup Temperature Graph
-        self.temp_axis = LiveAxis('left', text=_translate("Temperature"), units="", unitPrefix=REF_RESIST_UNIT.strip())
-        self.temp_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Resistance") + f" ({REF_RESIST_UNIT}Ohm)","bottom": _translate("Time")})
-        self.temp_curve = LiveLinePlot(brush="red", pen="red")
+        self.htr_layout.removeWidget(self.temp_plot)
+        self.temp_plot.setParent(None)
+        self.temp_plot.deleteLater()
+        self.temp_axis = LiveAxis('left', text=_translate("MainWindow", "Temperature"), units="degC")
+        self.temp_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Temperature"), axisItems={"left": self.temp_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Temperature") + " (degC)", "bottom": _translate("MainWindow", "Time")})
+        self.temp_curve = LiveLinePlot(brush="blue", pen="blue")
         self.temp_plot.addItem(self.temp_curve)
-        self.temp_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
+        self.temp_plot.setBackground(background="w")
+        self.temp_plot.show_crosshair()
+        self.temp_data = DataConnector(self.temp_curve, max_points=300, update_rate=1.0)
+        self.htr_layout.addWidget(self.temp_plot)
+        
+        # Setup Amplitude Graph
+        self.qcm_layout.removeWidget(self.amp_plot)
+        self.amp_plot.setParent(None)
+        self.amp_plot.deleteLater()
+        self.amp_axis = LiveAxis('left', text=_translate("MainWindow", "Amplitude"), units="dB")
+        self.amp_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Amplitude"), axisItems={"left": self.amp_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Amplitude") + " (dB)", "bottom": _translate("MainWindow", "Time")})
+        self.amp_curve = LiveLinePlot(brush="blue", pen="blue")
+        self.amp_plot.addItem(self.amp_curve)
+        self.amp_plot.setBackground(background="w")
+        self.amp_data = DataConnector(self.amp_curve, max_points=300, update_rate=1.0)
+        self.qcm_layout.addWidget(self.amp_plot, 0, 0, 1, 1)
+        
+        # Setup Phase Graph
+        self.qcm_layout.removeWidget(self.phase_plot)
+        self.phase_plot.setParent(None)
+        self.phase_plot.deleteLater()
+        self.phase_axis = LiveAxis('left', text=_translate("MainWindow", "Phase"), units="deg")
+        self.phase_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Phase"), axisItems={"left": self.phase_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Phase") + " (deg)", "bottom": _translate("MainWindow", "Time")})
+        self.phase_curve = LiveLinePlot(brush="blue", pen="blue")
+        self.phase_plot.addItem(self.phase_curve)
+        self.phase_plot.setBackground(background="w")
+        self.phase_data = DataConnector(self.phase_curve, max_points=300, update_rate=1.0)
+        self.qcm_layout.addWidget(self.phase_plot, 0, 1, 1, 1)
+        
+        # Setup Frequency Graph
+        self.qcm_layout.removeWidget(self.freq_plot)
+        self.freq_plot.setParent(None)
+        self.freq_plot.deleteLater()
+        self.freq_axis = LiveAxis('left', text=_translate("MainWindow", "Frequency"), units="Hz")
+        self.freq_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Frequency"), axisItems={"left": self.freq_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Frequency") + " (dB)", "bottom": _translate("MainWindow", "Time")})
+        self.freq_curve = LiveLinePlot(brush="blue", pen="blue")
+        self.freq_plot.addItem(self.freq_curve)
+        self.freq_plot.setBackground(background="w")
+        self.freq_data = DataConnector(self.freq_curve, max_points=300, update_rate=1.0)
+        self.qcm_layout.addWidget(self.freq_plot, 1, 0, 1, 1)
+        
+        # Setup Dissipation Graph
+        self.qcm_layout.removeWidget(self.dissipate_plot)
+        self.dissipate_plot.setParent(None)
+        self.dissipate_plot.deleteLater()
+        self.dissipate_axis = LiveAxis('left', text=_translate("MainWindow", "Dissipation"), units="ppm")
+        self.dissipate_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Dissipation"), axisItems={"left": self.dissipate_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Dissipation") + " (ppm)", "bottom": _translate("MainWindow", "Time")})
+        self.dissipate_curve = LiveLinePlot(brush="blue", pen="blue")
+        self.dissipate_plot.addItem(self.dissipate_curve)
+        self.dissipate_plot.setBackground(background="w")
+        self.dissipate_data = DataConnector(self.dissipate_curve, max_points=300, update_rate=1.0)
+        self.qcm_layout.addWidget(self.dissipate_plot, 1, 1, 1, 1)
 
     def data_collection(self, export : TextIOWrapper):
         '''
@@ -178,33 +255,38 @@ class Window(Ui_MainWindow):
             # Update x
             x += 1
 
-    def updatePorts(self):
+    def update_ports(self):
         """
         Update available ports to select
         """
+        # Ping for
         old_ports = self.ports
         self.ports = active_ports()
-        if not self.ctrl.sensor.is_open and self.ctrl.sensor.port is not None:
-            self.ports.append(self.ctrl.sensor.port)
+
+        # Add Used Ports to list
+        if self.htr_port is not None:
+            self.ports.append(self.htr_port)
+        if self.qcm_port is not None:
+            self.ports.append(self.qcm_port)
 
         # Ignore if nothing changed
         if identical_list(old_ports, self.ports):
             return
         
         # Remove all menu items
-        for action_port in self.action_ports:
-            self.menu_Connect.removeAction(action_port)
+        self.htr_serial.clear()
+        self.qcm_serial.clear()
 
         # Add New COM Menu
-        self.action_ports : List[QAction] = []
-        _translate = QtCore.QCoreApplication.translate
         for port in self.ports:
-            temp_port_action = QAction(self.mainWindow)
-            temp_port_action.setObjectName(port)
-            temp_port_action.setText(_translate("MainWindow", action_port.objectName().upper()))
-            temp_port_action.setToolTip(_translate("MainWindow", "Switches to this port"))
-            self.action_ports.append(temp_port_action)
-            self.menu_Connect.addAction(temp_port_action)
+            self.htr_serial.addItem(port)
+            self.qcm_serial.addItem(port)
+
+        # Add Used Ports to list
+        if self.htr_port is not None:
+            self.htr_serial.setCurrentText(self.htr_port)
+        if self.qcm_port is not None:
+            self.qcm_serial.setCurrentText(self.qcm_port)
 
     def start_htr(self):
         # Ensure connected
@@ -255,7 +337,7 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_action_Refresh_triggered(self):
-        self.updatePorts()
+        self.update_ports()
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
@@ -270,6 +352,9 @@ if __name__ == "__main__":
     # Prep App Launch
     app = QApplication(sys.argv)
     win = Window()
+
+    # Show
+    win.show()
 
     # End
     sys.exit(app.exec())
