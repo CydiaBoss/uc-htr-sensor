@@ -695,6 +695,9 @@
                   <property name="value">
                    <number>24</number>
                   </property>
+                  <property name="textVisible">
+                   <bool>true</bool>
+                  </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
