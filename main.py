@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QApplication, QAction
 from PyQt5 import QtCore
 
 from main_gui import Ui_MainWindow
+from main_gui_new import BareUIMainWindow
 from constants import *
 from tools import active_ports, identical_list
 
