@@ -10,12 +10,11 @@ import sys, ctypes, time, re, atexit
 from PyQt5.QtWidgets import QApplication, QAction
 from PyQt5 import QtCore
 
-from main_gui import Ui_MainWindow
-# from main_gui_new import Ui_MainWindow
+# from main_gui import Ui_MainWindow
+from main_gui_new import Ui_MainWindow
 from constants import *
 from tools import active_ports, identical_list
 
-from pglive.kwargs import Axis
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
 from pglive.sources.live_plot_widget import LivePlotWidget
@@ -55,7 +54,7 @@ class Window(Ui_MainWindow):
             self.ctrl.update_ref_volt(REF_VOLT)
             self.statusBar().clearMessage()
             self.statusBar().showMessage("Reference values configured.", 2500)
-            self.startButton.setEnabled(True)
+            self.start_btn.setEnabled(True)
 
         else:
             self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
