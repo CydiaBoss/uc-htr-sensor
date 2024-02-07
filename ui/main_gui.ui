@@ -52,7 +52,7 @@
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="htr_layout">
           <item>
            <widget class="LivePlotWidget" name="resist_plot" native="true"/>
           </item>
@@ -65,7 +65,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="qcm_layout">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="amp_plot" native="true"/>
           </item>
@@ -85,6 +85,9 @@
       <widget class="QSplitter" name="splitter_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
+       </property>
+       <property name="handleWidth">
+        <number>2</number>
        </property>
        <widget class="QSplitter" name="splitter_2">
         <property name="orientation">
