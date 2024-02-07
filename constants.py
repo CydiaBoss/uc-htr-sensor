@@ -1,3 +1,5 @@
+from pglive.kwargs import Axis
+
 # Settings
 AUTO_EXPORT = True
 AUTO_FLUSH = 50
@@ -13,3 +15,10 @@ REF_VOLT = 5.099
 
 # Internal Usage
 DATA_PARSE = r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})"
+TIME_AXIS_CONFIG = {
+    "orientation": "bottom",
+    "text": "Time", 
+    "units": "s", 
+    "tick_angle":-45, 
+    Axis.TICK_FORMAT: Axis.TIME
+}

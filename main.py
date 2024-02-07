@@ -11,9 +11,18 @@ from PyQt5.QtWidgets import QApplication, QAction
 from PyQt5 import QtCore
 
 from main_gui import Ui_MainWindow
-from main_gui_new import BareUIMainWindow
+# from main_gui_new import Ui_MainWindow
 from constants import *
 from tools import active_ports, identical_list
+
+from pglive.kwargs import Axis
+from pglive.sources.data_connector import DataConnector
+from pglive.sources.live_plot import LiveLinePlot
+from pglive.sources.live_plot_widget import LivePlotWidget
+from pglive.sources.live_axis import LiveAxis
+
+# Translate Component
+_translate = QtCore.QCoreApplication.translate
 
 # Run Data Collection
 run_data_collect = True
@@ -50,6 +59,31 @@ class Window(Ui_MainWindow):
 
         else:
             self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
+
+    def setup_plots(self):
+        '''
+        Setups the graphs for live data collectrion
+        '''
+        # Setup Resistance Graph
+        self.resist_axis = LiveAxis('left', text=_translate("Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT.strip())
+        self.resist_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Resistance") + f" ({REF_RESIST_UNIT}Ohm)","bottom": _translate("Time")})
+        self.resist_curve = LiveLinePlot(brush="red", pen="red")
+        self.resist_plot.addItem(self.resist_curve)
+        self.resist_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
+        
+        # Setup Humidity Graph
+        self.humd_axis = LiveAxis('left', text=_translate("Humidity"), units="%RH")
+        self.humd_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Humidity"), axisItems={"left": self.humd_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Humidity") + " (%RH)","bottom": _translate("Time")})
+        self.humd_curve = LiveLinePlot(brush="red", pen="red")
+        self.humd_plot.addItem(self.humd_curve)
+        self.humd_data = DataConnector(self.humd_curve, max_points=300, update_rate=1.0)
+        
+        # Setup Temperature Graph
+        self.temp_axis = LiveAxis('left', text=_translate("Temperature"), units="", unitPrefix=REF_RESIST_UNIT.strip())
+        self.temp_plot = LivePlotWidget(self.layoutWidget, title=_translate("Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("Resistance") + f" ({REF_RESIST_UNIT}Ohm)","bottom": _translate("Time")})
+        self.temp_curve = LiveLinePlot(brush="red", pen="red")
+        self.temp_plot.addItem(self.temp_curve)
+        self.temp_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
 
     def data_collection(self, export : TextIOWrapper):
         '''

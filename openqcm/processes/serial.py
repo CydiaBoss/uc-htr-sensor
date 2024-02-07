@@ -1,9 +1,9 @@
 import multiprocessing
-from openQCM.core.ringBuffer import RingBuffer
-from openQCM.core.constants import Constants
-from openQCM.common.fileStorage import FileStorage
-from openQCM.common.logger import Logger as Log
-from openQCM.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
+from openqcm.core.ringBuffer import RingBuffer
+from openqcm.core.constants import Constants
+from openqcm.common.fileStorage import FileStorage
+from openqcm.common.logger import Logger as Log
+from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
 from time import time
 import serial
 from serial.tools import list_ports
@@ -1124,7 +1124,7 @@ class SerialProcess(multiprocessing.Process):
     ###########################################################################
     @staticmethod
     def get_ports(): 
-        from openQCM.common.architecture import Architecture,OSType
+        from openqcm.common.architecture import Architecture,OSType
         if Architecture.get_os() is OSType.macosx:
             import glob
             return glob.glob("/dev/tty.usbmodem*")

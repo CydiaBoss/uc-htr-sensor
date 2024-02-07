@@ -440,7 +440,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.widget4.setGeometry(QtCore.QRect(0, 40 + int(new_height*340/self.HEIGHT) + int(new_height*100/self.HEIGHT), new_width, int(new_height*90/self.HEIGHT)))
         return super().resizeEvent(a0)
         
-    def closeEvent(self, a0: QCloseEvent | None) -> None:
+    def closeEvent(self, a0: QCloseEvent) -> None:
         # Ask for confirmation before closing
         confirmation = QMessageBox.question(self, "Confirmation", "Are you sure you want to close the application?", QMessageBox.Yes | QMessageBox.No)
         if confirmation == QMessageBox.Yes:

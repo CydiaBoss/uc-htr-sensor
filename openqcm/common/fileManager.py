@@ -1,5 +1,5 @@
 import os
-from openQCM.common.architecture import Architecture,OSType
+from openqcm.common.architecture import Architecture,OSType
 
 ###############################################################################
 # File operations: create directory, full path and check if the existing file

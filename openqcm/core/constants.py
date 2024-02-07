@@ -5,7 +5,7 @@ from time import strftime, localtime
 import time
 import datetime 
 
-from openQCM.common.architecture import Architecture,OSType
+from openqcm.common.architecture import Architecture,OSType
 
 ###############################################################################    
 # Enum for the types of sources. Indices MUST match app_sources constant

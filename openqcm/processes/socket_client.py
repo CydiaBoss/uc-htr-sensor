@@ -3,8 +3,8 @@ from time import time
 
 import socket
 
-from openQCM.core.constants import Constants
-from openQCM.common.logger import Logger as Log
+from openqcm.core.constants import Constants
+from openqcm.common.logger import Logger as Log
 
 
 TAG = "Socket"

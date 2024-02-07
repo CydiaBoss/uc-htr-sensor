@@ -16,7 +16,7 @@ from time import sleep
 from numpy import loadtxt
 
 # DEV RAWDATA
-from common.architecture import Architecture,OSType
+from openqcm.common.architecture import Architecture,OSType
 
 TAG = ""#"[Multiscan]"
 

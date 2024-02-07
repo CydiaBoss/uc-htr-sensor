@@ -1,7 +1,7 @@
 import csv
-from openQCM.common.fileManager import FileManager
-from openQCM.core.constants import Constants
-from openQCM.common.logger import Logger as Log
+from openqcm.common.fileManager import FileManager
+from openqcm.core.constants import Constants
+from openqcm.common.logger import Logger as Log
 from time import strftime, localtime
 import datetime
 import numpy as np
