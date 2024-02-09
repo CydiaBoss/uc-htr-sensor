@@ -7,7 +7,7 @@ import sys, ctypes, time, re, atexit
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
-from controller import HTRSensorCtrl, HTRTester
+from controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 
 from main_gui_new import Ui_MainWindow
 from constants import *
@@ -301,9 +301,6 @@ class Window(Ui_MainWindow):
         # Reset Status Icon for Both 
         self.htr_status.setPixmap(QPixmap(":/main/mark.png"))
 
-        # Connection to HTR Sensor
-        self.statusBar().showMessage(f"Validating port {self.htr_serial.currentText()} for HTR...")
-
         # Start Worker
         self.htr_tester = HTRTester(port=self.htr_serial.currentText())
         self.htr_tester.moveToThread(self.htr_thread)
@@ -338,7 +335,6 @@ class Window(Ui_MainWindow):
         '''
         Test the QCM port for success
         '''
-        # TODO convert this to QCM
         # Lock Connect Button for now
         self.connect_btn.setEnabled(False)
         self.qcm_serial.setEnabled(False)
@@ -347,40 +343,37 @@ class Window(Ui_MainWindow):
         self.qcm_thread = QtCore.QThread()
 
         # Reset Status Icon for Both 
-        self.htr_status.setPixmap(QPixmap(":/main/mark.png"))
-
-        # Connection to HTR Sensor
-        self.statusBar().showMessage(f"Validating port {self.htr_serial.currentText()} for HTR...")
+        self.qcm_status.setPixmap(QPixmap(":/main/mark.png"))
 
         # Start Worker
-        self.htr_tester = HTRTester(port=self.htr_serial.currentText())
-        self.htr_tester.moveToThread(self.htr_thread)
+        self.qcm_tester = QCMTester(port=self.qcm_serial.currentText())
+        self.qcm_tester.moveToThread(self.qcm_thread)
 
         # Signal/Slots
-        self.htr_thread.started.connect(self.htr_tester.run)
-        self.htr_tester.finished.connect(self.htr_thread.quit)
-        self.htr_tester.finished.connect(self.htr_tester.deleteLater)
-        self.htr_thread.finished.connect(self.htr_thread.deleteLater)
-        self.htr_tester.results.connect(self._htr_test_results)
+        self.qcm_thread.started.connect(self.qcm_tester.run)
+        self.qcm_tester.finished.connect(self.qcm_thread.quit)
+        self.qcm_tester.finished.connect(self.qcm_tester.deleteLater)
+        self.qcm_thread.finished.connect(self.qcm_thread.deleteLater)
+        self.qcm_tester.results.connect(self._qcm_test_results)
 
         # Run
-        self.htr_thread.start()
+        self.qcm_thread.start()
 
-    def _htr_test_results(self, results : bool):
+    def _qcm_test_results(self, results : bool):
         '''
         Determine Success
         '''
         if not results:
-            self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR")
+            self.qcm_status.setPixmap(QPixmap(":/main/cross.png"))
+            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is not the QCM")
         else:
-            self.htr_status.setPixmap(QPixmap(":/main/check.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR")
+            self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
+            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM")
 
         # Unlock
-        if self.qcm_serial.isEnabled():
+        if self.htr_serial.isEnabled():
             self.connect_btn.setEnabled(True)
-        self.htr_serial.setEnabled(True)
+        self.qcm_serial.setEnabled(True)
 
     def start_htr(self):
         '''
@@ -442,8 +435,14 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage("Nothing to connect to...", 5000)
             return
         
+        # Signal Launch
+        self.statusBar().showMessage("Attempting to communicate with the sensors...")
+        
         # Test HTR
         self.test_htr_port()
+                
+        # Test QCM
+        self.test_qcm_port()
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):

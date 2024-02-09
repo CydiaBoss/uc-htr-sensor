@@ -2,10 +2,12 @@
 # Code to communicate with sensors #
 # ================================ #
 from serial import Serial
+from serial.tools import list_ports
 import time, atexit
 
 from constants import READ_TIMEOUT
 from openqcm.core.worker import Worker
+from openqcm.common.architecture import Architecture, OSType
 from tools import active_ports
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -163,3 +165,42 @@ class QCMSensorCtrl:
     def __init__(self) -> None:
         # Create QCM worker
         self.worker = Worker()
+
+
+        
+class QCMTester(QObject):
+    finished = pyqtSignal()
+    results = pyqtSignal(bool)
+
+    def __init__(self, parent: QObject=None, port="") -> None:
+        super().__init__(parent)
+        self.port = port
+
+    def run(self):
+        '''
+        Check if the port is part of the HTR system
+        '''
+        try:
+            temp_serial = Serial(port=self.port, baudrate=9600, timeout=0.1)
+
+            # Close
+            temp_serial.close()
+
+            # Status boolean
+            status = False
+
+            # Check Port ID for QCM
+            if Architecture.get_os() is OSType.windows:
+                com_ports = list_ports.comports()
+                for com in com_ports:
+                    if com[0] == self.port:
+                        status = com[2].startswith("USB VID:PID=16C0:0483")
+                        break
+
+            # Confirm Launch
+            self.results.emit(status)
+        except:
+            self.results.emit(False)
+
+        # Signal Completion
+        self.finished.emit()
