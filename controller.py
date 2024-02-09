@@ -120,7 +120,7 @@ class HTRTester(QObject):
     finished = pyqtSignal()
     results = pyqtSignal(bool)
 
-    def __init__(self, parent: QObject | None = ..., port="") -> None:
+    def __init__(self, parent: QObject=None, port="") -> None:
         super().__init__(parent)
         self.port = port
 
