@@ -8,6 +8,8 @@ from constants import READ_TIMEOUT
 from openqcm.core.worker import Worker
 from tools import active_ports
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
 class HTRSensorCtrl:
     '''
     Class of sensor controls for the HTR system
@@ -113,7 +115,43 @@ class HTRSensorCtrl:
         Read from the sensor
         '''
         return self.sensor.readline().decode("utf-8")
-    
+        
+class HTRTester(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def __init__(self, parent: QObject | None = ..., port="") -> None:
+        super().__init__(parent)
+        self.port = port
+
+    def run(self):
+        '''
+        Check if the port is part of the HTR system
+        '''
+        try:
+            temp_serial = Serial(port=self.port, baudrate=9600, timeout=0.1)
+
+            # Status boolean
+            status = True
+
+            # Wait for Launch Message
+            tick_to_timeout = 0
+            while "Running" not in temp_serial.readline().decode("utf-8"):
+                # Timeout
+                if tick_to_timeout > READ_TIMEOUT:
+                    status = False
+                    break
+                tick_to_timeout += 1
+                time.sleep(1)
+
+            # Close
+            temp_serial.close()
+
+            # Confirm Launch
+            return status
+        except:
+            return False
+
 class QCMSensorCtrl:
     '''
     Class of sensor controllers for the QCM system

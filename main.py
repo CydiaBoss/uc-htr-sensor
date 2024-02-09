@@ -1,14 +1,13 @@
 from io import TextIOWrapper
 from threading import Thread
-from typing import List
 
-import numpy as np
-from controller import HTRSensorCtrl
 from pathlib import Path
 import sys, ctypes, time, re, atexit
 
-from PyQt5.QtWidgets import QApplication, QAction
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
+from controller import HTRSensorCtrl, HTRTester
 
 from main_gui_new import Ui_MainWindow
 from constants import *
@@ -288,7 +287,36 @@ class Window(Ui_MainWindow):
         if self.qcm_port is not None:
             self.qcm_serial.setCurrentText(self.qcm_port)
 
+    def test_htr_port(self):
+        '''
+        Test the HTR port for success
+        '''
+        # Prepare QThread
+        self.htr_thread = QtCore.QThread()
+
+        # Reset Status Icon for Both 
+        self.htr_status.setPixmap(QPixmap(":/main/mark.png"))
+
+        # Connection to HTR Sensor
+        self.statusBar().showMessage(f"Validating port {self.htr_serial.currentText()} for HTR...")
+
+        # Start Worker
+        self.htr_tester = HTRTester(self.htr_serial.currentText())
+
+        # TODO work here
+
+        # On fail
+        if not HTRSensorCtrl.validation_port():
+            self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
+            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR")
+        else:
+            self.htr_status.setPixmap(QPixmap(":/main/check.png"))
+            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR")
+
     def start_htr(self):
+        '''
+        Start running HTR sampling
+        '''
         # Ensure connected
         if not self.ctrl.connected:
             self.statusBar().showMessage("No sensor connected to start HTR")
@@ -325,12 +353,11 @@ class Window(Ui_MainWindow):
         # Initialize Data Collection
         self.htr_thread = Thread(daemon=True, target=self.data_collection, args=(export,))
         self.htr_thread.start()
-
+        
         # Disable start button
-        self.startButton.setEnabled(False)
+        self.start.setEnabled(False)
     
     # Slots
-
     @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
@@ -340,8 +367,21 @@ class Window(Ui_MainWindow):
         self.update_ports()
 
     @QtCore.pyqtSlot()
+    def on_connect_btn_clicked(self):
+        self.test_htr_port()
+
+    @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
         self.start_htr()
+
+    # Events
+    def closeEvent(self, a0: QCloseEvent) -> None:
+        # Ask for confirmation before closing
+        confirmation = QMessageBox.question(self, "Confirmation", "Are you sure you want to close the application?", QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.Yes:
+            a0.accept()
+        else:
+            a0.ignore() 
 
 if __name__ == "__main__":
     # Update App ID if Windows
