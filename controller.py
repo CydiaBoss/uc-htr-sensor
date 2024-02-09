@@ -118,7 +118,7 @@ class HTRSensorCtrl:
         
 class HTRTester(QObject):
     finished = pyqtSignal()
-    progress = pyqtSignal(int)
+    results = pyqtSignal(bool)
 
     def __init__(self, parent: QObject | None = ..., port="") -> None:
         super().__init__(parent)
@@ -148,9 +148,12 @@ class HTRTester(QObject):
             temp_serial.close()
 
             # Confirm Launch
-            return status
+            self.results.emit(status)
         except:
-            return False
+            self.results.emit(False)
+
+        # Signal Completion
+        self.finished.emit()
 
 class QCMSensorCtrl:
     '''

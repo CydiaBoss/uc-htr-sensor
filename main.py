@@ -291,6 +291,10 @@ class Window(Ui_MainWindow):
         '''
         Test the HTR port for success
         '''
+        # Lock Connect Button for now
+        self.connect_btn.setEnabled(False)
+        self.htr_serial.setEnabled(False)
+
         # Prepare QThread
         self.htr_thread = QtCore.QThread()
 
@@ -302,16 +306,32 @@ class Window(Ui_MainWindow):
 
         # Start Worker
         self.htr_tester = HTRTester(self.htr_serial.currentText())
+        self.htr_thread.moveToThread(self.htr_tester)
 
-        # TODO work here
+        # Signal/Slots
+        self.htr_thread.started.connect(self.htr_tester.run)
+        self.htr_tester.finished.connect(self.htr_thread.quit)
+        self.htr_tester.finished.connect(self.htr_tester.deleteLater)
+        self.htr_thread.finished.connect(self.htr_thread.deleteLater)
+        self.htr_tester.results.connect(self._htr_test_results)
 
-        # On fail
-        if not HTRSensorCtrl.validation_port():
+        # Run
+        self.htr_thread.start()
+
+    def _htr_test_results(self, results : bool):
+        '''
+        Determine Success
+        '''
+        if not results:
             self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
             self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR")
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR")
+
+        # Unlock
+        self.connect_btn.setEnabled(True)
+        self.htr_serial.setEnabled(True)
 
     def start_htr(self):
         '''
@@ -368,6 +388,12 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_connect_btn_clicked(self):
+        # Ensure something is selected
+        if self.htr_serial.currentIndex() == -1 or self.qcm_serial.currentIndex() == -1:
+            self.statusBar().showMessage("Nothing to connect to...", 5000)
+            return
+        
+        # Test HTR
         self.test_htr_port()
 
     @QtCore.pyqtSlot()
