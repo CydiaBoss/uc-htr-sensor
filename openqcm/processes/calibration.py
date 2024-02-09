@@ -1,6 +1,7 @@
 import multiprocessing
 
-from openqcm.core.constants import Constants
+from constants import Constants
+
 from openqcm.common.architecture import Architecture, OSType
 from openqcm.common.fileStorage import FileStorage
 
@@ -8,7 +9,6 @@ import serial
 from serial.tools import list_ports
 import numpy as np
 import scipy.signal
-from numpy import loadtxt
 
 
 TAG = ""#"[Calibration]"

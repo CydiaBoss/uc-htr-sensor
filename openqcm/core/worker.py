@@ -1,6 +1,7 @@
 from multiprocessing import Queue
 
-from openqcm.core.constants import Constants, SourceType
+from constants import Constants, SourceType
+
 from openqcm.processes.parser import ParserProcess
 from openqcm.processes.serial import SerialProcess
 from openqcm.processes.calibration import CalibrationProcess

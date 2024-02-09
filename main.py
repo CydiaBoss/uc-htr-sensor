@@ -33,11 +33,17 @@ temperature = []
 
 class Window(Ui_MainWindow):
 
+    # Signal
+    connected = QtCore.pyqtSignal()
+
     def __init__(self, parent=None):
         # Setup Basic Stuff
         main_rc.qInitResources()
         super().__init__(parent)
         self.setupUi(self)
+
+        # Disable All
+        self.disable_all_ctrls()
 
         # Setup Graphs
         self.setup_plots()
@@ -50,24 +56,8 @@ class Window(Ui_MainWindow):
         self.ports = []
         self.update_ports()
 
-        # Main Logic
-        # Connection to Sensors
-        # self.statusBar().showMessage("Looking for sensor controller...")
-        # self.ctrl = HTRSensorCtrl(baud=BAUD, timeout=SENSOR_TIMEOUT)
-        # self.statusBar().clearMessage()
-        # self.htr_thread = None
-
-        # # Auto Start if connected
-        # if self.ctrl.connected:
-        #     self.statusBar().showMessage(f"Connected to sensor at port {self.ctrl.sensor.port}!")
-        #     self.ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-        #     self.ctrl.update_ref_volt(REF_VOLT)
-        #     self.statusBar().clearMessage()
-        #     self.statusBar().showMessage("Reference values configured.", 2500)
-        #     self.start_btn.setEnabled(True)
-
-        # else:
-        #     self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
+        # Setup Signals
+        self.setup_signals()
 
     def setup_plots(self):
         '''
@@ -159,6 +149,14 @@ class Window(Ui_MainWindow):
         self.dissipate_plot.setBackground(background="w")
         self.dissipate_data = DataConnector(self.dissipate_curve, max_points=300, update_rate=1.0)
         self.qcm_layout.addWidget(self.dissipate_plot, 1, 1, 1, 1)
+
+    def setup_signals(self):
+        """
+        Setup all essential connections
+        """
+        # Connection signal
+        self.connected.connect(self.is_connected)
+
 
     def data_collection(self, export : TextIOWrapper):
         '''
@@ -254,6 +252,60 @@ class Window(Ui_MainWindow):
             # Update x
             x += 1
 
+    def disable_all_ctrls(self):
+        """
+        Disable all controls
+        """
+        # Calibration
+        self.qc_type.setEnabled(False)
+        self.calibrate_btn.setEnabled(False)
+        self.calibration_bar.setValue(0)
+        
+        # Measurement
+        self.measure_type.setEnabled(False)
+        self.freq_list.setEnabled(False)
+        self.qcm_temp_ctrl.setChecked(False)
+        self.qcm_temp_ctrl.setEnabled(False)
+
+        # Exportation
+        self.auto_export.setChecked(False)
+        self.auto_export.setEnabled(False)
+        self.file_dest.setEnabled(False)
+        self.file_select.setEnabled(False)
+
+        # Start
+        self.start_btn.setEnabled(False)
+        self.stop_btn.setEnabled(False)
+        self.reset_btn.setEnabled(False)
+        self.progress_bar.setValue(0)
+
+    def enable_calibrate(self):
+        """
+        Enable all calibration ctrls
+        """
+        self.qc_type.setEnabled(True)
+        self.calibrate_btn.setEnabled(True)
+
+    def enable_measurement(self):
+        """
+        Enable all measurement ctrls
+        """
+        self.measure_type.setEnabled(True)
+        self.freq_list.setEnabled(True)
+        # self.qcm_temp_ctrl.setEnabled(True)
+
+    def enable_export(self):
+        """
+        Enable all export ctrls
+        """
+        self.auto_export.setEnabled(True)
+
+    def enable_start(self):
+        """
+        Enable all start ctrls
+        """
+        self.start_btn.setEnabled(True)
+
     def update_ports(self):
         """
         Update available ports to select
@@ -295,6 +347,9 @@ class Window(Ui_MainWindow):
         self.connect_btn.setEnabled(False)
         self.htr_serial.setEnabled(False)
 
+        # Reset Port String
+        self.htr_port = None
+
         # Prepare QThread
         self.htr_thread = QtCore.QThread()
 
@@ -325,6 +380,8 @@ class Window(Ui_MainWindow):
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR")
+            self.htr_port = self.htr_serial.currentText()
+            self.connected.emit()
 
         # Unlock
         if self.qcm_serial.isEnabled():
@@ -338,6 +395,9 @@ class Window(Ui_MainWindow):
         # Lock Connect Button for now
         self.connect_btn.setEnabled(False)
         self.qcm_serial.setEnabled(False)
+
+        # Reset QCM port
+        self.qcm_port = None
 
         # Prepare QThread
         self.qcm_thread = QtCore.QThread()
@@ -369,18 +429,50 @@ class Window(Ui_MainWindow):
         else:
             self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM")
+            self.qcm_port = self.qcm_serial.currentText()
+            self.connected.emit()
 
         # Unlock
         if self.htr_serial.isEnabled():
             self.connect_btn.setEnabled(True)
         self.qcm_serial.setEnabled(True)
 
+    def is_connected(self) -> bool:
+        """
+        Checks if the system is connected
+        Enables calibration if is
+        """
+        connect = self.htr_port is not None and self.qcm_port is not None
+        if connect:
+            self.enable_calibrate()
+
+        return connect
+
     def start_htr(self):
         '''
         Start running HTR sampling
         '''
+
+        # Make Data Thread
+        self.htr_thread = QtCore.QThread()
+        
+        # Create controller
+        self.htr_ctrl = HTRSensorCtrl(port=self.htr_port, baud=BAUD, timeout=SENSOR_TIMEOUT)
+
+        # # Auto Start if connected
+        if self.ctrl.connected:
+            self.statusBar().showMessage(f"Connected to sensor at port {self.ctrl.sensor.port}!")
+            self.ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+            self.ctrl.update_ref_volt(REF_VOLT)
+            self.statusBar().clearMessage()
+            self.statusBar().showMessage("Reference values configured.", 2500)
+            self.start_btn.setEnabled(True)
+
+        else:
+            self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
+
         # Ensure connected
-        if not self.ctrl.connected:
+        if not self.htr_ctrl.connected:
             self.statusBar().showMessage("No sensor connected to start HTR")
             return
         
@@ -418,6 +510,14 @@ class Window(Ui_MainWindow):
         
         # Disable start button
         self.start.setEnabled(False)
+
+    def start_qcm_calibrate(self):
+        """
+        Start calibration for the QCM sensor
+        """
+        self.qcm_ctrl = QCMSensorCtrl(self.qcm_port)
+
+        # TODO this part
     
     # Slots
     @QtCore.pyqtSlot()
@@ -437,12 +537,19 @@ class Window(Ui_MainWindow):
         
         # Signal Launch
         self.statusBar().showMessage("Attempting to communicate with the sensors...")
+
+        # Disable
+        self.disable_all_ctrls()
         
         # Test HTR
         self.test_htr_port()
                 
         # Test QCM
         self.test_qcm_port()
+
+    @QtCore.pyqtSlot()
+    def on_calibrate_btn_clicked(self):
+        self.start_qcm_calibrate()
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
