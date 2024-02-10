@@ -31,7 +31,12 @@ TIME_AXIS_CONFIG = {
     "text": "Time", 
     "units": "s", 
     "tick_angle":-45, 
-    Axis.TICK_FORMAT: Axis.TIME
+    Axis.TICK_FORMAT: Axis.DURATION
+}
+FREQ_AXIS_CONFIG = {
+    "orientation": "bottom",
+    "text": "Frequency", 
+    "units": "Hz", 
 }
 
 # QCM Specific Constants
