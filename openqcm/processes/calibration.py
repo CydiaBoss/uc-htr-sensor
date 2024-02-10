@@ -84,10 +84,8 @@ class CalibrationProcess(multiprocessing.Process):
         # Instantiate a ParserProcess class for each communication channels
         self._parser1 = parser_process
         self._parser2 = parser_process
-        #self._parser3 = parser_process
-        #self._parser4 = parser_process
-        self._parser5 = parser_process
-        self._parser6 = parser_process
+        self._parser3 = parser_process
+        self._parser4 = parser_process
         self._serial = serial.Serial()
         
     ###########################################################################
@@ -113,16 +111,11 @@ class CalibrationProcess(multiprocessing.Process):
         self._QCStype = speed
         
         # Variable to process the exception
-        #wrong = False
         # Checks QCStype to calibrate
         if self._QCStype == '@5MHz_QCM':
            self._QCStype_int = 0
         elif self._QCStype =='@10MHz_QCM':
            self._QCStype_int = 1
-        #else: 
-        #   wrong = True
-        #   print(TAG, "Warning: wrong QCM Sensor selected, set default to @5MHz") 
-        #   self._QCStype_int = 0
         #if not wrong:
         print(TAG, "Selected Quartz Crystal Sensor:",self._QCStype)
         return self._is_port_available(self._serial.port)
@@ -149,11 +142,7 @@ class CalibrationProcess(multiprocessing.Process):
         # Checks if the serial port is currently connected
         if self._is_port_available(self._serial.port):
             
-            # Sets start, stop, step and range frequencies 
-            #startFreq = Constants.calibration_frequency_start
-            #stopFreq  = Constants.calibration_frequency_stop
-            #samples   = Constants.calibration_default_samples 
-            #fStep     = Constants.calibration_fStep
+            # Sets start, stop, step and range frequencies
             readFREQ  = Constants.calibration_readFREQ
             # Gets the state of the serial port
             if not self._serial.isOpen(): 
@@ -203,25 +192,11 @@ class CalibrationProcess(multiprocessing.Process):
                         strs = ["" for x in range(samples + 2)]
                         
                         # Initializes the progress bar
-                        #################################################################################
-                        # CHANGED v2.0
-                        # INCREASED maxval=1000000 TO AVOID bar.update(len.buffer) BREAKS THE CALIBRATION  
-                        #################################################################################
-                        # bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=830000).start()
                         # READS and decodes sweep from the serial port
                         while 1:
-                            buffer += self._serial.read(self._serial.inWaiting()).decode() #Constants.app_encoding 
-                            #len_buffer = len(buffer)
-                            #bar.update(len_buffer)
-                            # print(buffer)
+                            buffer += self._serial.read(self._serial.inWaiting()).decode() 
                             if 's' in buffer:
                                  break
-                        #################################################################################
-                        # CHANGED v2.0
-                        # PRINT LEN BUFFER WHEN THE EOM is RECEIVED
-                        #################################################################################    
-                        #print("len_buffer = " + str(len_buffer))
-                        # bar.finish()
                         
                         # from a full buffer to a list of string
                         data_raw = buffer.split('\n')
@@ -238,14 +213,12 @@ class CalibrationProcess(multiprocessing.Process):
                             data_ph[i] = float(strs[i][1]) * ADCtoVolt  / 1.5
                             data_ph[i] = (data_ph[i]-VCP) / 0.01
                         
-                        
                         #------------------------------
                         if k>0:
                             data_mag=data_mag[1:]
                             data_ph=data_ph[1:]
                         temp1=np.append(temp1,data_mag)
                         temp2=np.append(temp2,data_ph)
-                        #print('len=',len(temp1),len(temp2))
                         #------------------------------
                         print(TAG,"signal section #{}/{} acquired successfully\n".format(k+1,Constants.calib_sections), end='\r') #10
                             
@@ -254,7 +227,6 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG, "WARNING: ValueError during signal acquisition")
                         print(TAG, "Please, repeat the calibration") 
                         self._flag = 1
-                        #Log.w(TAG, "Warning: ValueError during calibration!"))
 
                         #################################################################################
                         # CHANGED v2.0
@@ -269,7 +241,6 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG, "WARNING: generic error during signal acquisition")
                         print(TAG, "Please, repeat the calibration") 
                         self._flag = 1
-                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed") 
                         
                         #################################################################################
                         # CHANGED v2.0
@@ -281,20 +252,14 @@ class CalibrationProcess(multiprocessing.Process):
                         self.stop()
                     
                     #--------------------------------
-                    ## ADDS new serial data to internal queue
+                    ## new serial data to internal queue
                     self._parser1.add1(temp1)
                     self._parser2.add2(temp2)
                     #--------------------------------
                     
-                    
-# =============================================================================
-#                     self._parser6.add6([self._flag, self._flag2, self._flag2, k, None])
-# =============================================================================
                     # VER 0.1.4
                     # add None to the queue for the overtone number and TEC status variable 
-                    # self._parser6.add6([self._flag, self._flag2, self._flag2, k, None])
-                    self._parser6.add6([self._flag, self._flag2, self._flag2, k, None, None])
-                    
+                    self._parser4.add6([self._flag, self._flag2, self._flag2, k, None, None])
                     
                     k+=1                    
                     # STOPS acquiring data
@@ -302,13 +267,7 @@ class CalibrationProcess(multiprocessing.Process):
                         self.stop()
                         break
                 #### END SWEEPS LOOP ####
-                '''
-                # CALLS baseline_correction method
-                (data_mag_baseline, data_ph_baseline) = self.baseline_correction(readFREQ,temp1,temp2)
-                ## ADDS serial data (baseline corrected) to internal queue
-                self._parser1.add1(data_mag_baseline)
-                self._parser2.add2(data_ph_baseline)
-                '''
+                    
                 #### STORING DATA TO FILE ###
                 # CHECKS QCM Sensor type for saving calibration
                 if self._QCStype_int == 0:
@@ -327,13 +286,6 @@ class CalibrationProcess(multiprocessing.Process):
                    # CALLS baseline_correction method
                    print(TAG,"Baseline Correction Process Started")
                    
-# =============================================================================
-#                    print ("LEN FREQ", len(readFREQ))
-#                    print ("LEN MAG", len(temp1))
-#                    print ("LEN PH", len(temp2))
-# =============================================================================
-                   
-                   
                    (data_mag_baseline, data_ph_baseline) = self.baseline_correction(readFREQ,temp1,temp2)
                    ## ADDS serial data (baseline corrected) to internal queue
                    self._parser1.add1(data_mag_baseline)
@@ -350,66 +302,37 @@ class CalibrationProcess(multiprocessing.Process):
                        
                        print (max_freq_mag)
                        print (max_freq_phase)
-                       
-                       #####################
-                       # TODO PEAK DETECTION 
-                       #####################
                      
                        # if (len(max_freq_mag)==5 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (len(max_freq_mag)==3 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
                        if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
                           # SAVES independently of the state of the export box
                           print(TAG,"Saving data in file...")
-                          
-                          # TODO CHECK MAG vs PHASE PEAKS
-                          # this is just a dummy fix  
-                          # np.savetxt(path, np.column_stack([max_freq_mag,max_freq_phase]))
-                          
-                          # CALIBRATION CHANGE TO PHASE DETETCED PEAK
-                          # BUG VER 0.2 BETA: DO NOT PHASE CHECK FOR PHASE PEAK
-                          # ---------------------------------------------------
-# =============================================================================
-#                           np.savetxt(path, np.column_stack([max_freq_mag, max_freq_mag]))
-# =============================================================================
-                          # VER 0.2 BETA change the peak detection on phase signal 
-                          # BUG VER 0.2 pea phase is far from gain phase, you do not take the main resonance 
-                          # np.savetxt(path, np.column_stack([max_freq_phase, max_freq_phase]))
 
                           np.savetxt(path, np.column_stack([max_freq_mag, max_freq_mag]))
                           
                           path_RT = Constants.cvs_peakfrequencies_RT_path
-# =============================================================================
-#                           np.savetxt(path_RT, np.column_stack([max_freq_mag, max_freq_mag]))
-# =============================================================================
-                          # BUG VER 0.2 pea phase is far from gain phase, you do not take the main resonance 
-                          # np.savetxt(path_RT, np.column_stack([max_freq_phase, max_freq_phase]))
+                          
+                          # phase is far from gain phase, you do not take the main resonance 
                           np.savetxt(path_RT, np.column_stack([max_freq_mag, max_freq_mag]))
-                                              
-# =============================================================================
-#                           print(TAG, "DEV PEAK FREQUENCIES DETECTED ON PHASE SIGNAL")
-# =============================================================================
                           
                           print(TAG, "Peak frequencies for {} saved in: {}".format(self._QCStype,path))
                           
                           FileStorage.TXT_sweeps_save(filename_calib, Constants.csv_calibration_export_path, readFREQ, temp1, temp2)
                           print(TAG, "Calibration for {} saved in: {}".format(self._QCStype,path_calib))
                        else:
-                          #print('a',max_freq_mag, max_freq_phase)
                           print(TAG, "WARNING: unable to identify fundamental peak")
                           print(TAG, "Please, repeat the calibration!")
                           self._flag2 = 1
             
                    except:
-                     #print('b',max_freq_mag, max_freq_phase)
                      print(TAG, "WARNING: unable to apply peak detection algorithm")
                      print(TAG, "Please, repeat the calibration!") 
                      self._flag2 = 1
                      
                 if self._flag == 0 and self._flag2 == 0:
                      print(TAG, 'Calibration success for baseline correction!')
-                     #print(TAG, 'Please, now click STOP to terminate')
                 # ADDS error flags to internal queue
-                self._parser5.add5([self._flag,self._flag2])    
-                #self._parser6.add6([self._flag,self._flag2,self._flag2,len_buffer])
+                self._parser3.add5([self._flag,self._flag2])
                 #### CLOSES serial port ####
                 self._serial.close()
                 
@@ -477,8 +400,3 @@ class CalibrationProcess(multiprocessing.Process):
             if p == port:
                 return True
         return False
-
-
-# Instantiate the process and run the method 'run' of the class
-#a=CalibrationProcess(multiprocessing.Process)
-#a.run()
