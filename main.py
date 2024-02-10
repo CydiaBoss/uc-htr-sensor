@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 
-from main_gui_new import Ui_MainWindow
+from main_gui import Ui_MainWindow
 from constants import *
 from tools import active_ports, identical_list
 
