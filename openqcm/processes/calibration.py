@@ -19,7 +19,6 @@ TAG = ""#"[Calibration]"
 ###############################################################################
 class CalibrationProcess(multiprocessing.Process):
     
-    
     ###########################################################################
     # BASELINE ESTIMATION
     # Estimates Baseline with Least Squares Polynomial Fit (LSP)
@@ -30,8 +29,7 @@ class CalibrationProcess(multiprocessing.Process):
         # Evaluate a polynomial at specific values
         poly_fitted = np.polyval(coeffs,x) 
         return poly_fitted,coeffs       
-      
-        
+    
     ###########################################################################
     # BASELINE CORRECTION
     # estimates signal-baseline for amplitude and phase
@@ -112,9 +110,9 @@ class CalibrationProcess(multiprocessing.Process):
         
         # Variable to process the exception
         # Checks QCStype to calibrate
-        if self._QCStype == '@5MHz_QCM':
+        if self._QCStype == '5 MHz':
            self._QCStype_int = 0
-        elif self._QCStype =='@10MHz_QCM':
+        elif self._QCStype =='10 MHz':
            self._QCStype_int = 1
         #if not wrong:
         print(TAG, "Selected Quartz Crystal Sensor:",self._QCStype)
@@ -384,9 +382,9 @@ class CalibrationProcess(multiprocessing.Process):
     def get_speeds():
         #:return: List of the common baud rates, in bps :rtype: str list.
         
-        # return [str(v) for v in ['@10MHz_QCM', '@5MHz_QCM']]#[1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]]
+        # return [str(v) for v in ['10 MHz', '5 MHz']]#[1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]]
         # VER 0.1.2
-        return [str(v) for v in ['@5MHz_QCM', '@10MHz_QCM']]
+        return [str(v) for v in ['5 MHz', '10 MHz']]
 
     ###########################################################################
     # Checks if the serial port is currently connected

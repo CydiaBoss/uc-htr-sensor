@@ -5,7 +5,7 @@ from serial import Serial
 from serial.tools import list_ports
 import time, atexit
 
-from constants import READ_TIMEOUT, SourceType
+from constants import READ_TIMEOUT, Constants, SourceType
 from openqcm.core.worker import Worker
 from openqcm.common.architecture import Architecture, OSType
 
@@ -159,7 +159,16 @@ class QCMSensorCtrl(QObject):
         """
         Starts the calibration process
         """
-        self.worker = Worker(port=self.port, source=SourceType.calibration)
+        self.worker = Worker(QCS_on = None,
+                             port = self.port,
+                             speed = qc_type,
+                             samples = Constants.argument_default_samples,
+                             source = SourceType.calibration,
+                             export_enabled = False, 
+                             sampling_time = -1)
+        
+        # Start
+        self.worker.start()
 
     def single(self, freq : float) -> None:
         pass

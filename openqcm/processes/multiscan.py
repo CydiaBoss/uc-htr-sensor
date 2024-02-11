@@ -1391,7 +1391,7 @@ class MultiscanProcess(multiprocessing.Process):
 #             SG_window_size,
 #             spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
 #            
-#            print(TAG,"openQCM Device setup: @5MHz")
+#            print(TAG,"openQCM Device setup: 5 MHz")
         
         # 10 MHz get frequency sweep param
         if (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):

@@ -1,6 +1,4 @@
 import multiprocessing
-from openqcm.common.logger import Logger as Log
-
 
 TAG = ""#"[Parser]"
 
@@ -8,7 +6,6 @@ TAG = ""#"[Parser]"
 # Process to parse incoming data and distribute it to worker
 ###############################################################################
 class ParserProcess(multiprocessing.Process):
-    
     
     ###########################################################################
     # Initializing values for process
@@ -120,78 +117,4 @@ class ParserProcess(multiprocessing.Process):
         Signals the process to stop parsing data.
         :return:
         """
-        #print(TAG,'Process finishing...')
-        #Log.d(TAG, "Process finishing...")
         self._exit.set()    
-    '''
-    def run(self):
-        """
-        Process will monitor the internal buffer to parse raw data and distribute to graph and storage, if needed.
-        The process will loop again after timeout if more data is available.
-        :return:
-        """
-        print(TAG,'Process starting...')
-        Log.d(TAG, "Process starting...")
-        #while not self._exit.is_set():
-            #while not self._in_queue.empty():
-            #      queue = self._in_queue.get(False)#timeout=self._consumer_timeout
-            #      self._out_queue.put((queue))
-            #      print(queue) #DATI SINCRONI
-            #sleep(self._consumer_timeout)
-        # last check on the queue to completely remove data.
-        #self._consume_queue()
-        print(TAG,'Process finished')
-        Log.d(TAG, "Process finished")
-    '''
-
-    '''
-    def run(self):
-        """
-        Process will monitor the internal buffer to parse raw data and distribute to graph and storage, if needed.
-        The process will loop again after timeout if more data is available.
-        :return:
-        """
-        print(TAG,'Process starting...')
-        Log.d(TAG, "Process starting...")
-        while not self._exit.is_set():
-            self._consume_queue()
-            sleep(self._consumer_timeout)
-        # last check on the queue to completely remove data.
-        self._consume_queue()
-        print(TAG,'Process finished')
-        Log.d(TAG, "Process finished")
-
-    def stop(self):
-        """
-        Signals the process to stop parsing data.
-        :return:
-        """
-        print(TAG,'Process finishing...')
-        Log.d(TAG, "Process finishing...")
-        self._exit.set()
-        
-
-    def _consume_queue(self):
-        """
-        Consumer method for the queues/process.
-        Used in run method to recall after a stop is requested, to ensure queue is emptied.
-        :return:
-        """
-        while not self._in_queue.empty():
-            queue = self._in_queue.get(timeout=self._consumer_timeout)
-            self._parse_csv(queue)
-
-
-    def _parse_csv(self,line):
-        """
-        Parses incoming data and distributes to external processes.
-        :param time: Timestamp.
-        :type time: float.
-        :param line: Raw data coming from acquisition process.
-        :type line: basestring.
-        :return:
-        """
-        self._out_queue.put((line))
-        if self._store_reference is not None:
-            self._store_reference.add(line)
-        '''

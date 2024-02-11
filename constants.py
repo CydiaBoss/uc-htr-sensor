@@ -305,7 +305,7 @@ class Constants:
     ##########################
     serial_default_speed = 115200
     serial_default_overtone = None
-    serial_default_QCS = "@10MHz"
+    serial_default_QCS = "10 MHz"
     
     # VER 0.1.4
     # change / increased serial timeout parameters to improve the serial communication 
@@ -377,16 +377,16 @@ class Constants:
     csv_sweeps_export_path = "{}{}{}".format(csv_export_path,slash,csv_filename)
     csv_sweeps_filename = "sweep"
     
-    # Calibration: scan (WRITE for @5MHz and @10MHz QCS) path: 'common\'
+    # Calibration: scan (WRITE for 5 MHz and 10 MHz QCS) path: 'common\'
     csv_calibration_filename    = "Calibration_5MHz"
     csv_calibration_filename10  = "Calibration_10MHz"
     csv_calibration_export_path = "openQCM" #"common"
     
-    # Calibration: baseline correction (READ for @5MHz and @10MHz QCS) path: 'common\'
+    # Calibration: baseline correction (READ for 5 MHz and 10 MHz QCS) path: 'common\'
     csv_calibration_path   = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename,txt_extension)
     csv_calibration_path10 = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename10,txt_extension)
     
-    # Frequencies: Fundamental and overtones (READ and WRITE for @5MHz and @10MHz QCS)
+    # Frequencies: Fundamental and overtones (READ and WRITE for 5 MHz and 10 MHz QCS)
     csv_peakfrequencies_filename   = "PeakFrequencies"
     cvs_peakfrequencies_path    = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename,txt_extension)
     
