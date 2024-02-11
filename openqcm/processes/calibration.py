@@ -334,14 +334,12 @@ class CalibrationProcess(multiprocessing.Process):
                 #### CLOSES serial port ####
                 self._serial.close()
                 
-          
     ###########################################################################
     # Stops acquiring data
     ###########################################################################
     def stop(self):
         #Signals the process to stop acquiring data.
         self._exit.set()
-        
         
     ###########################################################################    
     # Automatically selects the serial ports for Teensy (macox/windows)
@@ -360,20 +358,14 @@ class CalibrationProcess(multiprocessing.Process):
             found = False
             ports_avaiable = list(list_ports.comports())
             
-            # VER 0.1.5 change the iedntification of the COM port connected to Teensy 4.0 
-            # using USB VID:PID=16C0:0483  VID 0 VENDOR_ID and PID = PRODUCT_ID of USB devices to identify hardware
-            # port[2] = hwid Technical description of serial port 
             for port in ports_avaiable:
                 if port[2].startswith("USB VID:PID=16C0:0483"):
                     found = True
                     port_connected.append(port[0])
-                #else:
-                #    Gets a list of the available serial ports.
-                #    found_ports.append(port[0])
+                    
             if found:
                found_ports = port_connected 
             return found_ports
-
 
     ###########################################################################
     # Gets a list of the common serial baud rates, in bps (only 115200 used)
@@ -382,8 +374,6 @@ class CalibrationProcess(multiprocessing.Process):
     def get_speeds():
         #:return: List of the common baud rates, in bps :rtype: str list.
         
-        # return [str(v) for v in ['10 MHz', '5 MHz']]#[1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]]
-        # VER 0.1.2
         return [str(v) for v in ['5 MHz', '10 MHz']]
 
     ###########################################################################

@@ -272,13 +272,6 @@ class Worker:
         self.consume_queue_D_multi()
         self.consume_queue_A_multi()
         
-        # VER 0.1.2
-# =============================================================================
-#         self._acquisition_process.stop()
-#         self._parser_process.stop()
-# =============================================================================
-
-        # VER 0.1.2
         # worker processes are still running when you press stop button on main gui 
         # when stop is called, terminate the processes alive in the worker 
 
@@ -473,10 +466,6 @@ class Worker:
     def _queue_data2(self,data):
         #:param data: values to add for serial data phase :type data: float.
         self._data2_buffer = data
-        # Additional function: exports calibration data in a file if export box is checked.
-        '''
-        self.store_data_calibration()
-        '''
     
     # FREQUENCY 
     def _queue_data3(self,data):

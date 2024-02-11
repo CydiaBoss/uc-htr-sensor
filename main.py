@@ -37,8 +37,10 @@ class Window(Ui_MainWindow):
     connected = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
-        # Setup Basic Stuff
+        # Initiate resources
         main_rc.qInitResources()
+
+        # Setup Basic Stuff
         super().__init__(parent)
         self.setupUi(self)
 
