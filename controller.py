@@ -176,10 +176,43 @@ class QCMSensorCtrl(QObject):
         # #
 
     def single(self, freq : float) -> None:
-        pass
+        """
+        Starts the calibration process
+        """
+        self.worker = Worker(QCS_on = None,
+                             port = self.port,
+                             speed = freq,
+                             samples = Constants.argument_default_samples,
+                             source = SourceType.serial,
+                             export_enabled = False, 
+                             sampling_time = -1)
+        
+        # Start
+        self.worker.start()
+
+        # # Grab Data
+        # self.worker.get_value1_buffer()
+
+        # #
 
     def multi(self) -> None:
-        pass
+        """
+        Starts the calibration process
+        """
+        self.worker = Worker(QCS_on = None,
+                             port = self.port,
+                             samples = Constants.argument_default_samples,
+                             source = SourceType.multiscan,
+                             export_enabled = False, 
+                             sampling_time = -1)
+        
+        # Start
+        self.worker.start()
+
+        # # Grab Data
+        # self.worker.get_value1_buffer()
+
+        # #
 
 class QCMTester(QObject):
     finished = pyqtSignal()

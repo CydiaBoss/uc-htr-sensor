@@ -1,5 +1,5 @@
 import multiprocessing
-from openqcm.core.ringBuffer import RingBuffer
+from openqcm.core.ring_buffer import RingBuffer
 from openqcm.core.constants import Constants
 
 from openqcm.common.logger import Logger as Log

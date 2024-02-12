@@ -8,7 +8,7 @@ from openqcm.processes.calibration import CalibrationProcess
 from openqcm.processes.multiscan import MultiscanProcess
 from openqcm.common.fileStorage import FileStorage
 from openqcm.common.logger import Logger as Log
-from openqcm.core.ringBuffer import RingBuffer
+from openqcm.core.ring_buffer import RingBuffer
 import numpy as np
 from time import time
 from numpy import loadtxt
@@ -66,13 +66,6 @@ class Worker:
         # TODO AMPLI init the list of array for amplitude sweep
         self._A_multi = None 
         self._P_multi = None 
-        
-# =============================================================================
-#         array_zero = self._zerolistmaker(Constants.SAMPLES)
-#         self._A_multi_buffer = [ array_zero, array_zero, array_zero, array_zero, array_zero ]
-
-#        self._F_Sweep_multi_buffer = [ array_zero, array_zero, array_zero, array_zero, array_zero]
-# =============================================================================
         
         self._A_multi_buffer = None
         self._F_Sweep_multi_buffer = None
@@ -175,10 +168,12 @@ class Worker:
         # single frequency measurement 
         if self._source == SourceType.serial:
            self._samples = Constants.argument_default_samples
+
         # calibration 
         elif self._source == SourceType.calibration:
            self._samples = Constants.calibration_default_samples
            self._readFREQ = Constants.calibration_readFREQ  
+
         # multi frequency measurement 
         elif self._source == SourceType.multiscan: 
             self._samples = Constants.argument_default_samples   
@@ -621,33 +616,17 @@ class Worker:
         # MULTI
         # ---------------------------------------------------------------------
         elif  self._source == SourceType.multiscan:
-           
-            # LOG MULTI DATA FILE 
-            # filenameCSV = "{}_{}".format(Constants.csv_filename, "multi_")
             
             # VER 0.1.2
             # init the new datalog file in single mode
             filenameCSV = "{}_{}".format(self._csv_filename, "multi_")
-
-            # TODO change the way the file is logged , there are duplicate in the data file 
-            # FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, time() - self._timestart, self._d3_store, self._F_store, self._D_store)
             
-            # LOG data file only if current overtone number is equal to total numer of peaks
-            #  TODO 
-            # if (self._overtone_number == self._number_of_peaks):
             index_store = 0
             _millisec = 1e6
             
             # VER 0.1.4
             SAMPLING_TIME_INTERVAL = self._sampling_time
-            
-            # VER 0.1.2
-            # [SOLVED] Bug: first line in datalog file missing frequency and dissipation data array
-            
-            # VER 0.1.4
-# =============================================================================
-#             if (self._overtone_number == index_store) and ((self._time_store[index_store] - self._timestart)/_millisec > 0): 
-# =============================================================================
+
             # VER 0.1.4 check if time elapsed is greater than zero 
             if  ( (self._time_store[index_store] - self._timestart)/_millisec > 0 ):
                 
@@ -671,14 +650,6 @@ class Worker:
                 # VER 0.1.4
                 # time controlled sampling time 
                 else: 
-# =============================================================================
-#                     print ((time_current - self.time_pre)/_millisec)
-# =============================================================================
-                    
-# =============================================================================
-#                     print ("CURRENT VALUE OVERTONE NUMBER = ", self._overtone_number)    
-# =============================================================================
-
 
                     # VER 0.1.4 create a circular buffer of size corresponding to the length of the datalog sampling time
                     # init the new data in circular buffer 
@@ -692,11 +663,6 @@ class Worker:
                         self._D_store_buffer_averaging[idx] = np.average( self._D_store_buffer[idx].get_all() )
                         self._T_store_buffer_averaging[idx] = np.average( self._T_store_buffer[idx].get_all() )
                     
-                    
-# =============================================================================
-#                     print (self._F_store_buffer[0].get_all())
-# =============================================================================
-                    
                     # VER 0.1.4
                     # check the sampling time 
                     if ( ((time_current - self.time_pre)/_millisec) >  SAMPLING_TIME_INTERVAL ):
@@ -706,18 +672,6 @@ class Worker:
                     
                         # VER 0.1.4 store the current time for the next loop 
                         self.time_pre = time_current
-
-# =============================================================================
-#                 FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-#                                           (self._time_store[index_store] - self._timestart)/_millisec, 
-#                                           self._d3_store, self._F_store, self._D_store)
-# =============================================================================
-                    # this lines code works, but introduced random relative time error 
-# =============================================================================
-#                 FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-#                                           time() - self._timestart, 
-#                                           self._d3_store, self._F_store, self._D_store)
-# =============================================================================
 
                 # ---------------------------------------------------------------------  
                 # TODO SAVE SINGLE SWEEP FILE   
@@ -757,8 +711,6 @@ class Worker:
         :param source: Source to get available ports :type source: SourceType.
         :return: List of available ports :rtype: str list.
         """
-        
-        # TODO what port ??? type of measurement 
         
         # SINGLE
         if source == SourceType.serial:
@@ -814,12 +766,6 @@ class Worker:
         # Initialises data buffers
         self._data1_buffer = np.zeros(samples) # amplitude
         self._data2_buffer = np.zeros(samples) # phase
-        #self._d1_buffer = []  # Resonance frequency 
-        #self._d2_buffer = []  # Dissipation
-        #self._d3_buffer = []  # temperature
-        #self._t1_buffer = []  # time (Resonance frequency)
-        #self._t2_buffer = []  # time (Dissipation)
-        #self._t3_buffer = []  # time (temperature)
 
         # Initialises supporting variables
         self._d1_store = 0
@@ -839,8 +785,6 @@ class Worker:
         self._t1_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (Resonance frequency)
         self._t2_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (Dissipation)
         self._t3_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (temperature)
-        #print(TAG,'Buffers cleared')
-        #Log.i(TAG, "Buffers cleared") 
         
         # init frequency and dissipation array of ring buffer 
         self._F_multi_buffer = []
@@ -850,21 +794,11 @@ class Worker:
         self._A_multi_buffer = []
         self._F_Sweep_multi_buffer = []
         
-        peaks = self._load_frequencies_file()
-        peaks_number = len(peaks)
-        
-        # TODO IMPORTANT chenge the ninitialization of list of ring buffer 
         # append ring buffer
-        for tmp in Constants.overtone_dummy:
+        for _ in Constants.overtone_dummy:
             self._F_multi_buffer.append(RingBuffer(Constants.ring_buffer_samples))
             self._D_multi_buffer.append(RingBuffer(Constants.ring_buffer_samples))
             self._time_buffer.append(RingBuffer(Constants.ring_buffer_samples))
-             
-# =============================================================================
-#         for nn in Constants.overtone_dummy:
-#             self._A_multi_buffer[nn] = self._zerolistmaker(Constants.SAMPLES)
-#             self._F_Sweep_multi_buffer[nn] = self._zerolistmaker(Constants.SAMPLES)
-# =============================================================================
 
         self._A_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
         self._F_Sweep_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
@@ -890,7 +824,8 @@ class Worker:
         self._F_store_buffer = [] 
         self._D_store_buffer = [] 
         self._T_store_buffer = []
-        for tmp in Constants.overtone_dummy:
+
+        for _ in Constants.overtone_dummy:
             self._F_store_buffer.append(RingBuffer(self.ring_buffer_len))
             self._D_store_buffer.append(RingBuffer(self.ring_buffer_len))
             self._T_store_buffer.append(RingBuffer(self.ring_buffer_len))
