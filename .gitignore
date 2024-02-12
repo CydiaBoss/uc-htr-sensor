@@ -2,6 +2,4 @@
 __pycache__
 data
 .vscode
-core/calibration_5MHz.txt
-core/calibration_10MHz.txt
-core/peak_freq_rt.txt
+core/*
