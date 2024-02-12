@@ -933,7 +933,6 @@ class Worker:
     def _load_frequencies_file(self):
             data  = loadtxt(Constants.cvs_peakfrequencies_path)
             peaks_mag = data[:,0]
-            #peaks_phase = data[:,1] #unused at the moment
             return peaks_mag
         
     def _zerolistmaker(self, n):

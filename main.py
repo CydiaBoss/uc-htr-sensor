@@ -519,7 +519,8 @@ class Window(Ui_MainWindow):
         """
         self.qcm_ctrl = QCMSensorCtrl(self.qcm_port)
 
-        # TODO this part
+        # Calibrate
+        self.qcm_ctrl.calibrate(self.qc_type.currentText())
     
     # Slots
     @QtCore.pyqtSlot()

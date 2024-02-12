@@ -378,22 +378,22 @@ class Constants:
     csv_sweeps_filename = "sweep"
     
     # Calibration: scan (WRITE for 5 MHz and 10 MHz QCS) path: 'common\'
-    csv_calibration_filename    = "Calibration_5MHz"
-    csv_calibration_filename10  = "Calibration_10MHz"
-    csv_calibration_export_path = "openQCM" #"common"
+    csv_calibration_filename    = "calibration_5MHz"
+    csv_calibration_filename10  = "calibration_10MHz"
+    csv_calibration_export_path = "core" #"common"
     
     # Calibration: baseline correction (READ for 5 MHz and 10 MHz QCS) path: 'common\'
     csv_calibration_path   = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename,txt_extension)
     csv_calibration_path10 = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename10,txt_extension)
     
     # Frequencies: Fundamental and overtones (READ and WRITE for 5 MHz and 10 MHz QCS)
-    csv_peakfrequencies_filename   = "PeakFrequencies"
+    csv_peakfrequencies_filename   = "peak_freq"
     cvs_peakfrequencies_path    = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename,txt_extension)
     
     
     # VER 0.1.4
     # add a new peak freqencies file storing the current value of resonance frequencies 
-    csv_peakfrequencies_RT_filename   = "PeakFrequenciesRT"
+    csv_peakfrequencies_RT_filename   = "peak_freq_rt"
     cvs_peakfrequencies_RT_path    = "{}{}{}.{}".format(csv_calibration_export_path, slash, csv_peakfrequencies_RT_filename, txt_extension)
     
     # TODO freuqwency start and stop file path

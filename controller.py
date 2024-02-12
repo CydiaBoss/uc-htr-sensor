@@ -170,6 +170,11 @@ class QCMSensorCtrl(QObject):
         # Start
         self.worker.start()
 
+        # # Grab Data
+        # self.worker.get_value1_buffer()
+
+        # #
+
     def single(self, freq : float) -> None:
         pass
 

@@ -1,7 +1,7 @@
 import multiprocessing
 from openqcm.core.ringBuffer import RingBuffer
 from openqcm.core.constants import Constants
-from openqcm.common.fileStorage import FileStorage
+
 from openqcm.common.logger import Logger as Log
 from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
 from time import time
