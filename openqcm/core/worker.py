@@ -158,11 +158,6 @@ class Worker:
     ###########################################################################
     def start(self):
         
-        
-# =============================================================================
-#         print ("WORKER SAMPLING TIME = ", self._sampling_time)
-# =============================================================================
-        
         # GET SAMPLES
         # ---------------------------------------------------------------------
         # single frequency measurement 
@@ -249,7 +244,6 @@ class Worker:
             Log.i(TAG, "Warning: Port is not available")
             return False
 
-
     ###########################################################################
     # Stops all running processes
     ###########################################################################    
@@ -281,8 +275,7 @@ class Worker:
             
             # wait for a while 
             sleep(1)
-
-        # TODO check if it is necessary to terminate parser
+            
         self._parser_process.stop()            
 
         print(TAG, 'Running processes stopped...')
@@ -379,15 +372,6 @@ class Worker:
             self._time_buffer[idx].append(values[idx])
             # store the current array of time data
             self._time_store[idx] = values[idx]
-# =============================================================================
-#             print("TIME ....")
-#             print (self._time_buffer[0])
-#             print (self._time_buffer[1])
-#             print (self._time_buffer[2])
-#             print (self._time_buffer[3])
-#             print (self._time_buffer[4])
-#             print("---------------------------")
-# =============================================================================
             
     def get_time_values_buffer(self, idx = 0):
         # get all time buffer 
@@ -414,7 +398,6 @@ class Worker:
         :return: float list.
         """
         return self._D_multi_buffer[idx].get_all()
-    
     
     def consume_queue_A_multi(self):
         while not self._queue_A_multi.empty():
@@ -448,7 +431,6 @@ class Worker:
         
         return self._F_Sweep_multi_buffer[idx]
         # print (self._F_Sweep_multi_buffer[idx])
-       
        
     ###########################################################################
     # Adds data to internal buffers.
@@ -486,8 +468,6 @@ class Worker:
         self._t3_store = data[0] # time (unused)
         self._d3_store = data[1] # data 
         
-        
-        
         self._t3_buffer.append(data[0])
         self._d3_buffer.append(data[1])
         
@@ -508,9 +488,6 @@ class Worker:
                 self.time_pre =  self._timestart
             
             self._flag = False
-            
-            # print("DATALOG TIME START = ")
-            # print (self._timestart )
         
         # Data Storage in csv and/or txt file 
         self.store_data()
@@ -580,7 +557,6 @@ class Worker:
     def get_TEC_status(self): 
         return self._TEC_status
     
-
     ###########################################################################
     # Exports data in csv and/or txt file if export box is checked
     ###########################################################################
@@ -590,12 +566,6 @@ class Worker:
         # SINGLE
         # ---------------------------------------------------------------------
         if self._source == SourceType.serial:
-          # Checks the state of the export box
-          #if self._export:
-          
-          # Storing calculated data with the format: timestamp,resonance frequency,dissipation
-          # filenameCSV = "{}_{}".format(Constants.csv_filename, self._overtone_name)
-          
           # VER 0.1.2 
           # init the new datalog file in single mode
           filenameCSV = "{}_{}".format(self._csv_filename, self._overtone_name)
@@ -672,12 +642,6 @@ class Worker:
                     
                         # VER 0.1.4 store the current time for the next loop 
                         self.time_pre = time_current
-
-                # ---------------------------------------------------------------------  
-                # TODO SAVE SINGLE SWEEP FILE   
-                # elif self._source == SourceType.multiscan: 
-                    # print("__TODO__ multiscan save file")
-                # ---------------------------------------------------------------------
                 
                 # DEV RAWDATA save single raw date here should work also here 
                 RAWDATA = False
@@ -686,13 +650,10 @@ class Worker:
                     # the code line blow works 
                     print (self.get_A_values_buffer(0))
     
-    
-    
     # VER 0.1.4
     def get_time_elapsed (self):
         # print ("HELLO WORLD")
         return (self.time_elapsed)
-    
     
     ###########################################################################
     # Checks if processes are running
@@ -700,13 +661,11 @@ class Worker:
     def is_running(self):  
         return self._acquisition_process is not None and self._acquisition_process.is_alive()
 
-
     ###########################################################################
     # Gets the available ports for specified source
     ###########################################################################
     @staticmethod
     def get_source_ports(source):
-        
         """
         :param source: Source to get available ports :type source: SourceType.
         :return: List of available ports :rtype: str list.
@@ -737,7 +696,6 @@ class Worker:
     ###########################################################################
     @staticmethod
     def get_source_speeds(source):
-        
         """
         :param source: Source to get available speeds :type source: SourceType.
         :return: List of available speeds :rtype: str list.
@@ -835,7 +793,6 @@ class Worker:
     ############################################################################
     
     def get_frequency_range(self):
-        
         """
         :param samples: Number of samples for the buffers :type samples: int.
         :return: overtone :type overtone: float.
@@ -857,7 +814,6 @@ class Worker:
     ############################################################################
     
     def get_overtone(self):
-        
         """
         :param samples: Number of samples for the buffers :type samples: int.
         :return: overtone :type overtone: float.

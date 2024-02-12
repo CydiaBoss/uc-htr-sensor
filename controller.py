@@ -1,11 +1,12 @@
 # ================================ #
 # Code to communicate with sensors #
 # ================================ #
+import re
 from serial import Serial
 from serial.tools import list_ports
 import time, atexit
 
-from constants import READ_TIMEOUT, Constants, SourceType
+from constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST, REF_RESIST_UNIT, REF_VOLT, Constants, SourceType
 from openqcm.core.worker import Worker
 from openqcm.common.architecture import Architecture, OSType
 
@@ -16,15 +17,20 @@ class HTRSensorCtrl(QObject):
     Class of sensor controls for the HTR system
     '''
     # Signals
-    resistance = pyqtSignal(float)
-    humidity = pyqtSignal(float)
-    temperature = pyqtSignal(float)
+    finished = pyqtSignal()
+    resistance = pyqtSignal(float, float)
+    humidity = pyqtSignal(float, float)
+    temperature = pyqtSignal(float, float)
 
-    def __init__(self, port : str="", baud : int=9600, timeout=0.1):
+    def __init__(self, parent: QObject=None, port : str="", baud : int=9600, timeout=0.1):
+        super().__init__(parent)
         # Record ports
         self.port = port
         self.baud = baud
         self.timeout = timeout
+
+        # Loop
+        self.loop = False
 
     def open(self) -> bool:
         """
@@ -55,12 +61,57 @@ class HTRSensorCtrl(QObject):
             return True
         return False
     
+    def stop(self):
+        """
+        Stop command
+        """
+        self.loop = False
+        if not self.serial.is_open:
+            self.serial.close()
+    
     def run(self):
         """
         Runs the data gathering thread
         """
-        
+        # Opens the connection
+        self.open()
 
+        # Adjust references
+        self.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
+        self.update_ref_volt(REF_VOLT)
+
+        # Processing Loop
+        self.loop = True
+        self.start_time = time.time()
+        while self.loop:
+            # Read Next Line
+            row = self.read_from()
+
+            # Parse Data row
+            data = re.search(DATA_PARSE, row)
+
+            # Update Graph if not None
+            if data is not None:
+                # Ignore for inf
+                if data.group(2) != "inf":
+                    r_data = float(data.group(2))
+
+                    # Send signal
+                    self.resistance.emit(time.time() - self.start_time, r_data)
+
+                h_data = float(data.group(3))
+                t_data = float(data.group(4))
+
+                # Send signal
+                self.humidity.emit(time.time() - self.start_time, h_data)
+                self.temperature.emit(time.time() - self.start_time, t_data)
+
+            # Delay a bit
+            time.sleep(READ_DELAY)
+
+        # On break
+        self.finished.emit()
+        
     def send_to(self, msg : str):
         '''
         Sends a message to the sensor controller
@@ -149,11 +200,15 @@ class QCMSensorCtrl(QObject):
     Class of sensor controllers for the QCM system
     '''
 
-    def __init__(self, port : str="") -> None:
+    def __init__(self, parent: QObject=None, port : str="") -> None:
+        super().__init__(parent)
         # Set port
         self.port = port
         # Create QCM worker
         self.worker = Worker()
+
+    def stop(self) -> None:
+        self.worker.stop()
 
     def calibrate(self, qc_type : str) -> None:
         """

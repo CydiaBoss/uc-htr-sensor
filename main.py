@@ -61,6 +61,10 @@ class Window(Ui_MainWindow):
         # Setup Signals
         self.setup_signals()
 
+        # Setup Controllers
+        self.htr_ctrl : HTRSensorCtrl = None
+        self.qcm_ctrl : QCMSensorCtrl = None
+
     def setup_plots(self):
         '''
         Setups the graphs for live data collectrion
@@ -158,101 +162,6 @@ class Window(Ui_MainWindow):
         """
         # Connection signal
         self.connected.connect(self.is_connected)
-
-
-    def data_collection(self, export : TextIOWrapper):
-        '''
-        Update the graphs on the GUI and handles auto export if needed
-        '''
-        # Counter
-        x = 0
-
-        # Loop
-        while run_data_collect:
-            # Grab next row
-            row = self.ctrl.read_from()
-
-            # Parse Data row
-            data = re.search(DATA_PARSE, row)
-
-            # Update Graph if not None
-            if data is not None:
-                # Ignore for inf
-                if data.group(2) != "inf":
-                    r_data = float(data.group(2))
-                    self.resist_data.cb_append_data_point(r_data, x)
-                    resistance.append(r_data)
-
-                    # Calculate Resist AVG
-                    resist_size = len(resistance)
-
-                    self.resist_avg_sig.emit(str(round(sum(resistance)/resist_size, 2)) + f" {data.group(1)}Ω")
-
-                    if resist_size > 15:
-                        self.resist_avg_15_sig.emit(str(round(sum(resistance[-15:])/15, 2)) + f" {data.group(1)}Ω")
-                    else:
-                        self.resist_avg_15_sig.emit("N/A")
-
-                    if resist_size > 50:
-                        self.resist_avg_50_sig.emit(str(round(sum(resistance[-50:])/50, 2)) + f" {data.group(1)}Ω")
-                    else:
-                        self.resist_avg_50_sig.emit("N/A")
-
-                h_data = float(data.group(3))
-                t_data = float(data.group(4))
-
-                self.humidity_data.cb_append_data_point(h_data, x)
-                self.temperature_data.cb_append_data_point(t_data, x)
-
-                humidity.append(h_data)
-                temperature.append(t_data)
-
-                # Calculate Humidity AVG
-                humd_size = len(humidity)
-                
-                self.humd_avg_sig.emit(str(round(sum(humidity)/humd_size, 2)) + "%RH")
-
-                if humd_size > 15:
-                    self.humd_avg_15_sig.emit(str(round(sum(humidity[-15:])/15, 2)) + "%RH")
-                else:
-                    self.humd_avg_15_sig.emit("N/A")
-
-                if humd_size > 50:
-                    self.humd_avg_50_sig.emit(str(round(sum(humidity[-50:])/50, 2)) + "%RH")
-                else:
-                    self.humd_avg_50_sig.emit("N/A")
-
-                # Calculate Temperature AVG
-                temp_size = len(temperature)
-                
-                self.temp_avg_sig.emit(str(round(sum(temperature)/temp_size, 2)) + "°C")
-
-                if temp_size > 15:
-                    self.temp_avg_15_sig.emit(str(round(sum(temperature[-15:])/15, 2)) + "°C")
-                else:
-                    self.temp_avg_15_sig.emit("N/A")
-
-                if temp_size > 50:
-                    self.temp_avg_50_sig.emit(str(round(sum(temperature[-50:])/50, 2)) + "°C")
-                else:
-                    self.temp_avg_50_sig.emit("N/A")
-
-            if AUTO_EXPORT and data is not None:
-                # Write last row of data
-                export.write(f'"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
-
-                # Output
-                print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
-
-                # Auto Flush
-                if x % AUTO_FLUSH == 0:
-                    export.flush()
-
-            # Delay a bit
-            time.sleep(READ_DELAY)
-
-            # Update x
-            x += 1
 
     def disable_all_ctrls(self):
         """
@@ -447,6 +356,7 @@ class Window(Ui_MainWindow):
         connect = self.htr_port is not None and self.qcm_port is not None
         if connect:
             self.enable_calibrate()
+            self.start_btn.setEnabled(True)
 
         return connect
 
@@ -454,64 +364,90 @@ class Window(Ui_MainWindow):
         '''
         Start running HTR sampling
         '''
-
         # Make Data Thread
         self.htr_thread = QtCore.QThread()
         
         # Create controller
         self.htr_ctrl = HTRSensorCtrl(port=self.htr_port, baud=BAUD, timeout=SENSOR_TIMEOUT)
+        self.htr_ctrl.moveToThread(self.htr_thread)
 
-        # # Auto Start if connected
-        if self.ctrl.connected:
-            self.statusBar().showMessage(f"Connected to sensor at port {self.ctrl.sensor.port}!")
-            self.ctrl.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-            self.ctrl.update_ref_volt(REF_VOLT)
-            self.statusBar().clearMessage()
-            self.statusBar().showMessage("Reference values configured.", 2500)
-            self.start_btn.setEnabled(True)
-
-        else:
-            self.statusBar().showMessage("No sensors found, Please connect the sensor controller to this computer.")
-
-        # Ensure connected
-        if not self.htr_ctrl.connected:
-            self.statusBar().showMessage("No sensor connected to start HTR")
-            return
-        
-        # Ensure not already running
-        if self.htr_thread is not None:
-            self.statusBar().showMessage("Already running HTR data collection")
-            return
-        
-        # Auto Export Setup
-        if AUTO_EXPORT:
-            # Make data directory if not already
-            Path("data/").mkdir(parents=True, exist_ok=True)
-
-            # Look for export file
-            filename = f"data-{int(time.time())}.csv"
-            export = open(f"data/{filename}", "w", encoding="utf-8")
-            atexit.register(lambda : export.close())
-        
-            # Grab latest data from sensors to make header in csv
-            row = self.ctrl.read_from()
-
-            # Parse Data row
-            data = re.search(DATA_PARSE, row)
-            print(f"{data.group(2)} {data.group(1)}Ω | {data.group(3)}%RH | {data.group(4)}°C")
-
-            # Header
-            export.write(f'"Time","Resistance ({data.group(1)}Ohm)","Humidity (%RH)","Temperature (degC)"\n"{time.strftime("%H:%M:%S", time.localtime())}","{data.group(2)}","{data.group(3)}","{data.group(4)}"\n')
-
-            self.statusBar().clearMessage()
-            self.statusBar().showMessage(f"Auto export enabled. Exporting to file {filename} in data folder.", 2500)
+        # Signal/Slots
+        self.htr_thread.started.connect(self.htr_ctrl.run)
+        self.htr_ctrl.resistance.connect(self.resistance_processing)
+        self.htr_ctrl.humidity.connect(self.humidity_processing)
+        self.htr_ctrl.temperature.connect(self.temperature_processing)
+        self.htr_ctrl.finished.connect(self.htr_thread.quit)
+        self.htr_ctrl.finished.connect(self.htr_ctrl.deleteLater)
+        self.htr_thread.finished.connect(self.htr_thread.deleteLater)
     
         # Initialize Data Collection
-        self.htr_thread = Thread(daemon=True, target=self.data_collection, args=(export,))
         self.htr_thread.start()
+
+    def resistance_processing(self, time_at : float, r_data : float):
+        """
+        Processes the resistance data
+        """
+        self.resist_data.cb_append_data_point(r_data, time_at)
+        resistance.append(r_data)
+
+        # Calculate Resist AVGs
+        resist_size = len(resistance)
+
+        self.resist_avg.setText(str(round(sum(resistance)/resist_size, 2)) + f" {REF_RESIST_UNIT}Ω")
+
+        if resist_size > 15:
+            self.avg_resist_15.setText(str(round(sum(resistance[-15:])/15, 2)) + f" {REF_RESIST_UNIT}Ω")
+        else:
+            self.avg_resist_15.setText("N/A")
+
+        if resist_size > 50:
+            self.avg_resist_50.setText(str(round(sum(resistance[-50:])/50, 2)) + f" {REF_RESIST_UNIT}Ω")
+        else:
+            self.avg_resist_50.setText("N/A")
+
+    def humidity_processing(self, time_at : float, h_data : float):
+        """
+        Processes the humidity data
+        """
+        self.humd_data.cb_append_data_point(h_data, time_at)
+        humidity.append(h_data)
+
+        # Calculate Humidity AVGs
+        humd_size = len(humidity)
         
-        # Disable start button
-        self.start.setEnabled(False)
+        self.humd_avg.setText(str(round(sum(humidity)/humd_size, 2)) + "%RH")
+
+        if humd_size > 15:
+            self.humd_avg_15.setText(str(round(sum(humidity[-15:])/15, 2)) + "%RH")
+        else:
+            self.humd_avg_15.setText("N/A")
+
+        if humd_size > 50:
+            self.humd_avg_50.setText(str(round(sum(humidity[-50:])/50, 2)) + "%RH")
+        else:
+            self.humd_avg_50.setText("N/A")
+
+    def temperature_processing(self, time_at : float, t_data : float):
+        """
+        Processes the temperature data
+        """
+        self.temp_data.cb_append_data_point(t_data, time_at)
+        temperature.append(t_data)
+
+        # Calculate Temperature AVGs
+        temp_size = len(temperature)
+        
+        self.temp_avg.setText(str(round(sum(temperature)/temp_size, 2)) + "°C")
+
+        if temp_size > 15:
+            self.temp_avg_15.setText(str(round(sum(temperature[-15:])/15, 2)) + "°C")
+        else:
+            self.temp_avg_15.setText("N/A")
+
+        if temp_size > 50:
+            self.temp_avg_50.setText(str(round(sum(temperature[-50:])/50, 2)) + "°C")
+        else:
+            self.temp_avg_50.setText("N/A")
 
     def start_qcm_calibrate(self):
         """
@@ -521,6 +457,16 @@ class Window(Ui_MainWindow):
 
         # Calibrate
         self.qcm_ctrl.calibrate(self.qc_type.currentText())
+
+    def stop_sensors(self):
+        """
+        Stops all the processes in process
+        """
+        # Close Controllers
+        if self.htr_ctrl is not None:
+            self.htr_ctrl.stop()
+        if self.qcm_ctrl is not None:
+            self.qcm_ctrl.stop()
     
     # Slots
     @QtCore.pyqtSlot()
@@ -555,14 +501,29 @@ class Window(Ui_MainWindow):
         self.start_qcm_calibrate()
 
     @QtCore.pyqtSlot()
-    def on_startButton_clicked(self):
+    def on_start_btn_clicked(self):
+        # Disable button
+        self.start_btn.setEnabled(False)
+
+        # Start HTR
         self.start_htr()
+
+        # Start QCM
+        # TODO
+
+    @QtCore.pyqtSlot()
+    def on_stop_btn_clicked(self):
+        self.stop_sensors()
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:
         # Ask for confirmation before closing
-        confirmation = QMessageBox.question(self, "Confirmation", "Are you sure you want to close the application?", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to close the application?"), QMessageBox.Yes | QMessageBox.No)
         if confirmation == QMessageBox.Yes:
+            # Close Controllers
+            self.stop_sensors()
+
+            # Close
             a0.accept()
         else:
             a0.ignore() 
