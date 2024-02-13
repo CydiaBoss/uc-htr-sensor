@@ -202,10 +202,6 @@ class QCMSensorCtrl(QObject):
     # Signals
     calibration_progress = pyqtSignal(float)
     calibration_finished = pyqtSignal()
-    amplitude = pyqtSignal(float, float)
-    phase = pyqtSignal(float, float)
-    frequency = pyqtSignal(float, float)
-    dissipation = pyqtSignal(float, float)
 
     def __init__(self, parent: QObject=None, port : str="") -> None:
         super().__init__(parent)
@@ -232,11 +228,6 @@ class QCMSensorCtrl(QObject):
         # Start
         self.worker.start()
 
-        # # Grab Data
-        # self.worker.get_value1_buffer()
-
-        # #
-
     def single(self, freq : float) -> None:
         """
         Starts the calibration process
@@ -252,11 +243,6 @@ class QCMSensorCtrl(QObject):
         # Start
         self.worker.start()
 
-        # # Grab Data
-        # self.worker.get_value1_buffer()
-
-        # #
-
     def multi(self) -> None:
         """
         Starts the calibration process
@@ -270,11 +256,6 @@ class QCMSensorCtrl(QObject):
         
         # Start
         self.worker.start()
-
-        # # Grab Data
-        # self.worker.get_value1_buffer()
-
-        # #
 
 class QCMTester(QObject):
     finished = pyqtSignal()

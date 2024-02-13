@@ -459,8 +459,9 @@ class Window(Ui_MainWindow):
 
         # Create QCM controller
         self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
+        self.qcm_ctrl.moveToThread(self.qcm_thread)
 
-        # Calibrate
+        # Start Calibrate
         self.qcm_ctrl.calibrate(self.qc_type.currentText())
 
     def stop_sensors(self):
