@@ -1,8 +1,4 @@
-from io import TextIOWrapper
-from threading import Thread
-
-from pathlib import Path
-import sys, ctypes, time, re, atexit
+import sys, ctypes
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -233,6 +229,8 @@ class Window(Ui_MainWindow):
 
         # Ignore if nothing changed
         if identical_list(old_ports, self.ports):
+            # Update
+            self.statusBar().showMessage("No New Ports Discovered")
             return
         
         # Remove all menu items
@@ -249,6 +247,9 @@ class Window(Ui_MainWindow):
             self.htr_serial.setCurrentText(self.htr_port)
         if self.qcm_port is not None:
             self.qcm_serial.setCurrentText(self.qcm_port)
+
+        # Update
+        self.statusBar().showMessage("New Ports Discovered")
 
     def test_htr_port(self):
         '''
@@ -453,7 +454,11 @@ class Window(Ui_MainWindow):
         """
         Start calibration for the QCM sensor
         """
-        self.qcm_ctrl = QCMSensorCtrl(self.qcm_port)
+        # Make Data Thread
+        self.qcm_thread = QtCore.QThread()
+
+        # Create QCM controller
+        self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
 
         # Calibrate
         self.qcm_ctrl.calibrate(self.qc_type.currentText())

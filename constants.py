@@ -6,8 +6,10 @@ from time import strftime, localtime
 import datetime 
 
 from openqcm.common.architecture import Architecture,OSType
+from settings import Settings
 
 # Settings
+SETTINGS = Settings()
 AUTO_EXPORT = True
 AUTO_FLUSH = 50
 BAUD = 9600
@@ -16,9 +18,9 @@ READ_TIMEOUT = 5
 READ_DELAY = 1.0
 
 # References
-REF_RESIST = 10
-REF_RESIST_UNIT = ' '
-REF_VOLT = 5.099
+REF_RESIST = SETTINGS.get_setting("ref_resist")
+REF_RESIST_UNIT = SETTINGS.get_setting("ref_resist_unit")
+REF_VOLT = float(SETTINGS.get_setting("ref_volt"))
 
 # QC Types
 QC_5MHZ = "5 MHz"

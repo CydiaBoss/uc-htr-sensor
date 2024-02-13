@@ -199,6 +199,13 @@ class QCMSensorCtrl(QObject):
     '''
     Class of sensor controllers for the QCM system
     '''
+    # Signals
+    calibration_progress = pyqtSignal(float)
+    calibration_finished = pyqtSignal()
+    amplitude = pyqtSignal(float, float)
+    phase = pyqtSignal(float, float)
+    frequency = pyqtSignal(float, float)
+    dissipation = pyqtSignal(float, float)
 
     def __init__(self, parent: QObject=None, port : str="") -> None:
         super().__init__(parent)

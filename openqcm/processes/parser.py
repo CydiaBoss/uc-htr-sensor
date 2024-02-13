@@ -10,16 +10,16 @@ class ParserProcess(multiprocessing.Process):
     ###########################################################################
     # Initializing values for process
     ###########################################################################
-    def __init__(self, data_queue1,
-                       data_queue2,
-                       data_queue3,
-                       data_queue4,
-                       data_queue5,
-                       data_queue6,
-                       data_queue_F_multi,
-                       data_queue_D_multi,
-                       data_queue_A_multi, 
-                       data_queue_P_multi,
+    def __init__(self, data_queue1 : multiprocessing.Queue,
+                       data_queue2 : multiprocessing.Queue,
+                       data_queue3 : multiprocessing.Queue,
+                       data_queue4 : multiprocessing.Queue,
+                       data_queue5 : multiprocessing.Queue,
+                       data_queue6 : multiprocessing.Queue,
+                       data_queue_F_multi : multiprocessing.Queue,
+                       data_queue_D_multi : multiprocessing.Queue,
+                       data_queue_A_multi : multiprocessing.Queue, 
+                       data_queue_P_multi : multiprocessing.Queue,
                        ):
         """
         :param data_queue{i}: References to queue where processed data will be put.

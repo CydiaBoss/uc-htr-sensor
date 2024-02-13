@@ -10,6 +10,8 @@ from serial.tools import list_ports
 import numpy as np
 import scipy.signal
 
+from openqcm.processes.parser import ParserProcess
+
 
 TAG = ""#"[Calibration]"
 
@@ -71,7 +73,7 @@ class CalibrationProcess(multiprocessing.Process):
     ###########################################################################
     # Initializing values for process
     ###########################################################################
-    def __init__(self, parser_process):
+    def __init__(self, parser_process : ParserProcess):
         """
         :param parser_process: Reference to a ParserProcess instance.
         :type parser_process: ParserProcess.
@@ -171,7 +173,6 @@ class CalibrationProcess(multiprocessing.Process):
                     # data reset for new sweep
                     data_mag = np.linspace(0,0,samples)   
                     data_ph  = np.linspace(0,0,samples)
-                    
                     
                     try:
                         # amplitude/phase convert bit to dB/Deg parameters

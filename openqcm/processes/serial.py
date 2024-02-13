@@ -10,11 +10,7 @@ from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
-from time import time as tm
-from numpy import loadtxt
 from time import sleep
-
-from numpy import loadtxt
 
 import pywt
 from statsmodels.robust import mad
