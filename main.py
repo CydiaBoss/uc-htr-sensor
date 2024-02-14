@@ -3,6 +3,7 @@ import sys, ctypes
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
+from numpy import loadtxt
 from controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 
 from main_gui import Ui_MainWindow
@@ -63,6 +64,9 @@ class Window(Ui_MainWindow):
 
         # Enable Ports
         self.enable_ports()
+
+        # Make Peak List
+        self.peaks = []
 
     def setup_plots(self):
         '''
@@ -162,6 +166,9 @@ class Window(Ui_MainWindow):
         # Connection signal
         self.connected.connect(self.is_connected)
 
+        # Measurement Selection
+        self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
+
     def disable_all_ctrls(self):
         """
         Disable all controls
@@ -214,6 +221,17 @@ class Window(Ui_MainWindow):
         Enable all measurement ctrls
         """
         self.measure_type.setEnabled(True)
+
+        # Populate frequency list
+        self.freq_list.clear()
+
+        # Read list
+        data  = loadtxt(Constants.cvs_peakfrequencies_path)
+        self.peaks = data[:,0]
+
+        for peak in self.peaks:
+            self.freq_list.addItem(f"{peak} Hz")
+
         self.freq_list.setEnabled(True)
         # self.qcm_temp_ctrl.setEnabled(True)
 
@@ -246,7 +264,7 @@ class Window(Ui_MainWindow):
         # Ignore if nothing changed
         if identical_list(old_ports, self.ports):
             # Update
-            self.statusBar().showMessage("No New Ports Discovered")
+            self.statusBar().showMessage("No New Ports Discovered", 5000)
             return
         
         # Remove all menu items
@@ -265,7 +283,7 @@ class Window(Ui_MainWindow):
             self.qcm_serial.setCurrentText(self.qcm_port)
 
         # Update
-        self.statusBar().showMessage("New Ports Discovered")
+        self.statusBar().showMessage("New Ports Discovered", 5000)
 
     def test_htr_port(self):
         '''
@@ -300,10 +318,10 @@ class Window(Ui_MainWindow):
         '''
         if not results:
             self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR")
+            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR", 5000)
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR")
+            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR", 5000)
             self.htr_port = self.htr_serial.currentText()
             self.connected.emit()
 
@@ -345,10 +363,10 @@ class Window(Ui_MainWindow):
         '''
         if not results:
             self.qcm_status.setPixmap(QPixmap(":/main/cross.png"))
-            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is not the QCM")
+            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is not the QCM", 5000)
         else:
             self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
-            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM")
+            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM", 5000)
             self.qcm_port = self.qcm_serial.currentText()
             self.connected.emit()
 
@@ -563,7 +581,8 @@ class Window(Ui_MainWindow):
             self.qcm_timer.stop()
             self.qcm_ctrl.stop()
             self.enable_calibrate()
-            self.statusBar().showMessage(f"[{labelstatus}] {labelbar}")
+            self.enable_measurement()
+            self.statusBar().showMessage(f"[{labelstatus}] {labelbar}", 5000)
 
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()
@@ -601,7 +620,7 @@ class Window(Ui_MainWindow):
             return
         
         # Signal Launch
-        self.statusBar().showMessage("Attempting to communicate with the sensors...")
+        self.statusBar().showMessage("Attempting to communicate with the sensors...", 5000)
 
         # Disable
         self.disable_all_ctrls()
