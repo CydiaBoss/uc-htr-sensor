@@ -267,7 +267,6 @@ class Worker:
         if self._acquisition_process is not None and self._acquisition_process.is_alive():
             # stop the process 
             self._acquisition_process.stop()
-            # self._acquisition_process.join(Constants.process_join_timeout_ms)
             
             # terminate the process 
             # https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.terminate

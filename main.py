@@ -61,6 +61,9 @@ class Window(Ui_MainWindow):
         self.htr_ctrl : HTRSensorCtrl = None
         self.qcm_ctrl : QCMSensorCtrl = None
 
+        # Enable Ports
+        self.enable_ports()
+
     def setup_plots(self):
         '''
         Setups the graphs for live data collectrion
@@ -113,7 +116,7 @@ class Window(Ui_MainWindow):
         self.amp_curve = LiveLinePlot(brush="blue", pen="blue")
         self.amp_plot.addItem(self.amp_curve)
         self.amp_plot.setBackground(background="w")
-        self.amp_data = DataConnector(self.amp_curve, max_points=300, update_rate=1.0)
+        self.amp_data = DataConnector(self.amp_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.amp_plot, 0, 0, 1, 1)
         
         # Setup Phase Graph
@@ -125,7 +128,7 @@ class Window(Ui_MainWindow):
         self.phase_curve = LiveLinePlot(brush="blue", pen="blue")
         self.phase_plot.addItem(self.phase_curve)
         self.phase_plot.setBackground(background="w")
-        self.phase_data = DataConnector(self.phase_curve, max_points=300, update_rate=1.0)
+        self.phase_data = DataConnector(self.phase_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.phase_plot, 0, 1, 1, 1)
         
         # Setup Frequency Graph
@@ -137,7 +140,7 @@ class Window(Ui_MainWindow):
         self.freq_curve = LiveLinePlot(brush="blue", pen="blue")
         self.freq_plot.addItem(self.freq_curve)
         self.freq_plot.setBackground(background="w")
-        self.freq_data = DataConnector(self.freq_curve, max_points=300, update_rate=1.0)
+        self.freq_data = DataConnector(self.freq_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.freq_plot, 1, 0, 1, 1)
         
         # Setup Dissipation Graph
@@ -149,7 +152,7 @@ class Window(Ui_MainWindow):
         self.dissipate_curve = LiveLinePlot(brush="blue", pen="blue")
         self.dissipate_plot.addItem(self.dissipate_curve)
         self.dissipate_plot.setBackground(background="w")
-        self.dissipate_data = DataConnector(self.dissipate_curve, max_points=300, update_rate=1.0)
+        self.dissipate_data = DataConnector(self.dissipate_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.dissipate_plot, 1, 1, 1, 1)
 
     def setup_signals(self):
@@ -163,6 +166,11 @@ class Window(Ui_MainWindow):
         """
         Disable all controls
         """
+        # Ports
+        self.htr_serial.setEnabled(False)
+        self.qcm_serial.setEnabled(False)
+        self.connect_btn.setEnabled(False)
+
         # Calibration
         self.qc_type.setEnabled(False)
         self.calibrate_btn.setEnabled(False)
@@ -185,6 +193,14 @@ class Window(Ui_MainWindow):
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(False)
         self.progress_bar.setValue(0)
+
+    def enable_ports(self):
+        """
+        Enable all port ctrls
+        """
+        self.htr_serial.setEnabled(True)
+        self.qcm_serial.setEnabled(True)
+        self.connect_btn.setEnabled(True)
 
     def enable_calibrate(self):
         """
@@ -255,10 +271,6 @@ class Window(Ui_MainWindow):
         '''
         Test the HTR port for success
         '''
-        # Lock Connect Button for now
-        self.connect_btn.setEnabled(False)
-        self.htr_serial.setEnabled(False)
-
         # Reset Port String
         self.htr_port = None
 
@@ -304,10 +316,6 @@ class Window(Ui_MainWindow):
         '''
         Test the QCM port for success
         '''
-        # Lock Connect Button for now
-        self.connect_btn.setEnabled(False)
-        self.qcm_serial.setEnabled(False)
-
         # Reset QCM port
         self.qcm_port = None
 
@@ -461,8 +469,110 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
         self.qcm_ctrl.moveToThread(self.qcm_thread)
 
-        # Start Calibrate
-        self.qcm_ctrl.calibrate(self.qc_type.currentText())
+        # Setup Timer for Testing
+        self.qcm_timer = QtCore.QTimer(self)
+        self.qcm_timer.moveToThread(self.qcm_thread)
+        self.qcm_timer.timeout.connect(self.calibration_processing)
+
+        # Setup Signals
+        self.qcm_thread.started.connect(lambda : self.qcm_ctrl.calibrate(self.qc_type.currentText()))
+        self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))
+        self.qcm_ctrl.calibration_finished.connect(self.qcm_thread.quit)
+        self.qcm_ctrl.calibration_finished.connect(self.qcm_ctrl.deleteLater)
+        self.qcm_thread.finished.connect(self.qcm_thread.deleteLater)
+
+        # Start
+        self.qcm_thread.start()
+        
+    def calibration_processing(self):
+        """
+        Process calibration data
+        """
+        # Consume
+        self.qcm_ctrl.worker.consume_queue1()
+        self.qcm_ctrl.worker.consume_queue2()
+        self.qcm_ctrl.worker.consume_queue3()
+        self.qcm_ctrl.worker.consume_queue4()
+        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        self.qcm_ctrl.worker.consume_queue5()
+        # general error queue
+        self.qcm_ctrl.worker.consume_queue6()
+
+        self.qcm_ctrl.worker.consume_queue_F_multi()
+        self.qcm_ctrl.worker.consume_queue_D_multi()
+        self.qcm_ctrl.worker.consume_queue_A_multi()
+
+        # flag for terminating calibration
+        stop_flag = 0
+
+        # vector2[0] and vector3[0] flag error
+        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
+        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
+
+        labelstatus = 'Calibration Processing'
+        labelbar = 'The operation might take just over a minute to complete... please wait...'
+        
+        # progressbar
+        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        
+        if self._ser_control < (Constants.calib_sections):
+            self._completed = (self._ser_control/(Constants.calib_sections))*100
+
+        # calibration buffer empty
+        if error1== 1 and vector3[0]==1:
+            labelstatus = 'Calibration Warning'
+
+            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer empty and ValueError from the serial port
+        elif error1== 1 and vector2[0]==1:
+            labelstatus = 'Calibration Warning'
+
+            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer not empty
+        elif error1==0:
+            labelstatus = 'Calibration Processing'
+            labelbar = 'The operation might take just over a minute to complete... please wait...'
+
+            # Success!
+            if vector2[0]== 0 and vector3[0]== 0:
+                labelstatus = 'Calibration Success'
+                
+                labelbar = 'Calibration Success for baseline correction!'
+                stop_flag=1
+            
+            # Error Message
+            elif vector2[0]== 1 or vector3[0]== 1:
+                labelstatus = 'Calibration Warning'
+
+                if vector2[0]== 1:
+                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
+                    stop_flag=1 ##
+                elif vector3[0]== 1:
+                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
+                    stop_flag=1 ##
+                    
+        # progressbar -------------
+        self.calibration_bar.setValue(int(self._completed + 10))
+
+        # terminate the  calibration (simulate clicked stop)
+        if stop_flag == 1:
+            self.qcm_timer.stop()
+            self.qcm_ctrl.stop()
+            self.enable_calibrate()
+            self.statusBar().showMessage(f"[{labelstatus}] {labelbar}")
+
+        # Update Plot
+        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
+        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+
+        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+
+        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
+        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
 
     def stop_sensors(self):
         """
@@ -504,12 +614,20 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_calibrate_btn_clicked(self):
+        # Disable
+        self.disable_all_ctrls()
+
+        # Start
         self.start_qcm_calibrate()
 
     @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):
         # Disable button
         self.start_btn.setEnabled(False)
+
+        # Enable buttons
+        self.stop_btn.setEnabled(True)
+        self.reset_btn.setEnabled(True)
 
         # Start HTR
         self.start_htr()
@@ -519,7 +637,12 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):
+        # Disable button
+        self.stop_btn.setEnabled(False)
         self.stop_sensors()
+
+        # Enable button
+        self.start_btn.setEnabled(True)
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:
