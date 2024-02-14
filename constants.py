@@ -19,7 +19,7 @@ READ_DELAY = 1.0
 
 # References
 REF_RESIST = SETTINGS.get_setting("ref_resist")
-REF_RESIST_UNIT = SETTINGS.get_setting("ref_resist_unit")
+REF_RESIST_UNIT = SETTINGS.get_setting("ref_resist_unit") or " "
 REF_VOLT = float(SETTINGS.get_setting("ref_volt"))
 
 # QC Types

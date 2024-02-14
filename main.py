@@ -1,4 +1,5 @@
 import sys, ctypes
+import time
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -20,15 +21,12 @@ import main_rc
 # Translate Component
 _translate = QtCore.QCoreApplication.translate
 
-# Run Data Collection
-run_data_collect = True
-
-# Data Storage
-resistance = []
-humidity = []
-temperature = []
-
 class Window(Ui_MainWindow):
+
+    # Data Storage
+    resistance = []
+    humidity = []
+    temperature = []
 
     # Signal
     connected = QtCore.pyqtSignal()
@@ -415,20 +413,20 @@ class Window(Ui_MainWindow):
         Processes the resistance data
         """
         self.resist_data.cb_append_data_point(r_data, time_at)
-        resistance.append(r_data)
+        self.resistance.append(r_data)
 
         # Calculate Resist AVGs
-        resist_size = len(resistance)
+        resist_size = len(self.resistance)
 
-        self.resist_avg.setText(str(round(sum(resistance)/resist_size, 2)) + f" {REF_RESIST_UNIT}Ω")
+        self.resist_avg.setText(str(round(sum(self.resistance)/resist_size, 2)) + f" {REF_RESIST_UNIT}Ω")
 
         if resist_size > 15:
-            self.avg_resist_15.setText(str(round(sum(resistance[-15:])/15, 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_15.setText(str(round(sum(self.resistance[-15:])/15, 2)) + f" {REF_RESIST_UNIT}Ω")
         else:
             self.avg_resist_15.setText("N/A")
 
         if resist_size > 50:
-            self.avg_resist_50.setText(str(round(sum(resistance[-50:])/50, 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_50.setText(str(round(sum(self.resistance[-50:])/50, 2)) + f" {REF_RESIST_UNIT}Ω")
         else:
             self.avg_resist_50.setText("N/A")
 
@@ -437,20 +435,20 @@ class Window(Ui_MainWindow):
         Processes the humidity data
         """
         self.humd_data.cb_append_data_point(h_data, time_at)
-        humidity.append(h_data)
+        self.humidity.append(h_data)
 
         # Calculate Humidity AVGs
-        humd_size = len(humidity)
+        humd_size = len(self.humidity)
         
-        self.humd_avg.setText(str(round(sum(humidity)/humd_size, 2)) + "%RH")
+        self.humd_avg.setText(str(round(sum(self.humidity)/humd_size, 2)) + "%RH")
 
         if humd_size > 15:
-            self.humd_avg_15.setText(str(round(sum(humidity[-15:])/15, 2)) + "%RH")
+            self.humd_avg_15.setText(str(round(sum(self.humidity[-15:])/15, 2)) + "%RH")
         else:
             self.humd_avg_15.setText("N/A")
 
         if humd_size > 50:
-            self.humd_avg_50.setText(str(round(sum(humidity[-50:])/50, 2)) + "%RH")
+            self.humd_avg_50.setText(str(round(sum(self.humidity[-50:])/50, 2)) + "%RH")
         else:
             self.humd_avg_50.setText("N/A")
 
@@ -459,20 +457,20 @@ class Window(Ui_MainWindow):
         Processes the temperature data
         """
         self.temp_data.cb_append_data_point(t_data, time_at)
-        temperature.append(t_data)
+        self.temperature.append(t_data)
 
         # Calculate Temperature AVGs
-        temp_size = len(temperature)
+        temp_size = len(self.temperature)
         
-        self.temp_avg.setText(str(round(sum(temperature)/temp_size, 2)) + "°C")
+        self.temp_avg.setText(str(round(sum(self.temperature)/temp_size, 2)) + "°C")
 
         if temp_size > 15:
-            self.temp_avg_15.setText(str(round(sum(temperature[-15:])/15, 2)) + "°C")
+            self.temp_avg_15.setText(str(round(sum(self.temperature[-15:])/15, 2)) + "°C")
         else:
             self.temp_avg_15.setText("N/A")
 
         if temp_size > 50:
-            self.temp_avg_50.setText(str(round(sum(temperature[-50:])/50, 2)) + "°C")
+            self.temp_avg_50.setText(str(round(sum(self.temperature[-50:])/50, 2)) + "°C")
         else:
             self.temp_avg_50.setText("N/A")
 
@@ -495,12 +493,12 @@ class Window(Ui_MainWindow):
         # Setup Signals
         self.qcm_thread.started.connect(lambda : self.qcm_ctrl.calibrate(self.qc_type.currentText()))
         self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))
-        self.qcm_ctrl.calibration_finished.connect(self.qcm_thread.quit)
-        self.qcm_ctrl.calibration_finished.connect(self.qcm_ctrl.deleteLater)
-        self.qcm_thread.finished.connect(self.qcm_thread.deleteLater)
 
         # Start
         self.qcm_thread.start()
+
+        # Message
+        self.statusBar().showMessage("Calibrating QCM...")
         
     def calibration_processing(self):
         """
@@ -527,7 +525,6 @@ class Window(Ui_MainWindow):
         vector2 = self.qcm_ctrl.worker.get_t3_buffer()
         vector3 = self.qcm_ctrl.worker.get_d3_buffer()
 
-        labelstatus = 'Calibration Processing'
         labelbar = 'The operation might take just over a minute to complete... please wait...'
         
         # progressbar
@@ -538,34 +535,25 @@ class Window(Ui_MainWindow):
 
         # calibration buffer empty
         if error1== 1 and vector3[0]==1:
-            labelstatus = 'Calibration Warning'
-
             labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
             stop_flag=1
 
         # calibration buffer empty and ValueError from the serial port
         elif error1== 1 and vector2[0]==1:
-            labelstatus = 'Calibration Warning'
-
             labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
             stop_flag=1
 
         # calibration buffer not empty
         elif error1==0:
-            labelstatus = 'Calibration Processing'
             labelbar = 'The operation might take just over a minute to complete... please wait...'
 
             # Success!
             if vector2[0]== 0 and vector3[0]== 0:
-                labelstatus = 'Calibration Success'
-                
                 labelbar = 'Calibration Success for baseline correction!'
                 stop_flag=1
             
             # Error Message
             elif vector2[0]== 1 or vector3[0]== 1:
-                labelstatus = 'Calibration Warning'
-
                 if vector2[0]== 1:
                     labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
                     stop_flag=1 ##
@@ -582,7 +570,9 @@ class Window(Ui_MainWindow):
             self.qcm_ctrl.stop()
             self.enable_calibrate()
             self.enable_measurement()
-            self.statusBar().showMessage(f"[{labelstatus}] {labelbar}", 5000)
+            self.enable_export()
+            self.enable_start()
+            self.statusBar().showMessage(f"{labelbar}", 5000)
 
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()
@@ -592,6 +582,24 @@ class Window(Ui_MainWindow):
 
         self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
         self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+
+    def clear_plots(self):
+        """
+        Clear the graphs
+        """
+        # Clear Plot
+        self.resist_data.cb_set_data(x=[], y=[])
+        self.humd_data.cb_set_data(x=[], y=[])
+        self.temp_data.cb_set_data(x=[], y=[])
+
+    def clear_data(self):
+        """
+        Clear the graphs
+        """
+        # Clear Plot
+        self.resistance = []
+        self.humidity = []
+        self.temperature = []
 
     def stop_sensors(self):
         """
@@ -641,12 +649,19 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):
-        # Disable button
-        self.start_btn.setEnabled(False)
+        # Disable
+        self.disable_all_ctrls()
+        
+        # Clear
+        self.clear_plots()
 
         # Enable buttons
         self.stop_btn.setEnabled(True)
         self.reset_btn.setEnabled(True)
+
+        # If Auto Export is ON and no file name, create
+        if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
+            self.file_dest.setText(f"data/data-{int(time.time())}")
 
         # Start HTR
         self.start_htr()
@@ -662,6 +677,20 @@ class Window(Ui_MainWindow):
 
         # Enable button
         self.start_btn.setEnabled(True)
+
+    @QtCore.pyqtSlot()
+    def on_reset_btn_clicked(self):
+        # Disable button
+        self.reset_btn.setEnabled(False)
+        self.stop_btn.setEnabled(False)
+        self.clear_plots()
+        self.clear_data()
+        self.stop_sensors()
+
+        # Enable stuff
+        self.enable_measurement()
+        self.enable_export()
+        self.enable_start()
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:
