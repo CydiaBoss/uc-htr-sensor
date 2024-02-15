@@ -2,6 +2,7 @@
 # Code to communicate with sensors #
 # ================================ #
 import re
+import numpy as np
 from serial import Serial
 from serial.tools import list_ports
 import time, atexit
@@ -18,6 +19,7 @@ class HTRSensorCtrl(QObject):
     '''
     # Signals
     finished = pyqtSignal()
+    progress = pyqtSignal()
     resistance = pyqtSignal(float, float)
     humidity = pyqtSignal(float, float)
     temperature = pyqtSignal(float, float)
@@ -87,6 +89,9 @@ class HTRSensorCtrl(QObject):
             # Read Next Line
             row = self.read_from()
 
+            # Record time
+            self.progress.emit()
+
             # Parse Data row
             data = re.search(DATA_PARSE, row)
 
@@ -98,6 +103,8 @@ class HTRSensorCtrl(QObject):
 
                     # Send signal
                     self.resistance.emit(time.time() - self.start_time, r_data)
+                else:
+                    self.resistance.emit(time.time() - self.start_time, np.inf)
 
                 h_data = float(data.group(3))
                 t_data = float(data.group(4))

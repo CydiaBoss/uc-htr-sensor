@@ -1,5 +1,6 @@
 import sys, ctypes
 import time
+from datetime import datetime
 
 from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -24,9 +25,11 @@ _translate = QtCore.QCoreApplication.translate
 class Window(Ui_MainWindow):
 
     # Data Storage
-    resistance = []
-    humidity = []
-    temperature = []
+    raw_resistance = np.array([])
+    resistance = np.array([])
+    humidity = np.array([])
+    temperature = np.array([])
+    htr_time = np.array([])
 
     # Signal
     connected = QtCore.pyqtSignal()
@@ -65,9 +68,6 @@ class Window(Ui_MainWindow):
 
         # Make Peak List
         self.peaks = []
-
-        # DEBUG
-        self.auto_export.setEnabled(True)
 
     def setup_plots(self):
         '''
@@ -196,7 +196,6 @@ class Window(Ui_MainWindow):
         self.qcm_temp_ctrl.setEnabled(False)
 
         # Exportation
-        self.auto_export.setChecked(False)
         self.auto_export.setEnabled(False)
         self.file_dest.setEnabled(False)
         self.file_select.setEnabled(False)
@@ -389,7 +388,8 @@ class Window(Ui_MainWindow):
         connect = self.htr_port is not None and self.qcm_port is not None
         if connect:
             self.enable_calibrate()
-            self.start_btn.setEnabled(True)
+            self.enable_export()
+            self.enable_start()
 
         return connect
 
@@ -406,6 +406,7 @@ class Window(Ui_MainWindow):
 
         # Signal/Slots
         self.htr_thread.started.connect(self.htr_ctrl.run)
+        self.htr_ctrl.progress.connect(self.update_time)
         self.htr_ctrl.resistance.connect(self.resistance_processing)
         self.htr_ctrl.humidity.connect(self.humidity_processing)
         self.htr_ctrl.temperature.connect(self.temperature_processing)
@@ -416,29 +417,41 @@ class Window(Ui_MainWindow):
         # Initialize Data Collection
         self.htr_thread.start()
 
+    def update_time(self):
+        """
+        Update the time array
+        """
+        self.htr_time = np.append(self.htr_time, datetime.now().strftime("%H:%M:%S"))
+
     def resistance_processing(self, time_at : float, r_data : float):
         """
         Processes the resistance data
         """
+        # Don't do anything for inf
+        if r_data == np.inf:
+            self.raw_resistance = np.append(self.raw_resistance, r_data)
+            return
+
         if self.resist_override:
-            self.resist_data.cb_set_data(r_data, time_at)
+            self.resist_data.cb_set_data([r_data,], [time_at,])
             self.resist_override = False
         else:
             self.resist_data.cb_append_data_point(r_data, time_at)
-        self.resistance.append(r_data)
+        self.raw_resistance = np.append(self.raw_resistance, r_data)
+        self.resistance = np.append(self.resistance, r_data)
 
         # Calculate Resist AVGs
-        resist_size = len(self.resistance)
+        resist_size = self.resistance.size
 
-        self.resist_avg.setText(str(round(sum(self.resistance)/resist_size, 2)) + f" {REF_RESIST_UNIT}Ω")
+        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
 
         if resist_size > 15:
-            self.avg_resist_15.setText(str(round(sum(self.resistance[-15:])/15, 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
         else:
             self.avg_resist_15.setText("N/A")
 
         if resist_size > 50:
-            self.avg_resist_50.setText(str(round(sum(self.resistance[-50:])/50, 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
         else:
             self.avg_resist_50.setText("N/A")
 
@@ -447,24 +460,24 @@ class Window(Ui_MainWindow):
         Processes the humidity data
         """
         if self.humd_override:
-            self.humd_data.cb_set_data(h_data, time_at)
+            self.humd_data.cb_set_data([h_data,], [time_at,])
             self.humd_override = False
         else:
             self.humd_data.cb_append_data_point(h_data, time_at)
-        self.humidity.append(h_data)
+        self.humidity = np.append(self.humidity, h_data)
 
         # Calculate Humidity AVGs
-        humd_size = len(self.humidity)
+        humd_size = self.humidity.size
         
-        self.humd_avg.setText(str(round(sum(self.humidity)/humd_size, 2)) + "%RH")
+        self.humd_avg.setText(str(round(self.humidity.mean(), 2)) + "%RH")
 
         if humd_size > 15:
-            self.humd_avg_15.setText(str(round(sum(self.humidity[-15:])/15, 2)) + "%RH")
+            self.humd_avg_15.setText(str(round(self.humidity[-15:].mean(), 2)) + "%RH")
         else:
             self.humd_avg_15.setText("N/A")
 
         if humd_size > 50:
-            self.humd_avg_50.setText(str(round(sum(self.humidity[-50:])/50, 2)) + "%RH")
+            self.humd_avg_50.setText(str(round(self.humidity[-50:].mean(), 2)) + "%RH")
         else:
             self.humd_avg_50.setText("N/A")
 
@@ -473,24 +486,24 @@ class Window(Ui_MainWindow):
         Processes the temperature data
         """
         if self.temp_override:
-            self.temp_data.cb_set_data(t_data, time_at)
+            self.temp_data.cb_set_data([t_data,], [time_at,])
             self.temp_override = False
         else:
             self.temp_data.cb_append_data_point(t_data, time_at)
-        self.temperature.append(t_data)
+        self.temperature = np.append(self.temperature, t_data)
 
         # Calculate Temperature AVGs
-        temp_size = len(self.temperature)
+        temp_size = self.temperature.size
         
-        self.temp_avg.setText(str(round(sum(self.temperature)/temp_size, 2)) + "°C")
+        self.temp_avg.setText(str(round(self.temperature.mean(), 2)) + "°C")
 
         if temp_size > 15:
-            self.temp_avg_15.setText(str(round(sum(self.temperature[-15:])/15, 2)) + "°C")
+            self.temp_avg_15.setText(str(round(self.temperature[-15:].mean(), 2)) + "°C")
         else:
             self.temp_avg_15.setText("N/A")
 
         if temp_size > 50:
-            self.temp_avg_50.setText(str(round(sum(self.temperature[-50:])/50, 2)) + "°C")
+            self.temp_avg_50.setText(str(round(self.temperature[-50:].mean(), 2)) + "°C")
         else:
             self.temp_avg_50.setText("N/A")
 
@@ -617,9 +630,30 @@ class Window(Ui_MainWindow):
         Clear the graphs
         """
         # Clear Plot
-        self.resistance = []
-        self.humidity = []
-        self.temperature = []
+        self.raw_resistance = np.array([])
+        self.resistance = np.array([])
+        self.humidity = np.array([])
+        self.temperature = np.array([])
+        self.htr_time = np.array([])
+
+    def save_data(self):
+        """
+        Writes data to file
+        """
+        # Validates file destination
+        if self.file_dest.text().strip() == "":
+            self.statusBar().showMessage("Could not save file, no destination specified")
+            return
+        
+        # Create master nparray
+        export_data = np.vstack([self.htr_time, self.raw_resistance, self.humidity, self.temperature])
+
+        # Save
+        # TODO may need to do manually
+        np.savetxt(self.file_dest.text().strip(), export_data.T, fmt='%s,%f,%f,%f', delimiter=",", header=HTR_HEADER)
+
+        # Success
+        self.statusBar().showMessage(f"File saved at {self.file_dest.text()}")
 
     def stop_sensors(self):
         """
@@ -672,6 +706,8 @@ class Window(Ui_MainWindow):
         # If Check and Empty, set default
         if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
             self.file_dest.setText(f"data/data-{int(time.time())}.csv")
+        elif not self.auto_export.isChecked() and self.file_dest.text().startswith("data/data-"):
+            self.file_dest.clear()
 
     @QtCore.pyqtSlot()
     def on_file_select_clicked(self):
@@ -688,6 +724,7 @@ class Window(Ui_MainWindow):
         
         # Clear
         self.clear_plots()
+        self.clear_data()
 
         # Enable buttons
         self.stop_btn.setEnabled(True)
@@ -704,6 +741,10 @@ class Window(Ui_MainWindow):
         # Disable button
         self.stop_btn.setEnabled(False)
         self.stop_sensors()
+
+        # Save if wanted
+        if self.auto_export.isChecked():
+            self.save_data()
 
         # Enable button
         self.start_btn.setEnabled(True)

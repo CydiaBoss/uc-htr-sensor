@@ -3,7 +3,7 @@ from enum import Enum
 import numpy as np
 from pyqtgraph import AxisItem
 from time import strftime, localtime
-import datetime 
+from datetime import datetime 
 
 from openqcm.common.architecture import Architecture,OSType
 from settings import Settings
@@ -40,6 +40,7 @@ FREQ_AXIS_CONFIG = {
     "text": "Frequency", 
     "units": "Hz", 
 }
+HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT}Ohm)","Humidity (%RH)","Temperature (degC)"\n'
 
 # QCM Specific Constants
 ###############################################################################    
@@ -460,7 +461,7 @@ class DateAxis(AxisItem):
     def tickStrings(self, values, scale, spacing):    
         TS_MULT_us = 1e6
         try:
-            z= [(datetime.datetime.utcfromtimestamp(float(value)/TS_MULT_us)).strftime("%H:%M:%S") for value in values]
+            z= [(datetime.utcfromtimestamp(float(value)/TS_MULT_us)).strftime("%H:%M:%S") for value in values]
         except: 
             z= ''
         return z
