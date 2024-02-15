@@ -5,7 +5,7 @@ from enum import Enum
 
 from openqcm.common.architecture import Architecture
 from openqcm.common.fileManager import FileManager
-from openqcm.core.constants import Constants
+from constants import Constants
 
 ###############################################################################
 # Logging package - All packages can use this module

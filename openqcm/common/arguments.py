@@ -2,7 +2,7 @@ import argparse
 
 from openqcm.common.logger import Logger as Log
 from openqcm.common.logger import LoggerLevel
-from openqcm.core.constants import Constants
+from constants import Constants
 
 
 TAG = ""#"Arguments"

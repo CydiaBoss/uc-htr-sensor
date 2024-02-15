@@ -498,11 +498,14 @@ class Worker:
         self._ser_error2 = data[1]
         self._control_k = data[2]
         self._ser_err_usb = data[3]
-        self._overtone_number = data[4]
-        
-        # VER 0.2 
-        # get TEC status 
-        self._TEC_status = data[5]
+        try:
+            self._overtone_number = data[4]
+
+            # VER 0.2 
+            # get TEC status 
+            self._TEC_status = data[5]
+        except IndexError:
+            pass
         
     ###########################################################################
     # Gets data buffers for plot (Amplitude,Phase,Frequency and Dissipation) 

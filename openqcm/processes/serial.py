@@ -1,19 +1,16 @@
 import multiprocessing
-from openqcm.core.ring_buffer import RingBuffer
-from openqcm.core.constants import Constants
+from constants import Constants
 
-from openqcm.common.logger import Logger as Log
+from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
+from openqcm.common.architecture import Architecture,OSType
+
 from time import time
 import serial
 from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
-from time import sleep
-
-import pywt
-from statsmodels.robust import mad
 
 TAG = ""#"[Serial]"
 
@@ -132,197 +129,50 @@ class SerialProcess(multiprocessing.Process):
     ###########################################################################
     # Resonance Frequency, Resonance Peak, Bandwidth and Q-factor/Dissipation 
     ###########################################################################
-    def parameters_finder(self, freq, signal, overtone_number, threshold):
-        
-# =============================================================================
-#         # VER 0.1.2
-#         # [BUG] dissipation calculation fails when the sweep signal goes under zero level
-#         
-#         # Developed a new algorithm for the calculation of dissipation: 
-# 		# - shift the signal up make the gain resonance curve positive 
-# 		# - select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-# 		# - multiply x2 the bandwith	 
-# =============================================================================
-        
-# =============================================================================
-#         # VER 0.1.3
-#         # change the frequency and dissipation calculation, as below: 
-#         # FREQUENCY
-#         #   - resonance frequency at fundamental is defined as the peak of the maximum
-#         #   - resonance frequency at overtones is defined as the middle point between the maximum and minimum of the gain resonance curve 
-#         # DISSIPATION: 
-#         #   - dissipation at fundamenatl is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve at 75% of maximum
-#         #   - dissipation at overtones is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve 
-#         #   between the resonance curve at 90% on the left and the minimum of the resonanance curve
-# =============================================================================
-        # VER 0.1.4
-        # Change resonance frequency measurement as the maximum of amplitude signal, same for fundamental and higher overtone. 
-        # Change dissipation measurement defined as bandwidth at -0.3 dB below the maximum for fundamental and overtones
-        
-        # find minimum 
-        f_min = np.min(signal)
-        # find index of minimum 
-        i_min = np.argmin(signal,axis=0)
-        
-        # VER 0.1.4 do not rescale the signal at the minimum 
-# =============================================================================
-#         # rescale the signal 
-#         signal = signal - f_min
-# =============================================================================
-        
+    def parameters_finder(self,freq,signal,percent):
         f_max = np.max(signal)          # Find maximum
         i_max= np.argmax(signal,axis=0) # Find index of maximum
-        
         # setup the index for finding the leading edge
         index_m = i_max
-        
-        # VER 0.1.4
-        if (overtone_number == 0):
-        
-            # loop until the index at FWHM/others is found
-            # VER 0.1.4 find the index for the bandwidth
-            while signal[index_m] > (f_max - threshold):  
-# =============================================================================
-#             while signal[index_m] > percent*f_max:
-# =============================================================================
-                if index_m < 1:
-                   print(TAG, 'WARNING: Left value not found')
-                   self._err1 = 1
-                   break
-                index_m = index_m-1     
-            #linearly interpolate between the previous values to find the value of freq at the leading edge
-            m = (signal[index_m+1] - signal[index_m])/(freq[index_m+1] - freq[index_m])
-            c = signal[index_m] - freq[index_m]*m
-# =============================================================================
-#             i_leading = (percent*f_max - c)/m
-# =============================================================================
-            # VER 0.1.4 find the left index for the bandwidth
-            i_leading = (f_max - threshold - c)/m
-            
-            # setup index for finding the trailing edge
-            index_M = i_max
-            
-            # loop until the index at FWHM/others is found
-            # VER 0.1.4 find the index for the badwidth
-            while signal[index_M] > (f_max - threshold):
-# =============================================================================
-#             while signal[index_M] > percent*f_max:
-# =============================================================================
-                if index_M >= len(signal)-1:
-                    print(TAG, 'WARNING: Right value not found')
-                    self._err2 = 1
-                    break
-                index_M = index_M+1;
-            
-            # linearly interpolate between the previous values to find the value of freq at the trailing edge
-            m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
-            c = signal[index_M] - freq[index_M]*m
-# =============================================================================
-#             i_trailing = (percent*f_max - c)/m
-# =============================================================================
-            # VER 0.1.4 find the right index for the bandwidth            
-            i_trailing = (f_max - threshold - c)/m
-
-            bandwidth = abs(i_trailing - i_leading)
-      
-        else: 
-# =============================================================================
-#             bandwidth = 0
-#             index_m = 0
-#             index_M = 0
-#             PERCENT_OVERTONE = 0.90
-#             INDEX_OVERTONE_LEFT = i_max
-#             while signal[INDEX_OVERTONE_LEFT] > PERCENT_OVERTONE * f_max:
-#                 if INDEX_OVERTONE_LEFT < 1:
-#                    print(TAG, 'WARNING: Left value not found')
-#                    self._err1 = 1
-#                    break
-#                 INDEX_OVERTONE_LEFT = INDEX_OVERTONE_LEFT - 1     
-# =============================================================================
-            # loop until the index at FWHM/others is found
-            # VER 0.1.4 find the index for the bandwidth
-            while signal[index_m] > (f_max - threshold):  
-                if index_m < 1:
-                   print(TAG, 'WARNING: Left value not found')
-                   self._err1 = 1
-                   break
-                index_m = index_m-1     
-            #linearly interpolate between the previous values to find the value of freq at the leading edge
-            m = (signal[index_m+1] - signal[index_m])/(freq[index_m+1] - freq[index_m])
-            c = signal[index_m] - freq[index_m]*m
-            # VER 0.1.4 find the left index for the bandwidth
-            i_leading = (f_max - threshold - c)/m
-            
-            # setup index for finding the trailing edge
-            index_M = i_max
-            
-            # loop until the index at FWHM/others is found
-            # VER 0.1.4 find the index for the badwidth
-            while signal[index_M] > f_max - threshold:
-                if index_M >= len(signal)-1:
-                    print(TAG, 'WARNING: Right value not found')
-                    self._err2 = 1
-                    break
-                index_M = index_M+1;
-            
-            # linearly interpolate between the previous values to find the value of freq at the trailing edge
-            m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
-            c = signal[index_M] - freq[index_M]*m
-            # VER 0.1.4 find the right index for the bandwidth
-            i_trailing = (f_max - threshold - c)/m
-            
-            bandwidth = abs(i_trailing - i_leading)
-            
-        
+        # loop until the index at FWHM/others is found
+        while signal[index_m] > percent*f_max:
+            if index_m < 1:
+               #print(TAG, 'WARNING: Left value not found')
+               self._err1 = 1
+               break
+            index_m = index_m-1     
+        #linearly interpolate between the previous values to find the value of freq at the leading edge
+        m = (signal[index_m+1] - signal[index_m])/(freq[index_m+1] - freq[index_m])
+        c = signal[index_m] - freq[index_m]*m
+        i_leading = (percent*f_max - c)/m
+        # setup index for finding the trailing edge
+        index_M = i_max
+        # loop until the index at FWHM/others is found
+        while signal[index_M] > percent*f_max:
+            if index_M >= len(signal)-1:
+                #print(TAG, 'WARNING: Right value not found')
+                self._err2 = 1
+                break
+            index_M = index_M+1;
+        # linearly interpolate between the previous values to find the value of freq at the trailing edge
+        m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
+        c = signal[index_M] - freq[index_M]*m
+        i_trailing = (percent*f_max - c)/m
         #compute the FWHM/others
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # VER 0.1.2
-        # select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-        # multiply x2 the bandwith	
-# =============================================================================
-#         bandwidth = (freq[index_M] - freq[i_max])*2
-#         
-# =============================================================================
-        # Qfac=freq[i_max]/bandwidth
-        
-        # VER 0.1.4
-        # frequency and dissipation at fundamental 
-        if (overtone_number == 0):
-            
-            freq_resonance = freq[i_max]
-            Qfac = bandwidth
-        
-        # VER 0.1.4
-        # frequency and dissipation at overtones 
-        else:
-            
-# =============================================================================
-#             freq_resonance = (freq[i_min] + freq[i_max])/2
-# =============================================================================
-
-            # VER 0.1.4 resonance frequency as the peak
-            freq_resonance = freq[i_max]
-# =============================================================================
-#             Qfac = (freq[i_min] - freq[INDEX_OVERTONE_LEFT])
-# =============================================================================
-            # VER 0.1.4
-            Qfac = bandwidth
-
-        # VER 0.1.4 changed the return of the method introducing resonance frequency
-        return i_max, f_max, bandwidth, index_m, index_M, Qfac, freq_resonance  
+        bandwidth = abs(i_trailing - i_leading)
+        Qfac=freq[i_max]/bandwidth
+        return i_max, f_max, bandwidth, index_m, index_M, Qfac  
     
     
     ###########################################################################
     # Processes incoming data and calculates outcoming data
     ###########################################################################    
-    def elaborate(self, k, coeffs_all, readFREQ, samples, 
-                  Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
+    def elaborate(self, k, coeffs_all, readFREQ, samples, Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
         
         ###################
         def waveletSmooth(x, wavelet="db4", level=1, title=None):
+            import pywt
+            from statsmodels.robust import mad
             # calculate the wavelet coefficients
             coeff = pywt.wavedec( x, wavelet, mode="per")
             # calculate a threshold
@@ -377,26 +227,7 @@ class SerialProcess(multiprocessing.Process):
         mag_result_fit = s(xs)
         
         # PARAMETERS FINDER
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit,index_f1_fit,index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
-# =============================================================================
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, 
-#          index_f1_fit, index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.5)
-# =============================================================================
-        # VER 0.1.3
-        # change the parameter finder algorithm
-        # VER 0.1.3
-        # change the parameter finder algorithm  
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, 
-#          index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, self._overtone_int, percent = 0.7)
-#         
-# =============================================================================
-
-        # VER 0.1.4 chenge the bandwith threshold value to the constant value THRESHOLD_DB = 0.3
-        (index_peak_fit, max_peak_fit, bandwidth_fit, 
-         index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, self._overtone_int, Constants.THRESHOLD_DB)
+        (index_peak_fit, max_peak_fit, bandwidth_fit,index_f1_fit,index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
         
         # BANDWIDTH 70.7% of MAX
         #self._bw3.append(bandwidth_fit)
@@ -408,20 +239,9 @@ class SerialProcess(multiprocessing.Process):
         #self._freq_max_fit.append(freq_range[int(index_peak_fit)])
         #self._temperature.append(temperature)
         #######################################################
-
-        # VER 0.1.3
-        # change the dissipation calculation as the inverse of the bandwidth defined above in parameter finder 
-# =============================================================================
-#         self._frequency_buffer.append(freq_range[int(index_peak_fit)])
-# =============================================================================
-        # VER 0.1.3
-        self._frequency_buffer.append(frequency_resonance)
-# =============================================================================
-#         self._dissipation_buffer.append(1/Qfac_fit)
-# =============================================================================
-        # VER 0.1.4
-        self._dissipation_buffer.append( (Qfac_fit/1000000) )
         
+        self._frequency_buffer.append(freq_range[int(index_peak_fit)])
+        self._dissipation_buffer.append(1/Qfac_fit)
         self._temperature_buffer.append(temperature)
         
         if self._k>=self._environment:
@@ -435,15 +255,6 @@ class SerialProcess(multiprocessing.Process):
            vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
            temperature_mean = np.average(vec_app1t)
            
-        
-        # VER 0.1.4 set the current value of frequency 
-        if self._k <= self._environment:
-            # current value is raw
-            self.freq_res_current = freq_range[int(index_peak_fit)]
-        elif self._k > self._environment:
-            # current value as average 
-            self.freq_res_current = int(freq_range_mean)
-        
         #else:
            #freq_range_mean = freq_range[int(index_peak_fit)]
            #temperature_mean = temperature
@@ -528,40 +339,6 @@ class SerialProcess(multiprocessing.Process):
         self._parser6 = parser_process
         self._serial = serial.Serial()
         
-        self._dummy = True
-        
-        self.temperature_set_old = 0
-        self.cycling_time_set_old = 0
-        self.P_share_set_old = 0
-        self.I_share_set_old = 0
-        self.D_share_set_old = 0
-        
-        # self.Temperature_Pid_default = [0, 0, 0, 0, 0]
-        self.Temperature_Pid_default = [self.temperature_set_old, 
-                                        self.cycling_time_set_old, 
-                                        self.P_share_set_old, 
-                                        self.I_share_set_old, 
-                                        self.D_share_set_old]
-        # self.temperature_set_old = loadtxt(Constants.manual_frequencies_path)
-        self.Temperature_Pid_default = loadtxt(Constants.manual_frequencies_path)
-        
-        #DEV 
-        # control temperature switch default value 
-        self.ctrl_bool_pre = 0
-        
-        # VER 0.1.4
-        # init TEC controller status variable 
-        self._data_status = 0
-        
-        # VER 0.1.5 
-        # init TEC error register bit 
-        self._error_register_bit = 0
-        
-        # VER 0.1.4 current value of resonance frequency 
-        self.freq_res_current = None
-        # just another dummy counter
-        self._just_another_counter = 0
-        
     ###########################################################################
     # Opens a specified serial port
     ###########################################################################    
@@ -584,7 +361,6 @@ class SerialProcess(multiprocessing.Process):
         self._serial.timeout = timeout
         self._serial.writetimeout = writeTimeout
         
-        
         #self._overtone = float(speed)
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
@@ -604,47 +380,8 @@ class SerialProcess(multiprocessing.Process):
         if self._overtone_int == None:
            print(TAG, "Warning: wrong frequency selection, set default to {} Hz Fundamental".format(peaks_mag[0])) 
            self._overtone_int = 0
-        
-        print(self._is_port_available(self._serial.port))
-        
+
         return self._is_port_available(self._serial.port)
-    
-    ###########################################################################
-    def write (self, port, message):
-        # self._exit.set()
-        self.open(port)
-        message_string = str(message)
-        # self.stop()
-        
-        if self._is_port_available(port):
-            print ("PORT COM SELECTED = ")
-            print (port)
-            print ("port available")
-            # Gets the state of the serial port
-            if not self._serial.isOpen(): 
-                print ("port is not open")
-                self._serial.open() 
-                # OPENS the serial port
-                try:
-                    self._serial.write(message_string.encode())
-                except: 
-                    print("NOT WRITE")
-            else: 
-                print ("port IS OPEN")
-                # self._serial.open(port) 
-                # OPENS the serial port
-                try:
-                    self._serial.write(message_string.encode())
-                    # CLOSES serial port
-                    self._serial.close()
-                except: 
-                    print("PORT IS OPEN BUT I CANNOT WRITE")
-                print("if not self._serial.isOpen(): IS FALSE")
-        else: 
-            print ("PORT IS NOT AVAILABLE")
-            
-    ###########################################################################
-    
     
     ###########################################################################
     # Reads the serial port,processes and adds all the data to internal queues
@@ -669,458 +406,135 @@ class SerialProcess(multiprocessing.Process):
         self._flag_error_usb = 0
         self._err1 = 0
         self._err2 = 0
-        
-        # init readline object 
-        # line = rl(self._serial)
-    
+              
         # CALLS baseline_coeffs method
         coeffs_all = self.baseline_coeffs()
-        
-        
-        # TODO 
-        # init temperature and pid values WRONG 
-        # self.Temperature_Pid_default = loadtxt(Constants.manual_frequencies_path)
-        # _______________________________________________________________________
         
         # Checks if the serial port is currently connected
         if self._is_port_available(self._serial.port):
 
             samples = Constants.argument_default_samples 
+            # Calls get_frequencies method:
+            # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
+            (overone_name,overtone_value,fStep,readFREQ,SG_window_size,Spline_points,Spline_factor) = self.get_frequencies(samples)
             
-           
-            
-            # VER 0.1.4 call the get frequencies here in the loop
-            
-# =============================================================================
-#             # Calls get_frequencies method:
-#             # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
-#             (overone_name,overtone_value,fStep,readFREQ,SG_window_size,Spline_points,Spline_factor) = self.get_frequencies(samples)
-# =============================================================================
-            
-            # Get the state of the serial port
+            # Gets the state of the serial port
             if not self._serial.isOpen(): 
-                # open the serial port
+                # OPENS the serial port
                 self._serial.open() 
                 # Initializes the sweep counter
-                k = 0 
-                print(TAG,' Buffering and processing early raw data...')
-                
+                k=0 
+                print(TAG,'Capturing raw data...')
+                print(TAG,'Wait, processing early data...')
                 # creates a timestamp
                 timestamp = time()
-                # init data buffer 
+                
                 self._environment = Constants.environment
                 self._frequency_buffer   = RingBuffer(self._environment)
                 self._dissipation_buffer = RingBuffer(self._environment)
                 self._temperature_buffer = RingBuffer(self._environment)
-                
                 # Initializes the progress bar  
-                # bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=self._environment).start() #
-                
-                # START FREQUENCY SWEEP LOOP 
-                # -------------------------------------------------------------
-                # print(self._dummy)
-                
+                bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=self._environment).start() #
+                #### SWEEPS LOOP ####
                 while not self._exit.is_set():
-                    
-                    # VER 0.1.4
-                    self._just_another_counter =  self._just_another_counter + 1
-# =============================================================================
-#                     print (self._just_another_counter )
-# =============================================================================
-                    
-                    # VER 0.1.4
-                    # get resonance frequencies in acquisition loop. 
-                    # get and set sweep start, stop and set frequencies sweep parameters, as function of the number of samples
-                    
-                    if (self._just_another_counter < Constants.environment):
-                        # Get array sweep paramaters from frequency peaks file 
-                        (overone_name, overtone_value, 
-                         fStep, readFREQ, SG_window_size, 
-                         Spline_points, Spline_factor) = self.get_frequencies(samples)
-                    else:
-                        # Get array sweep paramaters from the real time frequency peaks file
-                        (overone_name, overtone_value, 
-                         fStep, readFREQ, SG_window_size, 
-                         Spline_points, Spline_factor) = self.get_frequencies_RT(samples, self._overtone_int)
-                    
                     # data reset for new sweep 
                     data_mag = np.linspace(0,0,samples)   
                     data_ph  = np.linspace(0,0,samples)
-                    # self._boolean_buffer_length = 0
                     
                     try:
                         # amplitude/phase convert bit to dB/Deg parameters
                         vmax = 3.3
-                        bitmax = 4096 
+                        bitmax = 8192 
                         ADCtoVolt = vmax / bitmax
                         VCP = 0.9
                         
-                        # DEBUG_0.1.1a
-                        # get sweep time start 
-                        timeStart = time()
-                        
-                        # -------------------------------------------------
-                        # START SWEEP 
-                            
-                        # WRITE SWEEP COMMAND MESSAGE TO SERIAL PORT
-                        # -------------------------------------------------
-                        
-                        # VER 0.1.4
-                        # current value of resonance frequency 
-                        
-                        if (self.freq_res_current is not None):
-                            pass
-# =============================================================================
-#                             print (self.freq_res_current)
-# =============================================================================
-                            
+                        # WRITES encoded command to the serial port
                         cmd = str(self._startFreq) + ';' + str(self._stopFreq) + ';' + str(int(fStep)) + '\n'
                         self._serial.write(cmd.encode())
-                        
-                        # DEBUG_0.1.1a
-                        # added a short sleep before read serial
-                        sleep(Constants.WRITE_SERIAL_WAIT)
                         
                         # Initializes buffer and strs record
                         buffer = ''
                         strs = ["" for x in range(samples + 2)]
                         
-                        # reset tje error register 
-                        self._error_register_bit = 0
-                     
+                        # READS and decodes sweep from the serial port
+                        while 1:
+                         buffer += self._serial.read(self._serial.inWaiting()).decode(Constants.app_encoding)
+                         #if '\n' in buffer:
+                         if 's' in buffer:
+                              break
+                        data_raw = buffer.split('\n')
+                        length = len(data_raw)
+                        
+                        # PERFORMS split with the semicolon delimiter
+                        for i in range (length):
+                            strs[i] = data_raw[i].split(';')
+
+                        # CONVERTS the sweep samples before adding to queue
+                        for i in range (length - 2):
+                            data_mag[i] = float(strs[i][0]) * ADCtoVolt / 2
+                            data_mag[i] = (data_mag[i]-VCP) / 0.03
+                            data_ph[i] = float(strs[i][1]) * ADCtoVolt / 1.5
+                            data_ph[i] = (data_ph[i]-VCP) / 0.01
+                        
+                        # ACQUIRES the temperature value from the buffer 
+                        data_temp = float((strs[length - 2][0]))
+                            
+                    # specify handlers for different exceptions        
+                    except ValueError:
+                        print(TAG, "WARNING (ValueError): convert raw to float failed", end='\r')
+                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
                     except:
-                        print(TAG, "Info: exception at serial write fail", end='\n')
-                        Log.i(TAG, "Info: exception at serial write fail")
-                        self._flag_error_usb = 1
-                     
-                    if self._flag_error_usb == 0:
-                        try:
-                            
-                            # READ SWEEP DATA AT SERIAL PORT
-                            # -------------------------------------------------
-                            while 1:
-                                 # append string read at serial port to buffer 
-                                 self.byte_at_port = self._serial.inWaiting()
-                                 buffer += self._serial.read(self.byte_at_port).decode(Constants.app_encoding)
-                                 
-                                 # DEBUG_0.1.1a
-                                 # check the time elapsed in serial read loop
-                                 _time_elapsed = time() - timeStart
-                                 
-                                 # check for EOM character 
-                                 if 's' in buffer:   
-                                     # VER 0.1.4
-                                     # add a little delay at the end of the sweep 
-                                     sleep(Constants.SLEEP_EOM_SINGLE)
-                                     
-                                     
-                                     break
-                                 
-                                 # DEBUG_0.1.1a
-                                 # insert a timeout in while acquisition loop to prevent freezing
-                                 if  _time_elapsed > Constants.TIME_ELAPSED_TIMEOUT: 
-                                     # DEBUG_0.1.1a
-                                     print(TAG, "Info: timeout on serial read", end='\n')
-                                     self._flag_error_usb = 1
-                                     sleep(0.5)
-                                     # reset serial input/output buffer
-                                     self._serial.reset_input_buffer()
-                                     self._serial.reset_output_buffer()
-                                     sleep(0.5)
-                                     # exit the for while if too much time elapsed
-                                     break  
-                            
-                            # STOP SWEEP 
-                            # -----------------------------------------
-                            
-                            # VER 0.1.4
-                            _time_elapsed_sweep = time() - timeStart
-# =============================================================================
-#                             print ("SAMPLING TIME = ", _time_elapsed_sweep)
-# =============================================================================
-                            
-                            if ( self._flag_error_usb == 0 ):
-                                #print(buffer)
-                                data_raw = buffer.split('\n')
-                                length = len(data_raw)
-                                
-                                # DEBUG_0.1.1a
-                                # check the length of the serial read buffer if exceed the number of samples = 500
-                                if length > Constants.argument_default_samples + 2:
-                                    print (TAG, "Info: exceed read buffer length = ", length, end='\n')
-                                    self._flag_error_usb = 1
-                                    data_mag = np.linspace(0,0,samples)   
-                                    data_ph  = np.linspace(0,0,samples)
-                                    # reset data raw
-                                    data_raw = ""
-                                    # reset buffer
-                                    buffer = ""
-                                    # reset serial input/output buffer
-                                    sleep(0.5)
-                                    self._serial.reset_input_buffer()
-                                    self._serial.reset_output_buffer()
-                                    sleep(0.5)
-                                    self._flag_error_usb = 1
-                                
-                                # DEBUG_0.1.1a
-                                elif length < Constants.argument_default_samples + 2:
-                                    #  # split data via semicolon ";" delimiter 
-                                    for i in range (length):
-                                        strs[i] = data_raw[i].split(';')
-            
-                                     # converts data values to gain and phase 
-                                    for i in range (length - 1):
-                                        data_mag[i] = float(strs[i][0]) * ADCtoVolt / 2
-                                        data_mag[i] = (data_mag[i]-VCP) / 0.03
-                                        data_ph[i] = float(strs[i][1]) * ADCtoVolt / 1.5
-                                        data_ph[i] = (data_ph[i]-VCP) / 0.01
-                                    
-                                    # ACQUIRES the temperature value from the buffer 
-                                    data_temp = float((strs[length -1][0]))
-                                    
-                                    # VER 0.1.4
-                                    # read STATUS TEC BOOL 
-                                    self._data_status = int((strs[length -1][1]))
-                                    
-                                    # VER 0.1.5 
-                                    # read MTD415T Error Register 
-                                    self._error_register_bit = int((strs[length -1][2]))
-                                    # print ("DEBUG: error register string = ", self._error_register_bit )
-                                    
-                                    # convert decimal to 16 bit binary
-                                    # integer to binary string array
-                                    bnr = bin(self._error_register_bit ).replace('0b','')
-                                    # reverse the binary string array 
-                                    bnr_rev = bnr[::-1] 
-                                    while len(bnr_rev) < 16:
-                                        # fill the binary string with zero 
-                                        bnr_rev += '0'
-                                        # reverse the array 
-                                        bnr = bnr_rev[::-1]
-                                    
-                                    # check the error register bit 
-                                    for i in range (len(Constants.ERROR_REG_EVENT)):
-                                        if bnr_rev[i] == '1': 
-                                            if i > 0: 
-                                                # PRINT THE ERROR MESSAGE, except bit = 0 "Enable pin not set"
-                                                print ("WARNING: MTD415T Temperature control error: ", Constants.ERROR_REG_EVENT[i])
+                        #if self._flag_error_usb == 1:
+                        print(TAG, "WARNING (ValueError): convert raw to float failed", end='\r')
+                        self._flag_error_usb += 1
+                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
                         
-                        except:
-                                print(TAG, "Info: exception at serial port read process", end='\n')
-                                Log.i(TAG, "Info: exception at serial port read process")
-                                
-                                # DEBUG_0.1.1a
-                                # reset buffer 
-                                data_mag = np.linspace(0,0,samples)   
-                                data_ph  = np.linspace(0,0,samples)
-                                
-                                # reset data raw
-                                data_raw = ""
-                                # reset buffer
-                                buffer = ""
-                                
-                                self._flag_error_usb = 1
-                        
-                        # DEBUG_0.1.1a
-                        try: 
-                            # SET TEMPERATURE and PID PARAMETERS
-                            self._Temperature_PID_control()
-                        except:
-                            print(TAG, "Info: exception set temperature control failed", end='\n')
-                            # Log.i(TAG, "EXCEPTION: exception at serial port read process")
-                            self._flag_error_usb = 1
+                    ## ADDS new serial data to internal queue
+                    #self._parser1.add1(data_mag)
+                    #self._parser2.add2(data_ph)
                     
-                    # DATA PROCESSING 
-                    # -----------------------------------------------------
-                    # TODO if an exception is encountered before do not elaborate
-                    if self._flag_error_usb == 0:
-                        
-                        # VER 0.2 BETA
-# =============================================================================
-#                         print ("DEBUG ELABORATE ")
-#                         print ("-------------------------------------")
-#         
-#                         print (self.freq_res_current)
-#                         print (self._overtone_int )
-#         
-#                         print ("-------------------------------------")
-# =============================================================================
-       
-                        # VER 0.1.4
-                        # set current value of resonance frequency in file
-                        if (self.freq_res_current is not None):
-# =============================================================================
-#                             print ("DEBUG print the current values of overtone and frequency ", 
-#                                    self._overtone_int , self.freq_res_current)
-# =============================================================================
-                            self.set_frequencies_RT(self._overtone_int , self.freq_res_current)
-                        
-                        try:
-                            self.elaborate(k, coeffs_all, readFREQ, samples,data_mag, data_ph, data_temp, SG_window_size, Spline_points, Spline_factor, timestamp)
-                        
-                        except ValueError:
-                            self._flag_error = 1
-                            #if k > self._environment:
-                            #   print(TAG, "WARNING (ValueError): miscalculation")
-                            # self._flag_error_usb = 1
-                            print(TAG, "Info: exception value error elaborate data", end=('\n'))
-                            Log.i(TAG, "Info: exception value error elaborate data")
-                        except:
-                            self._flag_error = 1
-                            #if k > self._environment:
-                            #   print(TAG, "WARNING (ValueError): miscalculation")
-                            if (k > Constants.environment):
-                                print(TAG, "Info: exception general error elaborate data", end=('\n'))
-                                Log.i(TAG, "Info: exception general error elaborate data")
-                    
-                    # TODO check the error parser 
-# =============================================================================
-#                     self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, None])
-# =============================================================================
-                    
-                    # VER 0.1.4
-                    # add a new element to the error / status parser for the TEC STATUS variable 
-                    self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, None, self._data_status])
-                    
+                    # Calls elaborate method to performs results
+                    try:
+                        self.elaborate(k, coeffs_all, readFREQ, samples,data_mag, data_ph, data_temp, SG_window_size, Spline_points, Spline_factor, timestamp)
+                    except ValueError:
+                        self._flag_error = 1
+                        #if k > self._environment:
+                        #   print(TAG, "WARNING (ValueError): miscalculation")
+                    except:
+                        self._flag_error = 1
+                        #if k > self._environment:
+                        #   print(TAG, "WARNING (ValueError): miscalculation")
+                    self._parser6.add6([self._err1,self._err2,k,self._flag_error_usb])
+                    if k<= self._environment:
+                       bar.update(k)
+                    elif k/50 == k//50:
+                      if k==100:
+                         print('\n')
+                      print(TAG,"sweep #{}               ".format(k), end='\r')
                     # refreshes error variables at each sweep
                     self._err1 = 0
                     self._err2 = 0
-                    self._flag_error_usb = 0
                     # Increases sweep counter 
-                    k += 1
-                
-# =============================================================================
-#                 if k == self._environment:
-#                    print("DEBUG BAR FINISHED")
-#                    bar.finish()
-# =============================================================================
-                
-                # END ACQUISITION LOOP
-                # -------------------------------------------------------------
-                
+                    k+=1
+                if k== self._environment:
+                   bar.finish()
+                #### END SWEEPS LOOP ####    
                 # CLOSES serial port
                 self._serial.close()
           
-    
-    def get_Temperature_set_Serial(self, value_T_set):
-        return value_T_set
-    
-    def _TempCtrl(self):
-        param = loadtxt(Constants.manual_frequencies_path)
-        temperature_set = param[0]
-        temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-        self._serial.write(temperature_msg.encode())
-    
-    def _Temperature_PID_control(self): 
-        param = loadtxt(Constants.manual_frequencies_path)
-        
-# =============================================================================
-#         # VER 0.1.5 DEBUG RESET PROCEDURE 
-#         print ("VER 0.1.5 DEBUG RESET PROCEDURE print file parameter", param )
-# =============================================================================
-        
-        temperature_set = param[0]
-        cycling_time_set = param[1]
-        P_share_set= param[2]
-        I_share_set = param[3]
-        D_share_set = param[4]
-        _var_bool = param[5]
-        _ctrl_bool = param[6]
-        
-        if temperature_set != self.temperature_set_old:
-            temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-            self._serial.write(temperature_msg.encode())  
-            self.temperature_set_old = temperature_set
-        
-        if cycling_time_set != self.cycling_time_set_old:
-            cycling_time_msg = 'C' + str(int(cycling_time_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.2)
-            self._serial.write(cycling_time_msg.encode())  
-            sleep(0.2)
-            self.cycling_time_set_old = cycling_time_set
-            
-        if P_share_set != self.P_share_set_old: 
-            P_Share_msg = 'P' + str(int(P_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.2)
-            self._serial.write(P_Share_msg.encode())
-            sleep(0.2)
-            self.P_share_set_old = P_share_set
-            
-        if I_share_set != self.I_share_set_old: 
-            I_Share_msg = 'I' + str(int(I_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.2)
-            self._serial.write(I_Share_msg.encode())
-            sleep(0.2)
-            self.I_share_set_old = I_share_set
-            
-        if D_share_set != self.D_share_set_old: 
-            D_Share_msg = 'D' + str(int(D_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.2)
-            self._serial.write(D_Share_msg.encode())
-            sleep(0.2)
-            self.D_share_set_old = D_share_set
-        
-        #DEV    
-        # check if temperature control is enabled 
-        if (_ctrl_bool != self.ctrl_bool_pre):  # value changed 
-            # print("DEBUG: temperature control switch I/O ", _ctrl_bool)
-            # init message 
-            cmd = 'X' + str(int(_ctrl_bool)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.5)
-            # serial write message 
-            self._serial.write(cmd.encode())
-            sleep(0.5)
-            # store new value
-            self.ctrl_bool_pre = _ctrl_bool
-        
-        if  (_var_bool) == 1.0:
-            temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.5)
-            # write the temperature message 
-            self._serial.write(temperature_msg.encode())  
-            # wait for a while again
-            sleep(0.5)
-            _path = Constants.manual_frequencies_path
-            np.savetxt( _path,  np.row_stack( [param[0], param[1], param[2], param[3],param[4], 0.0, param[6]] ), fmt='%d' )
-    
     ###########################################################################
     # Stops acquiring data
     ###########################################################################
     def stop(self):
+        #Signals the process to stop acquiring data.
+        self._exit.set()
         
-        # close serial port
-        # VER 0.1.2
-        try:
-            self._serial.close()
-            print ("serial COM port is closed")
-        except: 
-            print ("WARNING: unable to close COM port ")
         
-        # Signals the process to stop acquiring data.
-        try:
-            self._exit.set()
-            print ("exit acquisition loop ")
-        except:
-            print ("WARNING: unable exit acquisition loop")
-            
-        # reset the peak frequency value file
-        frequency_calibration_array = self.load_frequencies_file()
-        path_RT = Constants.cvs_peakfrequencies_RT_path
-        np.savetxt(path_RT, np.column_stack([frequency_calibration_array, 
-                                             frequency_calibration_array]))
-    
     ###########################################################################    
     # Automatically selects the serial ports for Teensy (macox/windows)
     ###########################################################################
     @staticmethod
     def get_ports(): 
-        from openqcm.common.architecture import Architecture,OSType
         if Architecture.get_os() is OSType.macosx:
             import glob
             return glob.glob("/dev/tty.usbmodem*")
@@ -1132,27 +546,7 @@ class SerialProcess(multiprocessing.Process):
             port_connected = []
             found = False
             ports_avaiable = list(list_ports.comports())
-            
             for port in ports_avaiable:
-# =============================================================================
-#                 print ("type of port:", type(port))
-#                 # print ("len of port: ", len(port))
-#                 print ("port: ", port)
-#                 print ("port 0 port : ", port[0])
-#                 print ("port 1 desc: ", port[1])
-#                 print ("port 2 hwid info:", port[2])
-# =============================================================================
-                # print ("port 3 hwid:", port[3])
-                
-# =============================================================================
-#                 if port[2].startswith("USB "):
-#                     found = True
-#                     port_connected.append(port[0])
-# =============================================================================
-                
-                # VER 0.1.5 change the iedntification of the COM port connected to Teensy 4.0 
-                # using USB VID:PID=16C0:0483  VID 0 VENDOR_ID and PID = PRODUCT_ID of USB devices to identify hardware
-                # port[2] = hwid Technical description of serial port 
                 if port[2].startswith("USB VID:PID=16C0:0483"):
                     found = True
                     port_connected.append(port[0])
@@ -1202,44 +596,18 @@ class SerialProcess(multiprocessing.Process):
         """
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
-        
-        # VER 0.1.4 get alternative frequency file
-        peaks_mag_current = self.load_frequencies_file_RT()
-# =============================================================================
-#         print (peaks_mag_current)
-# =============================================================================
-        
-        #################################################
-        # TODO CHECK QCM FUNDAMENTAL FREQ 5 MHz or 10 MHz
-        #################################################
-        '''
+       
         # Checks QCS type 5Mhz or 10MHz
         # Sets start and stop frequencies for the corresponding overtone
         if len(peaks_mag) == 5:
             switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
             # 0=fundamental, 1=3th overtone and so on
             (overtone_name,overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
-            print(TAG,"openQCM Device setup: 5 MHz")
+            print(TAG,"openQCM Device setup: @5MHz")
         elif len(peaks_mag) == 3:
             switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
             (overtone_name, overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
-            print(TAG,"openQCM Device setup: 10 MHz")
-        '''
-        # Checks QCS type 5Mhz or 10MHz
-        # Sets start and stop frequencies for the corresponding overtone
-        if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
-            switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
-            # 0=fundamental, 1=3th overtone and so on
-            (overtone_name,overtone_value, self._startFreq, self._stopFreq, SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
-# =============================================================================
-#             print(TAG,"openQCM Device setup: 5 MHz")
-# =============================================================================
-        elif (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
-            switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
-            (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size,spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
-# =============================================================================
-#             print(TAG,"openQCM Device setup: 10 MHz")
-# =============================================================================
+            print(TAG,"openQCM Device setup: @10MHz")
         
         # Sets the frequency step 
         fStep = (self._stopFreq-self._startFreq)/(samples-1)
@@ -1249,68 +617,8 @@ class SerialProcess(multiprocessing.Process):
         
         # Sets the frequency range for the corresponding overtone
         readFREQ = np.arange(samples) * (fStep) + self._startFreq 
-        return overtone_name, overtone_value, fStep, readFREQ, SG_window_size, spline_points, spline_factor
+        return overtone_name, overtone_value, fStep, readFREQ,SG_window_size, spline_points, spline_factor
     
-    
-    # VER 0.1.4
-    # get the current values of resonance frequencies
-    def get_frequencies_RT(self, samples, overtone_RT):
-    
-        # Loads frequencies from file
-        # VER 0.1.4 get alternative frequency file
-        peaks_mag_current = self.load_frequencies_file_RT()
-        
-# =============================================================================
-#         print ("DEBUG GET FREQUENCIES RT ")
-#         print ("Frequency peaks = ", peaks_mag_current)
-# =============================================================================
-        
-        # Checks QCM 5Mhz or 10MHz
-        # Set current start and stop sweep frequencies
-        
-        # 5 MHz
-        if (peaks_mag_current[0] >4e+06 and peaks_mag_current[0]<6e+06):
-            switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag_current)
-            # 0=fundamental, 1=3th overtone and so on
-            (overtone_name, 
-             overtone_value, 
-             self._startFreq, 
-             self._stopFreq, 
-             SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(overtone_RT)
-        
-        # 10 MHz    
-        elif (peaks_mag_current[0] >9e+06 and peaks_mag_current[0]<11e+06):
-            switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag_current)
-            (overtone_name, 
-             overtone_value, 
-             self._startFreq, 
-             self._stopFreq, 
-             SG_window_size,
-             spline_factor) = switch.overtone10MHz_to_freq_range(overtone_RT)
-            
-            
-        # Sets the frequency step 
-        fStep = (self._stopFreq-self._startFreq)/(samples-1)
-        
-        # Sets spline points for fitting
-        spline_points = int((self._stopFreq-self._startFreq))+1
-        
-        # Sets the frequency range for the corresponding overtone
-        readFREQ = np.arange(samples) * (fStep) + self._startFreq 
-        return overtone_name, overtone_value, fStep, readFREQ, SG_window_size, spline_points, spline_factor
-            
-    # DEV SWEEP1HZ CALIB TODO
-    # set the current values of resonance frequencies
-    def set_frequencies_RT(self, overtone_RT, frequency_RT):
-    
-        # open file 
-        frequency_array_RT = self.load_frequencies_file_RT()
-    
-        frequency_array_RT[overtone_RT] = frequency_RT
-        
-        # update and write file with current value of frequency at overtone
-        path_RT = Constants.cvs_peakfrequencies_RT_path
-        np.savetxt(path_RT, np.column_stack([frequency_array_RT, frequency_array_RT]))
     
     ###########################################################################
     # Loads Fundamental frequency and Overtones from file
@@ -1321,15 +629,7 @@ class SerialProcess(multiprocessing.Process):
         peaks_mag = data[:,0]
         #peaks_phase = data[:,1] #unused at the moment
         return peaks_mag
-    
-    # DEV SWEEP1HZ CALIB load the file containing thr current values of res frequencies 
-    @staticmethod
-    def load_frequencies_file_RT():
-        # DEV SWEEP1HZ CALIB
-        data  = loadtxt(Constants.cvs_peakfrequencies_RT_path)
-        peaks_mag_RT = data[:,0]
-        #peaks_phase = data[:,1] #unused at the moment
-        return peaks_mag_RT
+        
     
     ###########################################################################
     # Loads Calibration (baseline correction) from file
@@ -1338,25 +638,11 @@ class SerialProcess(multiprocessing.Process):
         # Loads Fundamental frequency and Overtones from file
         peaks_mag = self.load_frequencies_file()
         
-        ############################### 
-        # TODO check the damn QCM type 
-        ###############################
-        
-        '''
         # Checks QCS type 5Mhz or 10MHz
         if len(peaks_mag) == 5:
            filename = Constants.csv_calibration_path
         elif len(peaks_mag) == 3:
            filename = Constants.csv_calibration_path10 
-        '''
-        
-        # Checks QCS type 5Mhz or 10MHz
-        if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
-           filename = Constants.csv_calibration_path
-        elif (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
-           filename = Constants.csv_calibration_path10 
-        
-        
         data  = loadtxt(filename)
         freq_all  = data[:,0]
         mag_all   = data[:,1]

@@ -291,7 +291,7 @@ class Window(Ui_MainWindow):
         self.htr_port = None
 
         # Prepare QThread
-        self.htr_thread = QtCore.QThread()
+        self.htr_thread = QtCore.QThread(self)
 
         # Reset Status Icon for Both 
         self.htr_status.setPixmap(QPixmap(":/main/mark.png"))
@@ -336,7 +336,7 @@ class Window(Ui_MainWindow):
         self.qcm_port = None
 
         # Prepare QThread
-        self.qcm_thread = QtCore.QThread()
+        self.qcm_thread = QtCore.QThread(self)
 
         # Reset Status Icon for Both 
         self.qcm_status.setPixmap(QPixmap(":/main/mark.png"))
@@ -390,7 +390,7 @@ class Window(Ui_MainWindow):
         Start running HTR sampling
         '''
         # Make Data Thread
-        self.htr_thread = QtCore.QThread()
+        self.htr_thread = QtCore.QThread(self)
         
         # Create controller
         self.htr_ctrl = HTRSensorCtrl(port=self.htr_port, baud=BAUD, timeout=SENSOR_TIMEOUT)
@@ -479,7 +479,7 @@ class Window(Ui_MainWindow):
         Start calibration for the QCM sensor
         """
         # Make Data Thread
-        self.qcm_thread = QtCore.QThread()
+        self.qcm_thread = QtCore.QThread(self)
 
         # Create QCM controller
         self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
@@ -588,9 +588,12 @@ class Window(Ui_MainWindow):
         Clear the graphs
         """
         # Clear Plot
-        self.resist_data.cb_set_data(x=[], y=[])
-        self.humd_data.cb_set_data(x=[], y=[])
-        self.temp_data.cb_set_data(x=[], y=[])
+        self.resist_curve.clear()
+        self.humd_curve.clear()
+        self.temp_curve.clear()
+        # self.resist_data.cb_set_data(x=[], y=[])
+        # self.humd_data.cb_set_data(x=[], y=[])
+        # self.temp_data.cb_set_data(x=[], y=[])
 
     def clear_data(self):
         """

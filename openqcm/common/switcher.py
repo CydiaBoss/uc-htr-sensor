@@ -1,4 +1,4 @@
-from openqcm.core.constants import Constants
+from constants import Constants
 
 TAG = "[Switcher]"
 
