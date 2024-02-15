@@ -1,7 +1,7 @@
 import sys, ctypes
 import time
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -65,6 +65,9 @@ class Window(Ui_MainWindow):
 
         # Make Peak List
         self.peaks = []
+
+        # DEBUG
+        self.auto_export.setEnabled(True)
 
     def setup_plots(self):
         '''
@@ -156,6 +159,11 @@ class Window(Ui_MainWindow):
         self.dissipate_plot.setBackground(background="w")
         self.dissipate_data = DataConnector(self.dissipate_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.dissipate_plot, 1, 1, 1, 1)
+
+        # Set Override
+        self.resist_override = True
+        self.humd_override = True
+        self.temp_override = True
 
     def setup_signals(self):
         """
@@ -412,7 +420,11 @@ class Window(Ui_MainWindow):
         """
         Processes the resistance data
         """
-        self.resist_data.cb_append_data_point(r_data, time_at)
+        if self.resist_override:
+            self.resist_data.cb_set_data(r_data, time_at)
+            self.resist_override = False
+        else:
+            self.resist_data.cb_append_data_point(r_data, time_at)
         self.resistance.append(r_data)
 
         # Calculate Resist AVGs
@@ -434,7 +446,11 @@ class Window(Ui_MainWindow):
         """
         Processes the humidity data
         """
-        self.humd_data.cb_append_data_point(h_data, time_at)
+        if self.humd_override:
+            self.humd_data.cb_set_data(h_data, time_at)
+            self.humd_override = False
+        else:
+            self.humd_data.cb_append_data_point(h_data, time_at)
         self.humidity.append(h_data)
 
         # Calculate Humidity AVGs
@@ -456,7 +472,11 @@ class Window(Ui_MainWindow):
         """
         Processes the temperature data
         """
-        self.temp_data.cb_append_data_point(t_data, time_at)
+        if self.temp_override:
+            self.temp_data.cb_set_data(t_data, time_at)
+            self.temp_override = False
+        else:
+            self.temp_data.cb_append_data_point(t_data, time_at)
         self.temperature.append(t_data)
 
         # Calculate Temperature AVGs
@@ -587,13 +607,10 @@ class Window(Ui_MainWindow):
         """
         Clear the graphs
         """
-        # Clear Plot
-        self.resist_curve.clear()
-        self.humd_curve.clear()
-        self.temp_curve.clear()
-        # self.resist_data.cb_set_data(x=[], y=[])
-        # self.humd_data.cb_set_data(x=[], y=[])
-        # self.temp_data.cb_set_data(x=[], y=[])
+        # Set Override Plot
+        self.resist_override = True
+        self.humd_override = True
+        self.temp_override = True
 
     def clear_data(self):
         """
@@ -651,6 +668,20 @@ class Window(Ui_MainWindow):
         self.start_qcm_calibrate()
 
     @QtCore.pyqtSlot()
+    def on_auto_export_clicked(self):
+        # If Check and Empty, set default
+        if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
+            self.file_dest.setText(f"data/data-{int(time.time())}.csv")
+
+    @QtCore.pyqtSlot()
+    def on_file_select_clicked(self):
+        # Get File
+        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), "data/", _translate("MainWindow", "CSV (*.csv)"))
+
+        # Save
+        self.file_dest.setText(self.file_dialog[0])
+
+    @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):
         # Disable
         self.disable_all_ctrls()
@@ -661,10 +692,6 @@ class Window(Ui_MainWindow):
         # Enable buttons
         self.stop_btn.setEnabled(True)
         self.reset_btn.setEnabled(True)
-
-        # If Auto Export is ON and no file name, create
-        if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
-            self.file_dest.setText(f"data/data-{int(time.time())}")
 
         # Start HTR
         self.start_htr()
