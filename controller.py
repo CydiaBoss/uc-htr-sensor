@@ -70,6 +70,9 @@ class HTRSensorCtrl(QObject):
         self.loop = False
         if not self.serial.is_open:
             self.serial.close()
+
+        # Destroy
+        self.deleteLater()
     
     def run(self):
         """
@@ -210,6 +213,10 @@ class QCMSensorCtrl(QObject):
     calibration_progress = pyqtSignal(float)
     calibration_finished = pyqtSignal()
 
+    # References
+    reference_value_frequency = 0
+    reference_value_dissipation = 0
+
     def __init__(self, parent: QObject=None, port : str="") -> None:
         super().__init__(parent)
         # Set port
@@ -219,6 +226,9 @@ class QCMSensorCtrl(QObject):
 
     def stop(self) -> None:
         self.worker.stop()
+
+        # Destroy
+        self.deleteLater()
 
     def calibrate(self, qc_type : str) -> None:
         """

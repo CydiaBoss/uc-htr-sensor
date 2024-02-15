@@ -543,7 +543,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue2()
         self.qcm_ctrl.worker.consume_queue3()
         self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
@@ -597,6 +597,7 @@ class Window(Ui_MainWindow):
                     
         # progressbar -------------
         self.calibration_bar.setValue(int(self._completed + 10))
+        self.statusBar().showMessage(f"{labelbar}", 5000)
 
         # terminate the  calibration (simulate clicked stop)
         if stop_flag == 1:
@@ -606,7 +607,6 @@ class Window(Ui_MainWindow):
             self.enable_measurement()
             self.enable_export()
             self.enable_start()
-            self.statusBar().showMessage(f"{labelbar}", 5000)
 
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()
@@ -631,12 +631,15 @@ class Window(Ui_MainWindow):
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
         self.qcm_timer.moveToThread(self.qcm_thread)
-        self.qcm_timer.timeout.connect(self.calibration_processing)
 
         # Setup Signals
+        # Single
         if self.measure_type.currentIndex() == 0:
+            self.qcm_timer.timeout.connect(self.single_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
+        # Multi
         elif self.measure_type.currentIndex() == 1:
+            self.qcm_timer.timeout.connect(self.multi_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
 
         # Start Timer
@@ -657,7 +660,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue2()
         self.qcm_ctrl.worker.consume_queue3()
         self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
@@ -670,47 +673,42 @@ class Window(Ui_MainWindow):
         stop_flag = 0
 
         # vector2[0] and vector3[0] flag error
-        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
-        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
-
-        labelbar = 'The operation might take just over a minute to complete... please wait...'
+        vector1 = self.qcm_ctrl.worker.get_d1_buffer()
+        vector2 = self.qcm_ctrl.worker.get_d2_buffer()
         
-        # progressbar
-        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        self._ser_error1,self._ser_error2, self._ser_control,self._ser_err_usb = self.qcm_ctrl.worker.get_ser_error()
         
-        if self._ser_control < (Constants.calib_sections):
-            self._completed = (self._ser_control/(Constants.calib_sections))*100
+        if vector1.any():
+            # progressbar
+            if self._ser_control<=Constants.environment:
+                self._completed = self._ser_control*2
 
-        # calibration buffer empty
-        if error1== 1 and vector3[0]==1:
-            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
+            if str(vector1[0])=='nan' and not self._ser_error1 and not self._ser_error2:
+                labelbar = 'Please wait, processing early data...'
 
-        # calibration buffer empty and ValueError from the serial port
-        elif error1== 1 and vector2[0]==1:
-            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
-
-        # calibration buffer not empty
-        elif error1==0:
-            labelbar = 'The operation might take just over a minute to complete... please wait...'
-
-            # Success!
-            if vector2[0]== 0 and vector3[0]== 0:
-                labelbar = 'Calibration Success for baseline correction!'
-                stop_flag=1
-            
-            # Error Message
-            elif vector2[0]== 1 or vector3[0]== 1:
-                if vector2[0]== 1:
-                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
-                    stop_flag=1 ##
-                elif vector3[0]== 1:
-                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
-                    stop_flag=1 ##
+            elif (str(vector1[0])=='nan' and (self._ser_error1 or self._ser_error2)):
+                if self._ser_error1 and self._ser_error2:
+                    labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
+                elif self._ser_error1:
+                    labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
+                elif self._ser_error2:
+                    labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
+            else:
+                if not self._ser_error1 and not self._ser_error2:
+                    labelbar = 'Monitoring!'
+                else:
+                    if self._ser_error1 and self._ser_error2:
+                        labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
+                    elif self._ser_error1:
+                        labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
+                    elif self._ser_error2:
+                        labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
                     
-        # progressbar -------------
-        self.calibration_bar.setValue(int(self._completed + 10))
+        # progressbar 
+        self.progress_bar.setValue(int(self._completed+2))
+
+        # Message
+        self.statusBar().showMessage(labelbar, 5000)
 
         # terminate the  calibration (simulate clicked stop)
         if stop_flag == 1:
@@ -720,16 +718,21 @@ class Window(Ui_MainWindow):
             self.enable_measurement()
             self.enable_export()
             self.enable_start()
-            self.statusBar().showMessage(f"{labelbar}", 5000)
 
         # Update Plot
-        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
-        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+        amp = self.qcm_ctrl.worker.get_value1_buffer()
+        phase = self.qcm_ctrl.worker.get_value2_buffer()
 
-        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+        readFreq = self.qcm_ctrl.worker.get_frequency_range()
 
-        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
-        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+        self.amp_data.cb_set_data(x=readFreq, y=amp, pen=Constants.plot_colors[0])
+        self.phase_data.cb_set_data(x=readFreq, y=phase, pen=Constants.plot_colors[1])
+
+        vector1 = np.array(vector1) - self.qcm_ctrl.reference_value_frequency          
+        self.freq_data.cb_set_data(x=self.qcm_ctrl.worker.get_t1_buffer(), y=vector1, pen=Constants.plot_colors[6])
+
+        vector2 = np.array(vector2) - self.qcm_ctrl.reference_value_dissipation 
+        self.dissipate_data.cb_set_data(x=self.qcm_ctrl.worker.get_t2_buffer(), y=vector2, pen=Constants.plot_colors[7])
         
     def multi_processing(self):
         """
@@ -740,7 +743,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue2()
         self.qcm_ctrl.worker.consume_queue3()
         self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
@@ -879,6 +882,7 @@ class Window(Ui_MainWindow):
             self.qcm_ctrl.stop()
             if self.qcm_timer is not None:
                 self.qcm_timer.stop()
+                self.qcm_timer.deleteLater()
             if self.qcm_thread is not None and self.qcm_thread.isRunning():
                 self.qcm_thread.quit()
     
