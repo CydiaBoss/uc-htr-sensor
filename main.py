@@ -1,8 +1,9 @@
+import re
 import sys, ctypes
 import time
 from datetime import datetime
 
-from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog, QInputDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -77,8 +78,8 @@ class Window(Ui_MainWindow):
         self.htr_layout.removeWidget(self.resist_plot)
         self.resist_plot.setParent(None)
         self.resist_plot.deleteLater()
-        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT.strip())
-        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT}Ohm)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT().strip())
+        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT()}Ohm)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
         self.resist_plot.setBackground(background="w")
@@ -443,15 +444,15 @@ class Window(Ui_MainWindow):
         # Calculate Resist AVGs
         resist_size = self.resistance.size
 
-        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
+        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
 
         if resist_size > 15:
-            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
         else:
             self.avg_resist_15.setText("N/A")
 
         if resist_size > 50:
-            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {REF_RESIST_UNIT}Ω")
+            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
         else:
             self.avg_resist_50.setText("N/A")
 
@@ -616,6 +617,203 @@ class Window(Ui_MainWindow):
         self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
         self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
 
+    def start_qcm(self):
+        """
+        Start measurements for the QCM sensor
+        """
+        # Make Data Thread
+        self.qcm_thread = QtCore.QThread(self)
+
+        # Create QCM controller
+        self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
+        self.qcm_ctrl.moveToThread(self.qcm_thread)
+
+        # Setup Timer for Testing
+        self.qcm_timer = QtCore.QTimer(self)
+        self.qcm_timer.moveToThread(self.qcm_thread)
+        self.qcm_timer.timeout.connect(self.calibration_processing)
+
+        # Setup Signals
+        if self.measure_type.currentIndex() == 0:
+            self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
+        elif self.measure_type.currentIndex() == 1:
+            self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
+
+        # Start Timer
+        self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))
+
+        # Start
+        self.qcm_thread.start()
+
+        # Message
+        self.statusBar().showMessage("Start measuring QCM...", 5000)
+        
+    def single_processing(self):
+        """
+        Process calibration data
+        """
+        # Consume
+        self.qcm_ctrl.worker.consume_queue1()
+        self.qcm_ctrl.worker.consume_queue2()
+        self.qcm_ctrl.worker.consume_queue3()
+        self.qcm_ctrl.worker.consume_queue4()
+        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        self.qcm_ctrl.worker.consume_queue5()
+        # general error queue
+        self.qcm_ctrl.worker.consume_queue6()
+
+        self.qcm_ctrl.worker.consume_queue_F_multi()
+        self.qcm_ctrl.worker.consume_queue_D_multi()
+        self.qcm_ctrl.worker.consume_queue_A_multi()
+
+        # flag for terminating calibration
+        stop_flag = 0
+
+        # vector2[0] and vector3[0] flag error
+        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
+        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
+
+        labelbar = 'The operation might take just over a minute to complete... please wait...'
+        
+        # progressbar
+        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        
+        if self._ser_control < (Constants.calib_sections):
+            self._completed = (self._ser_control/(Constants.calib_sections))*100
+
+        # calibration buffer empty
+        if error1== 1 and vector3[0]==1:
+            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer empty and ValueError from the serial port
+        elif error1== 1 and vector2[0]==1:
+            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer not empty
+        elif error1==0:
+            labelbar = 'The operation might take just over a minute to complete... please wait...'
+
+            # Success!
+            if vector2[0]== 0 and vector3[0]== 0:
+                labelbar = 'Calibration Success for baseline correction!'
+                stop_flag=1
+            
+            # Error Message
+            elif vector2[0]== 1 or vector3[0]== 1:
+                if vector2[0]== 1:
+                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
+                    stop_flag=1 ##
+                elif vector3[0]== 1:
+                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
+                    stop_flag=1 ##
+                    
+        # progressbar -------------
+        self.calibration_bar.setValue(int(self._completed + 10))
+
+        # terminate the  calibration (simulate clicked stop)
+        if stop_flag == 1:
+            self.qcm_timer.stop()
+            self.qcm_ctrl.stop()
+            self.enable_calibrate()
+            self.enable_measurement()
+            self.enable_export()
+            self.enable_start()
+            self.statusBar().showMessage(f"{labelbar}", 5000)
+
+        # Update Plot
+        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
+        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+
+        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+
+        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
+        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+        
+    def multi_processing(self):
+        """
+        Process calibration data
+        """
+        # Consume
+        self.qcm_ctrl.worker.consume_queue1()
+        self.qcm_ctrl.worker.consume_queue2()
+        self.qcm_ctrl.worker.consume_queue3()
+        self.qcm_ctrl.worker.consume_queue4()
+        # TODO note that data is logged here, when self.worker.consume_queue5() is called
+        self.qcm_ctrl.worker.consume_queue5()
+        # general error queue
+        self.qcm_ctrl.worker.consume_queue6()
+
+        self.qcm_ctrl.worker.consume_queue_F_multi()
+        self.qcm_ctrl.worker.consume_queue_D_multi()
+        self.qcm_ctrl.worker.consume_queue_A_multi()
+
+        # flag for terminating calibration
+        stop_flag = 0
+
+        # vector2[0] and vector3[0] flag error
+        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
+        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
+
+        labelbar = 'The operation might take just over a minute to complete... please wait...'
+        
+        # progressbar
+        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        
+        if self._ser_control < (Constants.calib_sections):
+            self._completed = (self._ser_control/(Constants.calib_sections))*100
+
+        # calibration buffer empty
+        if error1== 1 and vector3[0]==1:
+            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer empty and ValueError from the serial port
+        elif error1== 1 and vector2[0]==1:
+            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            stop_flag=1
+
+        # calibration buffer not empty
+        elif error1==0:
+            labelbar = 'The operation might take just over a minute to complete... please wait...'
+
+            # Success!
+            if vector2[0]== 0 and vector3[0]== 0:
+                labelbar = 'Calibration Success for baseline correction!'
+                stop_flag=1
+            
+            # Error Message
+            elif vector2[0]== 1 or vector3[0]== 1:
+                if vector2[0]== 1:
+                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
+                    stop_flag=1 ##
+                elif vector3[0]== 1:
+                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
+                    stop_flag=1 ##
+                    
+        # progressbar -------------
+        self.calibration_bar.setValue(int(self._completed + 10))
+
+        # terminate the  calibration (simulate clicked stop)
+        if stop_flag == 1:
+            self.qcm_timer.stop()
+            self.qcm_ctrl.stop()
+            self.enable_calibrate()
+            self.enable_measurement()
+            self.enable_export()
+            self.enable_start()
+            self.statusBar().showMessage(f"{labelbar}", 5000)
+
+        # Update Plot
+        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
+        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+
+        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+
+        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
+        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+
     def clear_plots(self):
         """
         Clear the graphs
@@ -645,12 +843,23 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage("Could not save file, no destination specified")
             return
         
-        # Create master nparray
-        export_data = np.vstack([self.htr_time, self.raw_resistance, self.humidity, self.temperature])
+        # Open file
+        f = open(self.file_dest.text().strip(), 'w')
 
-        # Save
-        # TODO may need to do manually
-        np.savetxt(self.file_dest.text().strip(), export_data.T, fmt='%s,%f,%f,%f', delimiter=",", header=HTR_HEADER)
+        # Add header
+        f.write(HTR_HEADER)
+
+        # Write
+        for i in range(self.htr_time.size):
+            f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.temperature[i]}"\n')
+
+            # Flush in parts
+            if i % AUTO_FLUSH == 0:
+                f.flush()
+
+        # Final flush
+        f.flush()
+        f.close()
 
         # Success
         self.statusBar().showMessage(f"File saved at {self.file_dest.text()}")
@@ -659,20 +868,58 @@ class Window(Ui_MainWindow):
         """
         Stops all the processes in process
         """
-        # Close Controllers
+        # Close HTR stuff
         if self.htr_ctrl is not None:
             self.htr_ctrl.stop()
+            if self.htr_thread is not None and self.htr_thread.isRunning():
+                self.htr_thread.quit()
+
+        # Close QCM stuff
         if self.qcm_ctrl is not None:
             self.qcm_ctrl.stop()
+            if self.qcm_timer is not None:
+                self.qcm_timer.stop()
+            if self.qcm_thread is not None and self.qcm_thread.isRunning():
+                self.qcm_thread.quit()
     
     # Slots
+    @QtCore.pyqtSlot()
+    def on_action_Refresh_triggered(self):
+        self.update_ports()
+
     @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
 
     @QtCore.pyqtSlot()
-    def on_action_Refresh_triggered(self):
-        self.update_ports()
+    def on_action_Resistor_triggered(self):
+        # Prompt user for new voltage
+        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{REF_RESIST()}{REF_RESIST_UNIT()}")
+
+        # Update
+        if raw_resist[1]:
+            # Parse string
+            resist = re.search(REF_RESIST_PARSE, raw_resist[0])
+
+            # Fail if not found
+            if resist is None or len(resist.groups()) < 3:
+                self.statusBar().showMessage(f"Reference resistance could not be updated, formatting is not correct. Must be (\\d+(\\.\\d+)?)([a-zA-Z ])", 5000)
+                return
+
+            SETTINGS.update_setting("ref_resist", resist.group(1))
+            SETTINGS.update_setting("ref_resist_unit", resist.group(3))
+
+            self.statusBar().showMessage(f"Reference resistance updated to {resist.group(1)} {resist.group(3)}Ω", 5000)
+
+    @QtCore.pyqtSlot()
+    def on_action_Voltage_triggered(self):
+        # Prompt user for new voltage
+        volt = QInputDialog.getDouble(self, _translate("MainWindow", "Reference Voltage"), _translate("MainWindow", "Enter the new reference voltage from the controller."), REF_VOLT(), 0.0, decimals=4)
+
+        # Update
+        if volt[1]:
+            SETTINGS.update_setting("ref_volt", str(volt[0]))
+            self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
 
     @QtCore.pyqtSlot()
     def on_connect_btn_clicked(self):

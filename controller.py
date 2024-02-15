@@ -79,8 +79,8 @@ class HTRSensorCtrl(QObject):
         self.open()
 
         # Adjust references
-        self.update_ref_resist(REF_RESIST, REF_RESIST_UNIT)
-        self.update_ref_volt(REF_VOLT)
+        self.update_ref_resist(REF_RESIST(), REF_RESIST_UNIT())
+        self.update_ref_volt(REF_VOLT())
 
         # Processing Loop
         self.loop = True

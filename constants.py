@@ -18,9 +18,9 @@ READ_TIMEOUT = 5
 READ_DELAY = 1.0
 
 # References
-REF_RESIST = SETTINGS.get_setting("ref_resist")
-REF_RESIST_UNIT = SETTINGS.get_setting("ref_resist_unit") or " "
-REF_VOLT = float(SETTINGS.get_setting("ref_volt"))
+REF_RESIST = lambda : SETTINGS.get_setting("ref_resist")
+REF_RESIST_UNIT = lambda : SETTINGS.get_setting("ref_resist_unit") or " "
+REF_VOLT = lambda : float(SETTINGS.get_setting("ref_volt"))
 
 # QC Types
 QC_5MHZ = "5 MHz"
@@ -28,6 +28,7 @@ QC_10MHZ = "10 MHz"
 
 # Internal Usage
 DATA_PARSE = r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})"
+REF_RESIST_PARSE = r"(\d+(\.\d+)?)([a-zA-Z ])"
 TIME_AXIS_CONFIG = {
     "orientation": "bottom",
     "text": "Time", 
@@ -40,7 +41,7 @@ FREQ_AXIS_CONFIG = {
     "text": "Frequency", 
     "units": "Hz", 
 }
-HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT}Ohm)","Humidity (%RH)","Temperature (degC)"\n'
+HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Temperature (degC)"\n'
 
 # QCM Specific Constants
 ###############################################################################    
