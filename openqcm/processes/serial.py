@@ -1,4 +1,5 @@
 import multiprocessing
+import datetime
 from constants import Constants
 
 from openqcm.core.ring_buffer import RingBuffer
@@ -170,20 +171,6 @@ class SerialProcess(multiprocessing.Process):
     def elaborate(self, k, coeffs_all, readFREQ, samples, Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
         
         ###################
-        def waveletSmooth(x, wavelet="db4", level=1, title=None):
-            import pywt
-            from statsmodels.robust import mad
-            # calculate the wavelet coefficients
-            coeff = pywt.wavedec( x, wavelet, mode="per")
-            # calculate a threshold
-            sigma = mad(coeff[-level])
-            # changing this threshold also changes the behavior
-            uthresh = sigma * np.sqrt( 2*np.log(len(x)))
-            coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
-            # reconstruct the signal using the thresholded coefficients
-            y = pywt.waverec( coeff, wavelet, mode="per")
-            return y
-        ###################
         # Number of spline points
         points = Spline_points
         # sweep counter
@@ -213,12 +200,6 @@ class SerialProcess(multiprocessing.Process):
         # FILTERING - Savitzky-Golay
         filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
         
-        # peak, index e frequency of max detection baseline corrected (filtering optional)
-        #self._vector_max_baseline_corrected.append(max(mag_beseline_corrected))   #Z axis (max)
-        #self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0)) # X axis (max position)
-        #h=self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0))
-        #self._freq_max_baseline_corrected.append(readFREQ[int(h)])
-        
         # FITTING/INTERPOLATING - SPLINE
         xrange = range(len(filtered_mag))
         freq_range = np.linspace(self._readFREQ[0], self._readFREQ[-1], points)
@@ -227,98 +208,38 @@ class SerialProcess(multiprocessing.Process):
         mag_result_fit = s(xs)
         
         # PARAMETERS FINDER
-        (index_peak_fit, max_peak_fit, bandwidth_fit,index_f1_fit,index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
-        
-        # BANDWIDTH 70.7% of MAX
-        #self._bw3.append(bandwidth_fit)
-        # Q FACTOR/DISSIPATION
-        #self._q_factor.append (1/Qfac_fit)
-        # Index of MAX fitted signals ()
-        #self._index_max_fit[k]= int(index_peak_fit)
-        # Frequency of MAX fitted signals ()
-        #self._freq_max_fit.append(freq_range[int(index_peak_fit)])
-        #self._temperature.append(temperature)
-        #######################################################
+        (index_peak_fit, _, _, _, _, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
         
         self._frequency_buffer.append(freq_range[int(index_peak_fit)])
         self._dissipation_buffer.append(1/Qfac_fit)
         self._temperature_buffer.append(temperature)
         
         if self._k>=self._environment:
-           #FREQUENCY
-           vec_app1 = self.savitzky_golay(self._frequency_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-           freq_range_mean = np.average(vec_app1)
-           #DISSIPATION     
-           vec_app1d = self.savitzky_golay(self._dissipation_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-           diss_mean = np.average(vec_app1d)
-           #TEMPERATURE
-           vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-           temperature_mean = np.average(vec_app1t)
-           
-        #else:
-           #freq_range_mean = freq_range[int(index_peak_fit)]
-           #temperature_mean = temperature
-           #diss_mean = 1/Qfac_fit
-           #freq_range_mean = freq_range[int(index_peak_fit)]
-           #diss_mean = 1/Qfac_fit
-           #temperature_mean = temperature
-        # vector of MAX fitted signals ()
-        #self._vector_max_fit.append(max_peak_fit)
-        
-        #######################################################
-        ##############
-        import datetime
+            #FREQUENCY
+            vec_app1 = self.savitzky_golay(self._frequency_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
+            freq_range_mean = np.average(vec_app1)
+            #DISSIPATION     
+            vec_app1d = self.savitzky_golay(self._dissipation_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
+            diss_mean = np.average(vec_app1d)
+            #TEMPERATURE
+            vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
+            temperature_mean = np.average(vec_app1t)
+            
         epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
         ts_mult=1e6
         w = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult)) #datetime.datetime.utcnow()
+
         ##############
         ## ADDS new serial data to internal queue
         self._parser1.add1(filtered_mag) ##############
         self._parser2.add2(phase)        ##############
+        print(filtered_mag, phase)
         # Adds new calculated data (resonance frequency and dissipation) to internal queues
-        #self._parser3.add3([time()-timestamp,freq_range[int(index_peak_fit)]])
         self._parser3.add3([w,freq_range_mean]) #time()-timestamp - time in seconds
-        #self._parser4.add4([time()-timestamp,1/Qfac_fit])
         self._parser4.add4([w,diss_mean]) #time()-timestamp - time in seconds
-        #self._parser5.add5([time()-timestamp,temperature])
         self._parser5.add5([w,temperature_mean]) #time()-timestamp - time in seconds
-        '''
-        ##############################
-        # DATA STORING in CSV/TXT FILE
-        ##############################
-        import csv
-        from time import strftime, localtime
-        # STORING DATA (CSV) in main folder: Time,resonance Frequency,Dissipation
-        filename = 'data_q.csv'
-        with open(filename,'a', newline='') as tempFile:
-         tempFileWriter = csv.writer(tempFile)
-         tempFileWriter.writerow([strftime(Constants.csv_default_filename, localtime()),freq_range[int(index_peak_fit)],1/Qfac_fit])
-        tempFile.close() 
-        '''
-        '''
-        import csv
-        # STORING DATA (CSV) in main folder: Time,resonance Frequency,Dissipation
-        filename = 'bw3.csv'
-        with open(filename,'a', newline='') as tempFile:
-         tempFileWriter = csv.writer(tempFile)
-         tempFileWriter.writerow(self._bw3)
-        tempFile.close()
+        print(freq_range_mean, diss_mean)
         
-        filename1 = 'vector_max.csv'
-        with open(filename1,'a', newline='') as tempFile1:
-         tempFileWriter = csv.writer(tempFile1)
-         tempFileWriter.writerow(self._vector_max_fit)
-        tempFile.close()
-        '''
-        # STORING DATA (CSV/TXT) in 'data' folder: frequency, amplitude
-        #np.savetxt(r"logged_data\sweep_%d_mag_raw.txt"%(k,), np.column_stack([readFREQ,mag]))
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_baseline_corrected.txt"%(k,), np.column_stack([readFREQ,mag_beseline_corrected]))
-        #np.savetxt(r"data\sweep_%d_mag_baseline_corrected.csv"%(k,), np.column_stack([readFREQ,globals()["Af_baseline_" + str(k)]]), delimiter=',')
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_filtered.txt"%(k,), np.column_stack([readFREQ,filtered_mag]))
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_fitted.txt"%(k,), np.column_stack([freq_range,mag_result_fit]))
-        ##############
-        
-
     ###########################################################################
     # Initializing values for process
     ###########################################################################
@@ -393,15 +314,6 @@ class SerialProcess(multiprocessing.Process):
         If incoming data can't be converted to float,the data will be discarded.
         """  
         # initializations
-        #self._vector_max_baseline_corrected = []
-        #self._index_max_baseline_corrected = []
-        #self._freq_max_baseline_corrected = []
-        #self._vector_max_fit = []
-        #self._index_max_fit = []
-        #self._bw3 = []
-        #self._q_factor = []
-        #self._freq_max_fit = []
-        #self._temperature = []
         self._flag_error = 0
         self._flag_error_usb = 0
         self._err1 = 0
@@ -416,7 +328,7 @@ class SerialProcess(multiprocessing.Process):
             samples = Constants.argument_default_samples 
             # Calls get_frequencies method:
             # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
-            (overone_name,overtone_value,fStep,readFREQ,SG_window_size,Spline_points,Spline_factor) = self.get_frequencies(samples)
+            (_,_,fStep,readFREQ,SG_window_size,Spline_points,Spline_factor) = self.get_frequencies(samples)
             
             # Gets the state of the serial port
             if not self._serial.isOpen(): 
@@ -433,8 +345,7 @@ class SerialProcess(multiprocessing.Process):
                 self._frequency_buffer   = RingBuffer(self._environment)
                 self._dissipation_buffer = RingBuffer(self._environment)
                 self._temperature_buffer = RingBuffer(self._environment)
-                # Initializes the progress bar  
-                bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=self._environment).start() #
+                
                 #### SWEEPS LOOP ####
                 while not self._exit.is_set():
                     # data reset for new sweep 
@@ -458,10 +369,10 @@ class SerialProcess(multiprocessing.Process):
                         
                         # READS and decodes sweep from the serial port
                         while 1:
-                         buffer += self._serial.read(self._serial.inWaiting()).decode(Constants.app_encoding)
-                         #if '\n' in buffer:
-                         if 's' in buffer:
-                              break
+                            buffer += self._serial.read(self._serial.inWaiting()).decode(Constants.app_encoding)
+                            #if '\n' in buffer:
+                            if 's' in buffer:
+                                break
                         data_raw = buffer.split('\n')
                         length = len(data_raw)
                         
@@ -482,42 +393,32 @@ class SerialProcess(multiprocessing.Process):
                     # specify handlers for different exceptions        
                     except ValueError:
                         print(TAG, "WARNING (ValueError): convert raw to float failed", end='\r')
-                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
                     except:
-                        #if self._flag_error_usb == 1:
                         print(TAG, "WARNING (ValueError): convert raw to float failed", end='\r')
                         self._flag_error_usb += 1
-                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
-                        
-                    ## ADDS new serial data to internal queue
-                    #self._parser1.add1(data_mag)
-                    #self._parser2.add2(data_ph)
                     
                     # Calls elaborate method to performs results
                     try:
                         self.elaborate(k, coeffs_all, readFREQ, samples,data_mag, data_ph, data_temp, SG_window_size, Spline_points, Spline_factor, timestamp)
                     except ValueError:
                         self._flag_error = 1
-                        #if k > self._environment:
-                        #   print(TAG, "WARNING (ValueError): miscalculation")
                     except:
                         self._flag_error = 1
-                        #if k > self._environment:
-                        #   print(TAG, "WARNING (ValueError): miscalculation")
+
                     self._parser6.add6([self._err1,self._err2,k,self._flag_error_usb])
-                    if k<= self._environment:
-                       bar.update(k)
-                    elif k/50 == k//50:
+
+                    if k/50 == k//50:
                       if k==100:
                          print('\n')
-                      print(TAG,"sweep #{}               ".format(k), end='\r')
+                      print(TAG,"sweep #{}".format(k), end='\r')
+
                     # refreshes error variables at each sweep
                     self._err1 = 0
                     self._err2 = 0
+
                     # Increases sweep counter 
                     k+=1
-                if k== self._environment:
-                   bar.finish()
+
                 #### END SWEEPS LOOP ####    
                 # CLOSES serial port
                 self._serial.close()
@@ -528,7 +429,6 @@ class SerialProcess(multiprocessing.Process):
     def stop(self):
         #Signals the process to stop acquiring data.
         self._exit.set()
-        
         
     ###########################################################################    
     # Automatically selects the serial ports for Teensy (macox/windows)
@@ -556,7 +456,6 @@ class SerialProcess(multiprocessing.Process):
             if found:
                found_ports = port_connected 
             return found_ports
-
 
     ###########################################################################
     # Gets a list of the Overtones reading from file
@@ -619,7 +518,6 @@ class SerialProcess(multiprocessing.Process):
         readFREQ = np.arange(samples) * (fStep) + self._startFreq 
         return overtone_name, overtone_value, fStep, readFREQ,SG_window_size, spline_points, spline_factor
     
-    
     ###########################################################################
     # Loads Fundamental frequency and Overtones from file
     ###########################################################################
@@ -630,7 +528,6 @@ class SerialProcess(multiprocessing.Process):
         #peaks_phase = data[:,1] #unused at the moment
         return peaks_mag
         
-    
     ###########################################################################
     # Loads Calibration (baseline correction) from file
     ###########################################################################
@@ -648,8 +545,3 @@ class SerialProcess(multiprocessing.Process):
         mag_all   = data[:,1]
         phase_all = data[:,2]
         return freq_all, mag_all, phase_all
-      
-    
-# Instantiate the process and run the method 'run' of the class
-#a=SerialProcess(multiprocessing.Process)
-#a.run()

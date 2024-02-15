@@ -10,15 +10,11 @@ from openqcm.common.fileStorage import FileStorage
 from openqcm.common.logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
 import numpy as np
-from time import time
 from numpy import loadtxt
 import datetime
 
 # VER 0.1.2
-from time import strftime, localtime
-
-# VER 0.1.2
-from time import sleep
+from time import time, strftime, localtime, sleep
 
 #import pywt
 
@@ -186,9 +182,11 @@ class Worker:
         # single frequency measurement 
         if self._source == SourceType.serial:
             self._acquisition_process = SerialProcess(self._parser_process)
+
         # calibration
         elif self._source == SourceType.calibration:
             self._acquisition_process = CalibrationProcess(self._parser_process)
+
         # multi frequency measurement 
         elif self._source == SourceType.multiscan:
             self._acquisition_process = MultiscanProcess(self._parser_process)
@@ -206,7 +204,27 @@ class Worker:
                 self._readFREQ, 
                 SG_window_size, 
                 spline_points, 
-                spline_factor) = self._acquisition_process.get_frequencies(self._samples)
+                _) = self._acquisition_process.get_frequencies(self._samples)
+               
+               print("")
+               print(TAG, "DATA MAIN INFORMATION")
+               print(TAG, "Selected frequency: {} - {}Hz".format(self._overtone_name,self._overtone_value))
+               print(TAG, "Frequency start: {}Hz".format(self._readFREQ[0]))
+               print(TAG, "Frequency stop:  {}Hz".format(self._readFREQ[-1]))
+               print(TAG, "Frequency range: {}Hz".format(self._readFREQ[-1]-self._readFREQ[0]))
+               print(TAG, "Number of samples: {}".format(self._samples-1))
+               print(TAG, "Sample rate: {}Hz".format(self._fStep))
+               print(TAG, "History buffer size: 180 min\n")
+               print(TAG, "MAIN PROCESSING INFORMATION")
+               print(TAG, "Method for baseline estimation and correction:")
+               print(TAG, "Least Squares Polynomial Fit (LSP)")
+               #print(TAG, "Degree of the fitting polynomial: 8")
+               print(TAG, "Savitzky-Golay Filtering")
+               print(TAG, "Order of the polynomial fit: {}".format(Constants.SG_order))
+               print(TAG, "Size of data window (in samples): {}".format(SG_window_size))
+               print(TAG, "Oversampling using spline interpolation")
+               print(TAG, "Spline points (in samples): {}".format(spline_points-1))
+               print(TAG, "Resolution after oversampling: {}Hz".format((self._readFREQ[-1]-self._readFREQ[0])/(spline_points-1)))
                
             # CALIBRATION
             elif self._source == SourceType.calibration:
@@ -551,6 +569,9 @@ class Worker:
     
     ##### Gets serial error
     def get_ser_error(self):
+        """
+        Returns: Error #1, Error #2, Control K, USB Error, Overtone Number Error
+        """
         #:return: float list.
         return self._ser_error1,self._ser_error2, self._control_k, self._ser_err_usb, self._overtone_number
     

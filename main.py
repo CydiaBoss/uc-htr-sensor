@@ -521,7 +521,8 @@ class Window(Ui_MainWindow):
 
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
-        self.qcm_timer.moveToThread(self.qcm_thread)
+        # self.qcm_timer.moveToThread(self.qcm_thread)
+
         self.qcm_timer.timeout.connect(self.calibration_processing)
 
         # Setup Signals
@@ -562,10 +563,10 @@ class Window(Ui_MainWindow):
         labelbar = 'The operation might take just over a minute to complete... please wait...'
         
         # progressbar
-        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        error1, _, _, _ser_control, _ = self.qcm_ctrl.worker.get_ser_error()
         
-        if self._ser_control < (Constants.calib_sections):
-            self._completed = (self._ser_control/(Constants.calib_sections))*100
+        if _ser_control < (Constants.calib_sections):
+            _completed = (_ser_control/(Constants.calib_sections))*100
 
         # calibration buffer empty
         if error1== 1 and vector3[0]==1:
@@ -596,7 +597,7 @@ class Window(Ui_MainWindow):
                     stop_flag=1 ##
                     
         # progressbar -------------
-        self.calibration_bar.setValue(int(self._completed + 10))
+        self.calibration_bar.setValue(int(_completed + 10))
         self.statusBar().showMessage(f"{labelbar}", 5000)
 
         # terminate the  calibration (simulate clicked stop)
@@ -630,7 +631,7 @@ class Window(Ui_MainWindow):
 
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
-        self.qcm_timer.moveToThread(self.qcm_thread)
+        # self.qcm_timer.moveToThread(self.qcm_thread)
 
         # Setup Signals
         # Single
@@ -669,55 +670,43 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue_D_multi()
         self.qcm_ctrl.worker.consume_queue_A_multi()
 
-        # flag for terminating calibration
-        stop_flag = 0
-
         # vector2[0] and vector3[0] flag error
         vector1 = self.qcm_ctrl.worker.get_d1_buffer()
         vector2 = self.qcm_ctrl.worker.get_d2_buffer()
         
-        self._ser_error1,self._ser_error2, self._ser_control,self._ser_err_usb = self.qcm_ctrl.worker.get_ser_error()
+        _ser_error1, _ser_error2, _ser_control, _, _ = self.qcm_ctrl.worker.get_ser_error()
         
         if vector1.any():
             # progressbar
-            if self._ser_control<=Constants.environment:
-                self._completed = self._ser_control*2
+            if _ser_control<=Constants.environment:
+                _completed = _ser_control*2
 
-            if str(vector1[0])=='nan' and not self._ser_error1 and not self._ser_error2:
+            if str(vector1[0])=='nan' and not _ser_error1 and not _ser_error2:
                 labelbar = 'Please wait, processing early data...'
 
-            elif (str(vector1[0])=='nan' and (self._ser_error1 or self._ser_error2)):
-                if self._ser_error1 and self._ser_error2:
+            elif (str(vector1[0])=='nan' and (_ser_error1 or _ser_error2)):
+                if _ser_error1 and _ser_error2:
                     labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
-                elif self._ser_error1:
+                elif _ser_error1:
                     labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
-                elif self._ser_error2:
+                elif _ser_error2:
                     labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
             else:
-                if not self._ser_error1 and not self._ser_error2:
+                if not _ser_error1 and not _ser_error2:
                     labelbar = 'Monitoring!'
                 else:
-                    if self._ser_error1 and self._ser_error2:
+                    if _ser_error1 and _ser_error2:
                         labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
-                    elif self._ser_error1:
+                    elif _ser_error1:
                         labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
-                    elif self._ser_error2:
+                    elif _ser_error2:
                         labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
                     
         # progressbar 
-        self.progress_bar.setValue(int(self._completed+2))
+        self.progress_bar.setValue(int(_completed+2))
 
         # Message
         self.statusBar().showMessage(labelbar, 5000)
-
-        # terminate the  calibration (simulate clicked stop)
-        if stop_flag == 1:
-            self.qcm_timer.stop()
-            self.qcm_ctrl.stop()
-            self.enable_calibrate()
-            self.enable_measurement()
-            self.enable_export()
-            self.enable_start()
 
         # Update Plot
         amp = self.qcm_ctrl.worker.get_value1_buffer()
@@ -728,10 +717,12 @@ class Window(Ui_MainWindow):
         self.amp_data.cb_set_data(x=readFreq, y=amp, pen=Constants.plot_colors[0])
         self.phase_data.cb_set_data(x=readFreq, y=phase, pen=Constants.plot_colors[1])
 
-        vector1 = np.array(vector1) - self.qcm_ctrl.reference_value_frequency          
+        vector1 = np.array(vector1) - self.qcm_ctrl.reference_value_frequency
+        print(vector1)
         self.freq_data.cb_set_data(x=self.qcm_ctrl.worker.get_t1_buffer(), y=vector1, pen=Constants.plot_colors[6])
 
-        vector2 = np.array(vector2) - self.qcm_ctrl.reference_value_dissipation 
+        vector2 = np.array(vector2) - self.qcm_ctrl.reference_value_dissipation
+        print(vector2)
         self.dissipate_data.cb_set_data(x=self.qcm_ctrl.worker.get_t2_buffer(), y=vector2, pen=Constants.plot_colors[7])
         
     def multi_processing(self):
@@ -874,8 +865,6 @@ class Window(Ui_MainWindow):
         # Close HTR stuff
         if self.htr_ctrl is not None:
             self.htr_ctrl.stop()
-            if self.htr_thread is not None and self.htr_thread.isRunning():
-                self.htr_thread.quit()
 
         # Close QCM stuff
         if self.qcm_ctrl is not None:
@@ -883,8 +872,7 @@ class Window(Ui_MainWindow):
             if self.qcm_timer is not None:
                 self.qcm_timer.stop()
                 self.qcm_timer.deleteLater()
-            if self.qcm_thread is not None and self.qcm_thread.isRunning():
-                self.qcm_thread.quit()
+                self.qcm_timer = None
     
     # Slots
     @QtCore.pyqtSlot()
@@ -985,12 +973,14 @@ class Window(Ui_MainWindow):
         self.start_htr()
 
         # Start QCM
-        # TODO
+        self.start_qcm()
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):
         # Disable button
         self.stop_btn.setEnabled(False)
+
+        # Stop Sensors
         self.stop_sensors()
 
         # Save if wanted

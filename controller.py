@@ -70,9 +70,6 @@ class HTRSensorCtrl(QObject):
         self.loop = False
         if not self.serial.is_open:
             self.serial.close()
-
-        # Destroy
-        self.deleteLater()
     
     def run(self):
         """
@@ -226,9 +223,6 @@ class QCMSensorCtrl(QObject):
 
     def stop(self) -> None:
         self.worker.stop()
-
-        # Destroy
-        self.deleteLater()
 
     def calibrate(self, qc_type : str) -> None:
         """
