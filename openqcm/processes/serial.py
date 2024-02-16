@@ -14,8 +14,7 @@ import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
 
-import pywt
-from statsmodels.robust import mad
+from math import factorial
 
 from openqcm.processes.parser import ParserProcess
 
@@ -110,22 +109,27 @@ class SerialProcess(multiprocessing.Process):
            W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
            Cambridge University Press ISBN-13: 9780521880688
         """
-        import numpy as np
-        from math import factorial
         try:
-            window_size = np.abs(np.int(window_size))
-            order = np.abs(np.int(order)) 
+            window_size = np.abs(int(window_size))
+            order = np.abs(int(order)) 
+            print("sussy")
         except ValueError as msg:
             raise ValueError("WARNING: window size and order have to be of type int!")
+        
         if window_size % 2 != 1 or window_size < 1:
             raise TypeError("WARNING: window size must be a positive odd number!")
         if window_size < order + 2:
             raise TypeError("WARNING: window size is too small for the polynomials order!")
+        
+        print("sussy 2")
         order_range = range(order+1)
         half_window = (window_size -1) // 2
         # precompute coefficients
         b = np.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
         m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+        
+        print("sussy 3")
+        
         # pad the signal at the extremes with values taken from the signal itself
         firstvals = y[0] - np.abs( y[1:half_window+1][::-1] - y[0] )
         lastvals = y[-1] + np.abs(y[-half_window-1:-1][::-1] - y[-1])
@@ -176,20 +180,6 @@ class SerialProcess(multiprocessing.Process):
     ###########################################################################    
     def elaborate(self, k, coeffs_all, readFREQ, samples, Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
                 
-        ###################
-        def waveletSmooth(x, wavelet="db4", level=1, title=None):
-            # calculate the wavelet coefficients
-            coeff = pywt.wavedec( x, wavelet, mode="per")
-            # calculate a threshold
-            sigma = mad(coeff[-level])
-            # changing this threshold also changes the behavior
-            uthresh = sigma * np.sqrt( 2*np.log(len(x)))
-            coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
-            # reconstruct the signal using the thresholded coefficients
-            y = pywt.waverec( coeff, wavelet, mode="per")
-            return y
-        ###################
-
         # Number of spline points
         points = Spline_points
         # sweep counter
@@ -210,15 +200,21 @@ class SerialProcess(multiprocessing.Process):
         self._Xm = np.linspace(0,0,self._samples)
         self._Xp = np.linspace(0,0,self._samples)
         
+        print("Pass this")
+
         # Evaluate a polynomial at specific values based on the coefficients and frequency range
         self._polyfitted = np.polyval(self._coeffs_all,self._readFREQ)
         
         # BASELINE CORRECTION ROI (raw data)
         mag_beseline_corrected = mag-self._polyfitted
         
+        print("Pass this 2")
+
         # FILTERING - Savitzky-Golay
         filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
         
+        print("Pass this 3")
+
         # FITTING/INTERPOLATING - SPLINE
         xrange = range(len(filtered_mag))
         freq_range = np.linspace(self._readFREQ[0], self._readFREQ[-1], points)
@@ -226,9 +222,13 @@ class SerialProcess(multiprocessing.Process):
         xs = np.linspace(0, len(filtered_mag)-1, points)
         mag_result_fit = s(xs)
         
+        print("Pass this 4")
+
         # PARAMETERS FINDER
         (index_peak_fit, _, _, _, _, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
         
+        print("Pass this 4")
+
         self._frequency_buffer.append(freq_range[int(index_peak_fit)])
         self._dissipation_buffer.append(1/Qfac_fit)
         self._temperature_buffer.append(temperature)
@@ -244,6 +244,8 @@ class SerialProcess(multiprocessing.Process):
             vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
             temperature_mean = np.average(vec_app1t)
             
+        print("pass this 5")
+
         epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
         ts_mult=1e6
         w = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult)) #datetime.datetime.utcnow()
@@ -381,8 +383,6 @@ class SerialProcess(multiprocessing.Process):
                         # WRITES encoded command to the serial port
                         cmd = str(self._startFreq) + ';' + str(self._stopFreq) + ';' + str(int(fStep)) + '\n'
                         self._serial.write(cmd.encode())
-
-                        print(cmd)
                         
                         # Initializes buffer and strs record
                         buffer = ''
@@ -421,10 +421,12 @@ class SerialProcess(multiprocessing.Process):
                     # Calls elaborate method to performs results
                     try:
                         self.elaborate(k, coeffs_all, readFREQ, samples,data_mag, data_ph, data_temp, SG_window_size, Spline_points, Spline_factor, timestamp)
-                    except ValueError:
+                    except ValueError as r:
                         self._flag_error = 1
-                    except:
+                        print(r)
+                    except TypeError as r:
                         self._flag_error = 1
+                        print(r)
 
                     self._parser6.add6([self._err1,self._err2,k,self._flag_error_usb])
 
@@ -519,11 +521,12 @@ class SerialProcess(multiprocessing.Process):
         if len(peaks_mag) == 5:
             switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
             # 0=fundamental, 1=3th overtone and so on
-            (overtone_name,overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
+            (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
             print(TAG,"openQCM Device setup: @5MHz")
         elif len(peaks_mag) == 3:
             switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
-            (overtone_name, overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
+            (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
+            print(overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor)
             print(TAG,"openQCM Device setup: @10MHz")
         
         # Sets the frequency step 

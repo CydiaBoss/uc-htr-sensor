@@ -374,7 +374,6 @@ class Constants:
     # VER 0.1.4 decrease the frequency sampling rate to 1 Hz  
     # change frequency step to change the frequency sampling rate and the sweep data points accordingly
     FREQUENCY_STEP = 1
-    argument_default_samples = int((LEFT + RIGHT)/FREQUENCY_STEP + 1)
     SAMPLES = int((LEFT + RIGHT)/FREQUENCY_STEP)
     
     # VER 0.1.4 define the threshold in dB for the bandwidth calculation 
