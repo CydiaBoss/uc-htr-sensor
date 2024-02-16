@@ -112,7 +112,6 @@ class SerialProcess(multiprocessing.Process):
         try:
             window_size = np.abs(int(window_size))
             order = np.abs(int(order)) 
-            print("sussy")
         except ValueError as msg:
             raise ValueError("WARNING: window size and order have to be of type int!")
         
@@ -121,14 +120,11 @@ class SerialProcess(multiprocessing.Process):
         if window_size < order + 2:
             raise TypeError("WARNING: window size is too small for the polynomials order!")
         
-        print("sussy 2")
         order_range = range(order+1)
         half_window = (window_size -1) // 2
         # precompute coefficients
         b = np.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
         m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
-        
-        print("sussy 3")
         
         # pad the signal at the extremes with values taken from the signal itself
         firstvals = y[0] - np.abs( y[1:half_window+1][::-1] - y[0] )
@@ -194,8 +190,8 @@ class SerialProcess(multiprocessing.Process):
         self._Xp = Xp
         self._filtered_mag = np.zeros(samples)
         # save current data 
-        mag   = self._Xm
-        phase = self._Xp ############################
+        self.mag   = self._Xm
+        self.phase = self._Xp ############################
         # Initializations of support vectors for later storage
         self._Xm = np.linspace(0,0,self._samples)
         self._Xp = np.linspace(0,0,self._samples)
@@ -206,20 +202,20 @@ class SerialProcess(multiprocessing.Process):
         self._polyfitted = np.polyval(self._coeffs_all,self._readFREQ)
         
         # BASELINE CORRECTION ROI (raw data)
-        mag_beseline_corrected = mag-self._polyfitted
+        mag_beseline_corrected = self.mag-self._polyfitted
         
         print("Pass this 2")
 
         # FILTERING - Savitzky-Golay
-        filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
+        self.filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
         
         print("Pass this 3")
 
         # FITTING/INTERPOLATING - SPLINE
-        xrange = range(len(filtered_mag))
+        xrange = range(len(self.filtered_mag))
         freq_range = np.linspace(self._readFREQ[0], self._readFREQ[-1], points)
-        s = UnivariateSpline(xrange, filtered_mag, s= Spline_factor)
-        xs = np.linspace(0, len(filtered_mag)-1, points)
+        s = UnivariateSpline(xrange, self.filtered_mag, s= Spline_factor)
+        xs = np.linspace(0, len(self.filtered_mag)-1, points)
         mag_result_fit = s(xs)
         
         print("Pass this 4")
@@ -236,13 +232,13 @@ class SerialProcess(multiprocessing.Process):
         if self._k>=self._environment:
             #FREQUENCY
             vec_app1 = self.savitzky_golay(self._frequency_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-            freq_range_mean = np.average(vec_app1)
+            self.freq_range_mean = np.average(vec_app1)
             #DISSIPATION     
             vec_app1d = self.savitzky_golay(self._dissipation_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-            diss_mean = np.average(vec_app1d)
+            self.diss_mean = np.average(vec_app1d)
             #TEMPERATURE
             vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
-            temperature_mean = np.average(vec_app1t)
+            self.temperature_mean = np.average(vec_app1t)
             
         print("pass this 5")
 
@@ -252,14 +248,12 @@ class SerialProcess(multiprocessing.Process):
 
         ##############
         ## ADDS new serial data to internal queue
-        self._parser1.add1(filtered_mag) ##############
-        self._parser2.add2(phase)        ##############
-        print(filtered_mag, phase)
+        self._parser1.add1(self.filtered_mag) ##############
+        self._parser2.add2(self.phase)        ##############
         # Adds new calculated data (resonance frequency and dissipation) to internal queues
-        self._parser3.add3([w,freq_range_mean]) #time()-timestamp - time in seconds
-        self._parser4.add4([w,diss_mean]) #time()-timestamp - time in seconds
-        self._parser5.add5([w,temperature_mean]) #time()-timestamp - time in seconds
-        print(freq_range_mean, diss_mean)
+        self._parser3.add3([w,self.freq_range_mean]) #time()-timestamp - time in seconds
+        self._parser4.add4([w,self.diss_mean]) #time()-timestamp - time in seconds
+        self._parser5.add5([w,self.temperature_mean]) #time()-timestamp - time in seconds
         
     ###########################################################################
     # Initializing values for process
