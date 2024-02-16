@@ -407,10 +407,7 @@ class SerialProcess(multiprocessing.Process):
 
                     self._parser6.add6([self._err1,self._err2,k,self._flag_error_usb])
 
-                    if k/50 == k//50:
-                      if k==100:
-                         print('\n')
-                      print(TAG,"sweep #{}".format(k), end='\r')
+                    print(TAG,"sweep #{}".format(k), end='\r')
 
                     # refreshes error variables at each sweep
                     self._err1 = 0

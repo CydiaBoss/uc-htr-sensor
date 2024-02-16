@@ -665,24 +665,23 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
-
-        self.qcm_ctrl.worker.consume_queue_F_multi()
-        self.qcm_ctrl.worker.consume_queue_D_multi()
-        self.qcm_ctrl.worker.consume_queue_A_multi()
-
-        # vector2[0] and vector3[0] flag error
-        vector1 = self.qcm_ctrl.worker.get_d1_buffer()
-        vector2 = self.qcm_ctrl.worker.get_d2_buffer()
         
         _ser_error1, _ser_error2, _ser_control, _, _ = self.qcm_ctrl.worker.get_ser_error()
+
+        vector1 = self.qcm_ctrl.worker.get_d1_buffer()
+        vector2 = self.qcm_ctrl.worker.get_d2_buffer()
+
+        # Early Process
+        prep_process = False
         
         if vector1.any():
             # progressbar
             if _ser_control<=Constants.environment:
-                _completed = _ser_control*2
+                self.qcm_progress = _ser_control*2
 
             if str(vector1[0])=='nan' and not _ser_error1 and not _ser_error2:
                 labelbar = 'Please wait, processing early data...'
+                prep_process = True
 
             elif (str(vector1[0])=='nan' and (_ser_error1 or _ser_error2)):
                 if _ser_error1 and _ser_error2:
@@ -703,7 +702,7 @@ class Window(Ui_MainWindow):
                         labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
                     
         # progressbar 
-        self.progress_bar.setValue(int(_completed+2))
+        self.progress_bar.setValue(int(self.qcm_progress + 2))
 
         # Message
         self.statusBar().showMessage(labelbar, 5000)
@@ -716,6 +715,10 @@ class Window(Ui_MainWindow):
 
         self.amp_data.cb_set_data(x=readFreq, y=amp, pen=Constants.plot_colors[0])
         self.phase_data.cb_set_data(x=readFreq, y=phase, pen=Constants.plot_colors[1])
+
+        # Continue to wait until process is done
+        if prep_process:
+            return
 
         vector1 = np.array(vector1) - self.qcm_ctrl.reference_value_frequency
         print(vector1)
