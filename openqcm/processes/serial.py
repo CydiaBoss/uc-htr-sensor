@@ -1,5 +1,6 @@
 import multiprocessing
 import datetime
+
 from constants import Constants
 
 from openqcm.core.ring_buffer import RingBuffer
@@ -12,6 +13,11 @@ from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
+
+import pywt
+from statsmodels.robust import mad
+
+from openqcm.processes.parser import ParserProcess
 
 TAG = ""#"[Serial]"
 
@@ -154,7 +160,7 @@ class SerialProcess(multiprocessing.Process):
                 #print(TAG, 'WARNING: Right value not found')
                 self._err2 = 1
                 break
-            index_M = index_M+1;
+            index_M = index_M+1
         # linearly interpolate between the previous values to find the value of freq at the trailing edge
         m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
         c = signal[index_M] - freq[index_M]*m
@@ -169,8 +175,21 @@ class SerialProcess(multiprocessing.Process):
     # Processes incoming data and calculates outcoming data
     ###########################################################################    
     def elaborate(self, k, coeffs_all, readFREQ, samples, Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
-        
+                
         ###################
+        def waveletSmooth(x, wavelet="db4", level=1, title=None):
+            # calculate the wavelet coefficients
+            coeff = pywt.wavedec( x, wavelet, mode="per")
+            # calculate a threshold
+            sigma = mad(coeff[-level])
+            # changing this threshold also changes the behavior
+            uthresh = sigma * np.sqrt( 2*np.log(len(x)))
+            coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
+            # reconstruct the signal using the thresholded coefficients
+            y = pywt.waverec( coeff, wavelet, mode="per")
+            return y
+        ###################
+
         # Number of spline points
         points = Spline_points
         # sweep counter
@@ -243,7 +262,7 @@ class SerialProcess(multiprocessing.Process):
     ###########################################################################
     # Initializing values for process
     ###########################################################################
-    def __init__(self, parser_process):
+    def __init__(self, parser_process : ParserProcess):
         """
         :param parser_process: Reference to a ParserProcess instance.
         :type parser_process: ParserProcess.
@@ -352,6 +371,8 @@ class SerialProcess(multiprocessing.Process):
                     data_mag = np.linspace(0,0,samples)   
                     data_ph  = np.linspace(0,0,samples)
                     
+                    print("sus")
+
                     try:
                         # amplitude/phase convert bit to dB/Deg parameters
                         vmax = 3.3
@@ -365,7 +386,7 @@ class SerialProcess(multiprocessing.Process):
                         
                         # Initializes buffer and strs record
                         buffer = ''
-                        strs = ["" for x in range(samples + 2)]
+                        strs = ["" for _ in range(samples + 2)]
                         
                         # READS and decodes sweep from the serial port
                         while 1:

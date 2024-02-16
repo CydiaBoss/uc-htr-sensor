@@ -50,9 +50,8 @@ HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Te
 class SourceType(Enum):
     serial = 0
     calibration = 1
-    SocketClient = 2
+    multiscan = 2
     
-
 ###############################################################################
 # Specifies the minimal Python version required
 ###############################################################################
