@@ -14,6 +14,8 @@ class Overtone_Switcher_10MHz:
     # from fundamental frequency to the 5th overtone  
     def overtone10MHz_to_freq_range(self, argument):
         method_name = 'overtone_' + str(argument)
+
+        print(method_name)
         # Get the method from 'self'. Default to a lambda.
         method = getattr(self, method_name, lambda: None)
         # Call the method as we return it

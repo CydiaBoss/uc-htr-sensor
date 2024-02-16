@@ -1,9 +1,8 @@
 import re
-import sys, ctypes
 import time
 from datetime import datetime
 
-from PyQt5.QtWidgets import QApplication, QMessageBox, QFileDialog, QInputDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -824,12 +823,16 @@ class Window(Ui_MainWindow):
         """
         Clear the graphs
         """
-        # Clear Plot
+        # Clear Data
         self.raw_resistance = np.array([])
         self.resistance = np.array([])
         self.humidity = np.array([])
         self.temperature = np.array([])
         self.htr_time = np.array([])
+
+        # Clear Progress
+        self.calibration_bar.setValue(0)
+        self.progress_bar.setValue(0)
 
     def save_data(self):
         """
@@ -1019,19 +1022,3 @@ class Window(Ui_MainWindow):
             a0.accept()
         else:
             a0.ignore() 
-
-if __name__ == "__main__":
-    # Update App ID if Windows
-    myappid = 'medal.sensorfusion.h2'
-    if sys.platform.startswith('win'):
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
-    # Prep App Launch
-    app = QApplication(sys.argv)
-    win = Window()
-
-    # Show
-    win.show()
-
-    # End
-    sys.exit(app.exec())

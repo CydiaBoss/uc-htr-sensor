@@ -371,8 +371,6 @@ class SerialProcess(multiprocessing.Process):
                     data_mag = np.linspace(0,0,samples)   
                     data_ph  = np.linspace(0,0,samples)
                     
-                    print("sus")
-
                     try:
                         # amplitude/phase convert bit to dB/Deg parameters
                         vmax = 3.3
@@ -383,6 +381,8 @@ class SerialProcess(multiprocessing.Process):
                         # WRITES encoded command to the serial port
                         cmd = str(self._startFreq) + ';' + str(self._stopFreq) + ';' + str(int(fStep)) + '\n'
                         self._serial.write(cmd.encode())
+
+                        print(cmd)
                         
                         # Initializes buffer and strs record
                         buffer = ''

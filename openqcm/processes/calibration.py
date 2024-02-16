@@ -9,6 +9,8 @@ from serial.tools import list_ports
 import numpy as np
 import scipy.signal
 
+from openqcm.processes.parser import ParserProcess
+
 TAG = ""#"[Calibration]"
 
 ###############################################################################
@@ -71,7 +73,7 @@ class CalibrationProcess(multiprocessing.Process):
     ###########################################################################
     # Initializing values for process
     ###########################################################################
-    def __init__(self, parser_process):
+    def __init__(self, parser_process : ParserProcess):
         """
         :param parser_process: Reference to a ParserProcess instance.
         :type parser_process: ParserProcess.
@@ -198,7 +200,7 @@ class CalibrationProcess(multiprocessing.Process):
                         
                         # Initializes buffer and strs
                         buffer = ''
-                        strs = ["" for x in range(samples + 2)]
+                        strs = ["" for _ in range(samples + 2)]
                         
                         # Initializes the progress bar
                         #################################################################################
