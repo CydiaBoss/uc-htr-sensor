@@ -12,7 +12,6 @@ import scipy.signal
 
 from openqcm.processes.parser import ParserProcess
 
-
 TAG = ""#"[Calibration]"
 
 ###############################################################################
@@ -47,7 +46,6 @@ class CalibrationProcess(multiprocessing.Process):
         self._phase_beseline_corrected_all = data_ph - self._polyfitted_all_phase 
         return self._mag_beseline_corrected_all, self._phase_beseline_corrected_all
     
-    
     ###########################################################################
     # PEAK DETECTION
     # Calculates the relative extrema of data using Signal Processing Toolbox 
@@ -68,8 +66,7 @@ class CalibrationProcess(multiprocessing.Process):
         self.max_value_phase=phase[self.max_indexes_phase]
         
         return self.max_freq_mag, self.max_value_mag, self.max_freq_phase, self.max_value_phase
-
-
+    
     ###########################################################################
     # Initializing values for process
     ###########################################################################
@@ -295,14 +292,12 @@ class CalibrationProcess(multiprocessing.Process):
                    
                    try:
                        # CALLS FindPeak method
-                       #(max_freq_mag, max_value_mag, max_freq_phase, max_value_phase)= self.FindPeak(readFREQ, data_mag_baseline, data_ph_baseline, dist=distance)
-                       (max_freq_mag, max_value_mag, max_freq_phase, max_value_phase)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
+                       (max_freq_mag, _, max_freq_phase, _)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
                        print(TAG, "{} peaks were found at frequencies: {} Hz\n".format(len(max_freq_mag),max_freq_mag))
                        
                        print (max_freq_mag)
                        print (max_freq_phase)
-                     
-                       # if (len(max_freq_mag)==5 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (len(max_freq_mag)==3 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
+                    
                        if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
                           # SAVES independently of the state of the export box
                           print(TAG,"Saving data in file...")
@@ -374,7 +369,6 @@ class CalibrationProcess(multiprocessing.Process):
     @staticmethod
     def get_speeds():
         #:return: List of the common baud rates, in bps :rtype: str list.
-        
         return [str(v) for v in ['5 MHz', '10 MHz']]
 
     ###########################################################################

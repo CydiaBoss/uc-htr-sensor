@@ -12,8 +12,7 @@ from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
 from time import sleep
 
-import pywt
-from statsmodels.robust import mad
+from math import factorial
 
 TAG = ""#"[Serial]"
 
@@ -106,8 +105,6 @@ class SerialProcess(multiprocessing.Process):
            W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
            Cambridge University Press ISBN-13: 9780521880688
         """
-        import numpy as np
-        from math import factorial
         try:
             window_size = np.abs(int(window_size))
             order = np.abs(int(order)) 
@@ -127,34 +124,11 @@ class SerialProcess(multiprocessing.Process):
         lastvals = y[-1] + np.abs(y[-half_window-1:-1][::-1] - y[-1])
         y = np.concatenate((firstvals, y, lastvals))
         return np.convolve( m[::-1], y, mode='valid')
-     
-        
+    
     ###########################################################################
     # Resonance Frequency, Resonance Peak, Bandwidth and Q-factor/Dissipation 
     ###########################################################################
     def parameters_finder(self, freq, signal, overtone_number, threshold):
-        
-# =============================================================================
-#         # VER 0.1.2
-#         # [BUG] dissipation calculation fails when the sweep signal goes under zero level
-#         
-#         # Developed a new algorithm for the calculation of dissipation: 
-# 		# - shift the signal up make the gain resonance curve positive 
-# 		# - select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-# 		# - multiply x2 the bandwith	 
-# =============================================================================
-        
-# =============================================================================
-#         # VER 0.1.3
-#         # change the frequency and dissipation calculation, as below: 
-#         # FREQUENCY
-#         #   - resonance frequency at fundamental is defined as the peak of the maximum
-#         #   - resonance frequency at overtones is defined as the middle point between the maximum and minimum of the gain resonance curve 
-#         # DISSIPATION: 
-#         #   - dissipation at fundamenatl is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve at 75% of maximum
-#         #   - dissipation at overtones is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve 
-#         #   between the resonance curve at 90% on the left and the minimum of the resonanance curve
-# =============================================================================
         # VER 0.1.4
         # Change resonance frequency measurement as the maximum of amplitude signal, same for fundamental and higher overtone. 
         # Change dissipation measurement defined as bandwidth at -0.3 dB below the maximum for fundamental and overtones
@@ -163,12 +137,6 @@ class SerialProcess(multiprocessing.Process):
         f_min = np.min(signal)
         # find index of minimum 
         i_min = np.argmin(signal,axis=0)
-        
-        # VER 0.1.4 do not rescale the signal at the minimum 
-# =============================================================================
-#         # rescale the signal 
-#         signal = signal - f_min
-# =============================================================================
         
         f_max = np.max(signal)          # Find maximum
         i_max= np.argmax(signal,axis=0) # Find index of maximum
@@ -182,9 +150,6 @@ class SerialProcess(multiprocessing.Process):
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the bandwidth
             while signal[index_m] > (f_max - threshold):  
-# =============================================================================
-#             while signal[index_m] > percent*f_max:
-# =============================================================================
                 if index_m < 1:
                    print(TAG, 'WARNING: Left value not found')
                    self._err1 = 1
@@ -193,9 +158,6 @@ class SerialProcess(multiprocessing.Process):
             #linearly interpolate between the previous values to find the value of freq at the leading edge
             m = (signal[index_m+1] - signal[index_m])/(freq[index_m+1] - freq[index_m])
             c = signal[index_m] - freq[index_m]*m
-# =============================================================================
-#             i_leading = (percent*f_max - c)/m
-# =============================================================================
             # VER 0.1.4 find the left index for the bandwidth
             i_leading = (f_max - threshold - c)/m
             
@@ -205,40 +167,21 @@ class SerialProcess(multiprocessing.Process):
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the badwidth
             while signal[index_M] > (f_max - threshold):
-# =============================================================================
-#             while signal[index_M] > percent*f_max:
-# =============================================================================
                 if index_M >= len(signal)-1:
                     print(TAG, 'WARNING: Right value not found')
                     self._err2 = 1
                     break
-                index_M = index_M+1;
+                index_M = index_M+1
             
             # linearly interpolate between the previous values to find the value of freq at the trailing edge
             m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
             c = signal[index_M] - freq[index_M]*m
-# =============================================================================
-#             i_trailing = (percent*f_max - c)/m
-# =============================================================================
             # VER 0.1.4 find the right index for the bandwidth            
             i_trailing = (f_max - threshold - c)/m
 
             bandwidth = abs(i_trailing - i_leading)
       
         else: 
-# =============================================================================
-#             bandwidth = 0
-#             index_m = 0
-#             index_M = 0
-#             PERCENT_OVERTONE = 0.90
-#             INDEX_OVERTONE_LEFT = i_max
-#             while signal[INDEX_OVERTONE_LEFT] > PERCENT_OVERTONE * f_max:
-#                 if INDEX_OVERTONE_LEFT < 1:
-#                    print(TAG, 'WARNING: Left value not found')
-#                    self._err1 = 1
-#                    break
-#                 INDEX_OVERTONE_LEFT = INDEX_OVERTONE_LEFT - 1     
-# =============================================================================
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the bandwidth
             while signal[index_m] > (f_max - threshold):  
@@ -263,7 +206,7 @@ class SerialProcess(multiprocessing.Process):
                     print(TAG, 'WARNING: Right value not found')
                     self._err2 = 1
                     break
-                index_M = index_M+1;
+                index_M = index_M+1
             
             # linearly interpolate between the previous values to find the value of freq at the trailing edge
             m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
@@ -272,21 +215,6 @@ class SerialProcess(multiprocessing.Process):
             i_trailing = (f_max - threshold - c)/m
             
             bandwidth = abs(i_trailing - i_leading)
-            
-        
-        #compute the FWHM/others
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # VER 0.1.2
-        # select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-        # multiply x2 the bandwith	
-# =============================================================================
-#         bandwidth = (freq[index_M] - freq[i_max])*2
-#         
-# =============================================================================
-        # Qfac=freq[i_max]/bandwidth
         
         # VER 0.1.4
         # frequency and dissipation at fundamental 
@@ -298,42 +226,20 @@ class SerialProcess(multiprocessing.Process):
         # VER 0.1.4
         # frequency and dissipation at overtones 
         else:
-            
-# =============================================================================
-#             freq_resonance = (freq[i_min] + freq[i_max])/2
-# =============================================================================
 
             # VER 0.1.4 resonance frequency as the peak
             freq_resonance = freq[i_max]
-# =============================================================================
-#             Qfac = (freq[i_min] - freq[INDEX_OVERTONE_LEFT])
-# =============================================================================
             # VER 0.1.4
             Qfac = bandwidth
 
         # VER 0.1.4 changed the return of the method introducing resonance frequency
         return i_max, f_max, bandwidth, index_m, index_M, Qfac, freq_resonance  
     
-    
     ###########################################################################
     # Processes incoming data and calculates outcoming data
     ###########################################################################    
     def elaborate(self, k, coeffs_all, readFREQ, samples, 
                   Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
-        
-        ###################
-        def waveletSmooth(x, wavelet="db4", level=1, title=None):
-            # calculate the wavelet coefficients
-            coeff = pywt.wavedec( x, wavelet, mode="per")
-            # calculate a threshold
-            sigma = mad(coeff[-level])
-            # changing this threshold also changes the behavior
-            uthresh = sigma * np.sqrt( 2*np.log(len(x)))
-            coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
-            # reconstruct the signal using the thresholded coefficients
-            y = pywt.waverec( coeff, wavelet, mode="per")
-            return y
-        ###################
         # Number of spline points
         points = Spline_points
         # sweep counter
@@ -363,62 +269,21 @@ class SerialProcess(multiprocessing.Process):
         # FILTERING - Savitzky-Golay
         filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
         
-        # peak, index e frequency of max detection baseline corrected (filtering optional)
-        #self._vector_max_baseline_corrected.append(max(mag_beseline_corrected))   #Z axis (max)
-        #self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0)) # X axis (max position)
-        #h=self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0))
-        #self._freq_max_baseline_corrected.append(readFREQ[int(h)])
-        
         # FITTING/INTERPOLATING - SPLINE
         xrange = range(len(filtered_mag))
         freq_range = np.linspace(self._readFREQ[0], self._readFREQ[-1], points)
         s = UnivariateSpline(xrange, filtered_mag, s= Spline_factor)
         xs = np.linspace(0, len(filtered_mag)-1, points)
         mag_result_fit = s(xs)
-        
-        # PARAMETERS FINDER
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit,index_f1_fit,index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.707)
-# =============================================================================
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, 
-#          index_f1_fit, index_f2_fit, Qfac_fit)= self.parameters_finder(freq_range, mag_result_fit, percent=0.5)
-# =============================================================================
-        # VER 0.1.3
-        # change the parameter finder algorithm
-        # VER 0.1.3
-        # change the parameter finder algorithm  
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, 
-#          index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, self._overtone_int, percent = 0.7)
-#         
-# =============================================================================
 
         # VER 0.1.4 chenge the bandwith threshold value to the constant value THRESHOLD_DB = 0.3
-        (index_peak_fit, max_peak_fit, bandwidth_fit, 
-         index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, self._overtone_int, Constants.THRESHOLD_DB)
-        
-        # BANDWIDTH 70.7% of MAX
-        #self._bw3.append(bandwidth_fit)
-        # Q FACTOR/DISSIPATION
-        #self._q_factor.append (1/Qfac_fit)
-        # Index of MAX fitted signals ()
-        #self._index_max_fit[k]= int(index_peak_fit)
-        # Frequency of MAX fitted signals ()
-        #self._freq_max_fit.append(freq_range[int(index_peak_fit)])
-        #self._temperature.append(temperature)
-        #######################################################
+        (index_peak_fit, _, _, 
+         _,_, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, self._overtone_int, Constants.THRESHOLD_DB)
 
         # VER 0.1.3
         # change the dissipation calculation as the inverse of the bandwidth defined above in parameter finder 
-# =============================================================================
-#         self._frequency_buffer.append(freq_range[int(index_peak_fit)])
-# =============================================================================
-        # VER 0.1.3
         self._frequency_buffer.append(frequency_resonance)
-# =============================================================================
-#         self._dissipation_buffer.append(1/Qfac_fit)
-# =============================================================================
+        
         # VER 0.1.4
         self._dissipation_buffer.append( (Qfac_fit/1000000) )
         
@@ -435,7 +300,6 @@ class SerialProcess(multiprocessing.Process):
            vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
            temperature_mean = np.average(vec_app1t)
            
-        
         # VER 0.1.4 set the current value of frequency 
         if self._k <= self._environment:
             # current value is raw
@@ -443,16 +307,6 @@ class SerialProcess(multiprocessing.Process):
         elif self._k > self._environment:
             # current value as average 
             self.freq_res_current = int(freq_range_mean)
-        
-        #else:
-           #freq_range_mean = freq_range[int(index_peak_fit)]
-           #temperature_mean = temperature
-           #diss_mean = 1/Qfac_fit
-           #freq_range_mean = freq_range[int(index_peak_fit)]
-           #diss_mean = 1/Qfac_fit
-           #temperature_mean = temperature
-        # vector of MAX fitted signals ()
-        #self._vector_max_fit.append(max_peak_fit)
         
         #######################################################
         ##############
@@ -471,42 +325,6 @@ class SerialProcess(multiprocessing.Process):
         self._parser4.add4([w,diss_mean]) #time()-timestamp - time in seconds
         #self._parser5.add5([time()-timestamp,temperature])
         self._parser5.add5([w,temperature_mean]) #time()-timestamp - time in seconds
-        '''
-        ##############################
-        # DATA STORING in CSV/TXT FILE
-        ##############################
-        import csv
-        from time import strftime, localtime
-        # STORING DATA (CSV) in main folder: Time,resonance Frequency,Dissipation
-        filename = 'data_q.csv'
-        with open(filename,'a', newline='') as tempFile:
-         tempFileWriter = csv.writer(tempFile)
-         tempFileWriter.writerow([strftime(Constants.csv_default_filename, localtime()),freq_range[int(index_peak_fit)],1/Qfac_fit])
-        tempFile.close() 
-        '''
-        '''
-        import csv
-        # STORING DATA (CSV) in main folder: Time,resonance Frequency,Dissipation
-        filename = 'bw3.csv'
-        with open(filename,'a', newline='') as tempFile:
-         tempFileWriter = csv.writer(tempFile)
-         tempFileWriter.writerow(self._bw3)
-        tempFile.close()
-        
-        filename1 = 'vector_max.csv'
-        with open(filename1,'a', newline='') as tempFile1:
-         tempFileWriter = csv.writer(tempFile1)
-         tempFileWriter.writerow(self._vector_max_fit)
-        tempFile.close()
-        '''
-        # STORING DATA (CSV/TXT) in 'data' folder: frequency, amplitude
-        #np.savetxt(r"logged_data\sweep_%d_mag_raw.txt"%(k,), np.column_stack([readFREQ,mag]))
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_baseline_corrected.txt"%(k,), np.column_stack([readFREQ,mag_beseline_corrected]))
-        #np.savetxt(r"data\sweep_%d_mag_baseline_corrected.csv"%(k,), np.column_stack([readFREQ,globals()["Af_baseline_" + str(k)]]), delimiter=',')
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_filtered.txt"%(k,), np.column_stack([readFREQ,filtered_mag]))
-        #np.savetxt(r"logged_data\data\sweep_%d_mag_fitted.txt"%(k,), np.column_stack([freq_range,mag_result_fit]))
-        ##############
-        
 
     ###########################################################################
     # Initializing values for process
@@ -584,8 +402,6 @@ class SerialProcess(multiprocessing.Process):
         self._serial.timeout = timeout
         self._serial.writetimeout = writeTimeout
         
-        
-        #self._overtone = float(speed)
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
         
@@ -611,10 +427,8 @@ class SerialProcess(multiprocessing.Process):
     
     ###########################################################################
     def write (self, port, message):
-        # self._exit.set()
         self.open(port)
         message_string = str(message)
-        # self.stop()
         
         if self._is_port_available(port):
             print ("PORT COM SELECTED = ")
@@ -631,7 +445,6 @@ class SerialProcess(multiprocessing.Process):
                     print("NOT WRITE")
             else: 
                 print ("port IS OPEN")
-                # self._serial.open(port) 
                 # OPENS the serial port
                 try:
                     self._serial.write(message_string.encode())
@@ -656,47 +469,22 @@ class SerialProcess(multiprocessing.Process):
         If incoming data can't be converted to float,the data will be discarded.
         """  
         # initializations
-        #self._vector_max_baseline_corrected = []
-        #self._index_max_baseline_corrected = []
-        #self._freq_max_baseline_corrected = []
-        #self._vector_max_fit = []
-        #self._index_max_fit = []
-        #self._bw3 = []
-        #self._q_factor = []
-        #self._freq_max_fit = []
-        #self._temperature = []
         self._flag_error = 0
         self._flag_error_usb = 0
         self._err1 = 0
         self._err2 = 0
         
         # init readline object 
-        # line = rl(self._serial)
     
         # CALLS baseline_coeffs method
         coeffs_all = self.baseline_coeffs()
-        
-        
-        # TODO 
-        # init temperature and pid values WRONG 
-        # self.Temperature_Pid_default = loadtxt(Constants.manual_frequencies_path)
-        # _______________________________________________________________________
         
         # Checks if the serial port is currently connected
         if self._is_port_available(self._serial.port):
 
             samples = Constants.argument_default_samples 
             
-           
-            
             # VER 0.1.4 call the get frequencies here in the loop
-            
-# =============================================================================
-#             # Calls get_frequencies method:
-#             # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
-#             (overone_name,overtone_value,fStep,readFREQ,SG_window_size,Spline_points,Spline_factor) = self.get_frequencies(samples)
-# =============================================================================
-            
             # Get the state of the serial port
             if not self._serial.isOpen(): 
                 # open the serial port
@@ -713,9 +501,6 @@ class SerialProcess(multiprocessing.Process):
                 self._dissipation_buffer = RingBuffer(self._environment)
                 self._temperature_buffer = RingBuffer(self._environment)
                 
-                # Initializes the progress bar  
-                # bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=self._environment).start() #
-                
                 # START FREQUENCY SWEEP LOOP 
                 # -------------------------------------------------------------
                 # print(self._dummy)
@@ -724,9 +509,6 @@ class SerialProcess(multiprocessing.Process):
                     
                     # VER 0.1.4
                     self._just_another_counter =  self._just_another_counter + 1
-# =============================================================================
-#                     print (self._just_another_counter )
-# =============================================================================
                     
                     # VER 0.1.4
                     # get resonance frequencies in acquisition loop. 
@@ -734,12 +516,12 @@ class SerialProcess(multiprocessing.Process):
                     
                     if (self._just_another_counter < Constants.environment):
                         # Get array sweep paramaters from frequency peaks file 
-                        (overone_name, overtone_value, 
+                        (_, _, 
                          fStep, readFREQ, SG_window_size, 
                          Spline_points, Spline_factor) = self.get_frequencies(samples)
                     else:
                         # Get array sweep paramaters from the real time frequency peaks file
-                        (overone_name, overtone_value, 
+                        (_, _, 
                          fStep, readFREQ, SG_window_size, 
                          Spline_points, Spline_factor) = self.get_frequencies_RT(samples, self._overtone_int)
                     
@@ -770,9 +552,6 @@ class SerialProcess(multiprocessing.Process):
                         
                         if (self.freq_res_current is not None):
                             pass
-# =============================================================================
-#                             print (self.freq_res_current)
-# =============================================================================
                             
                         cmd = str(self._startFreq) + ';' + str(self._stopFreq) + ';' + str(int(fStep)) + '\n'
                         self._serial.write(cmd.encode())
@@ -813,7 +592,6 @@ class SerialProcess(multiprocessing.Process):
                                      # add a little delay at the end of the sweep 
                                      sleep(Constants.SLEEP_EOM_SINGLE)
                                      
-                                     
                                      break
                                  
                                  # DEBUG_0.1.1a
@@ -832,12 +610,6 @@ class SerialProcess(multiprocessing.Process):
                             
                             # STOP SWEEP 
                             # -----------------------------------------
-                            
-                            # VER 0.1.4
-                            _time_elapsed_sweep = time() - timeStart
-# =============================================================================
-#                             print ("SAMPLING TIME = ", _time_elapsed_sweep)
-# =============================================================================
                             
                             if ( self._flag_error_usb == 0 ):
                                 #print(buffer)
@@ -927,32 +699,14 @@ class SerialProcess(multiprocessing.Process):
                             self._Temperature_PID_control()
                         except:
                             print(TAG, "Info: exception set temperature control failed", end='\n')
-                            # Log.i(TAG, "EXCEPTION: exception at serial port read process")
                             self._flag_error_usb = 1
                     
                     # DATA PROCESSING 
                     # -----------------------------------------------------
-                    # TODO if an exception is encountered before do not elaborate
                     if self._flag_error_usb == 0:
-                        
-                        # VER 0.2 BETA
-# =============================================================================
-#                         print ("DEBUG ELABORATE ")
-#                         print ("-------------------------------------")
-#         
-#                         print (self.freq_res_current)
-#                         print (self._overtone_int )
-#         
-#                         print ("-------------------------------------")
-# =============================================================================
-       
                         # VER 0.1.4
                         # set current value of resonance frequency in file
                         if (self.freq_res_current is not None):
-# =============================================================================
-#                             print ("DEBUG print the current values of overtone and frequency ", 
-#                                    self._overtone_int , self.freq_res_current)
-# =============================================================================
                             self.set_frequencies_RT(self._overtone_int , self.freq_res_current)
                         
                         try:
@@ -973,11 +727,6 @@ class SerialProcess(multiprocessing.Process):
                                 print(TAG, "Info: exception general error elaborate data", end=('\n'))
                                 Log.i(TAG, "Info: exception general error elaborate data")
                     
-                    # TODO check the error parser 
-# =============================================================================
-#                     self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, None])
-# =============================================================================
-                    
                     # VER 0.1.4
                     # add a new element to the error / status parser for the TEC STATUS variable 
                     self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, None, self._data_status])
@@ -988,12 +737,6 @@ class SerialProcess(multiprocessing.Process):
                     self._flag_error_usb = 0
                     # Increases sweep counter 
                     k += 1
-                
-# =============================================================================
-#                 if k == self._environment:
-#                    print("DEBUG BAR FINISHED")
-#                    bar.finish()
-# =============================================================================
                 
                 # END ACQUISITION LOOP
                 # -------------------------------------------------------------
@@ -1013,11 +756,6 @@ class SerialProcess(multiprocessing.Process):
     
     def _Temperature_PID_control(self): 
         param = loadtxt(Constants.manual_frequencies_path)
-        
-# =============================================================================
-#         # VER 0.1.5 DEBUG RESET PROCEDURE 
-#         print ("VER 0.1.5 DEBUG RESET PROCEDURE print file parameter", param )
-# =============================================================================
         
         temperature_set = param[0]
         cycling_time_set = param[1]
@@ -1134,22 +872,6 @@ class SerialProcess(multiprocessing.Process):
             ports_avaiable = list(list_ports.comports())
             
             for port in ports_avaiable:
-# =============================================================================
-#                 print ("type of port:", type(port))
-#                 # print ("len of port: ", len(port))
-#                 print ("port: ", port)
-#                 print ("port 0 port : ", port[0])
-#                 print ("port 1 desc: ", port[1])
-#                 print ("port 2 hwid info:", port[2])
-# =============================================================================
-                # print ("port 3 hwid:", port[3])
-                
-# =============================================================================
-#                 if port[2].startswith("USB "):
-#                     found = True
-#                     port_connected.append(port[0])
-# =============================================================================
-                
                 # VER 0.1.5 change the iedntification of the COM port connected to Teensy 4.0 
                 # using USB VID:PID=16C0:0483  VID 0 VENDOR_ID and PID = PRODUCT_ID of USB devices to identify hardware
                 # port[2] = hwid Technical description of serial port 
@@ -1203,43 +925,16 @@ class SerialProcess(multiprocessing.Process):
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
         
-        # VER 0.1.4 get alternative frequency file
-        peaks_mag_current = self.load_frequencies_file_RT()
-# =============================================================================
-#         print (peaks_mag_current)
-# =============================================================================
-        
-        #################################################
-        # TODO CHECK QCM FUNDAMENTAL FREQ 5 MHz or 10 MHz
-        #################################################
-        '''
-        # Checks QCS type 5Mhz or 10MHz
-        # Sets start and stop frequencies for the corresponding overtone
-        if len(peaks_mag) == 5:
-            switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
-            # 0=fundamental, 1=3th overtone and so on
-            (overtone_name,overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
-            print(TAG,"openQCM Device setup: 5 MHz")
-        elif len(peaks_mag) == 3:
-            switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
-            (overtone_name, overtone_value, self._startFreq,self._stopFreq,SG_window_size,spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
-            print(TAG,"openQCM Device setup: 10 MHz")
-        '''
         # Checks QCS type 5Mhz or 10MHz
         # Sets start and stop frequencies for the corresponding overtone
         if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
             switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
             # 0=fundamental, 1=3th overtone and so on
             (overtone_name,overtone_value, self._startFreq, self._stopFreq, SG_window_size,spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
-# =============================================================================
-#             print(TAG,"openQCM Device setup: 5 MHz")
-# =============================================================================
+            
         elif (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
             switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
             (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size,spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
-# =============================================================================
-#             print(TAG,"openQCM Device setup: 10 MHz")
-# =============================================================================
         
         # Sets the frequency step 
         fStep = (self._stopFreq-self._startFreq)/(samples-1)
@@ -1259,11 +954,6 @@ class SerialProcess(multiprocessing.Process):
         # Loads frequencies from file
         # VER 0.1.4 get alternative frequency file
         peaks_mag_current = self.load_frequencies_file_RT()
-        
-# =============================================================================
-#         print ("DEBUG GET FREQUENCIES RT ")
-#         print ("Frequency peaks = ", peaks_mag_current)
-# =============================================================================
         
         # Checks QCM 5Mhz or 10MHz
         # Set current start and stop sweep frequencies
@@ -1338,18 +1028,6 @@ class SerialProcess(multiprocessing.Process):
         # Loads Fundamental frequency and Overtones from file
         peaks_mag = self.load_frequencies_file()
         
-        ############################### 
-        # TODO check the damn QCM type 
-        ###############################
-        
-        '''
-        # Checks QCS type 5Mhz or 10MHz
-        if len(peaks_mag) == 5:
-           filename = Constants.csv_calibration_path
-        elif len(peaks_mag) == 3:
-           filename = Constants.csv_calibration_path10 
-        '''
-        
         # Checks QCS type 5Mhz or 10MHz
         if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
            filename = Constants.csv_calibration_path
@@ -1362,8 +1040,3 @@ class SerialProcess(multiprocessing.Process):
         mag_all   = data[:,1]
         phase_all = data[:,2]
         return freq_all, mag_all, phase_all
-      
-    
-# Instantiate the process and run the method 'run' of the class
-#a=SerialProcess(multiprocessing.Process)
-#a.run()

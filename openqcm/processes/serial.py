@@ -26,7 +26,6 @@ TAG = ""#"[Serial]"
 ###############################################################################
 class SerialProcess(multiprocessing.Process):
     
-    
     ###########################################################################
     # BASELINE CORRECTION
     ###########################################################################
@@ -60,7 +59,6 @@ class SerialProcess(multiprocessing.Process):
         (self.polyfitted_all_phase,self.coeffs_all_phase)=self.baseline_correction(self.freq_all,self.phase_all,8)
         self.phase_beseline_corrected_all= self.phase_all-self.polyfitted_all_phase 
         return self.coeffs_all
-    
     
     ###########################################################################
     # Savitzky-Golay (Smoothing/Denoising Filter)
@@ -157,7 +155,6 @@ class SerialProcess(multiprocessing.Process):
         # loop until the index at FWHM/others is found
         while signal[index_M] > percent*f_max:
             if index_M >= len(signal)-1:
-                #print(TAG, 'WARNING: Right value not found')
                 self._err2 = 1
                 break
             index_M = index_M+1
@@ -455,9 +452,6 @@ class SerialProcess(multiprocessing.Process):
                 if port[2].startswith("USB VID:PID=16C0:0483"):
                     found = True
                     port_connected.append(port[0])
-                #else:
-                #    Gets a list of the available serial ports.
-                #    found_ports.append(port[0])
             if found:
                found_ports = port_connected 
             return found_ports
@@ -531,7 +525,6 @@ class SerialProcess(multiprocessing.Process):
     def load_frequencies_file():
         data  = loadtxt(Constants.cvs_peakfrequencies_path)
         peaks_mag = data[:,0]
-        #peaks_phase = data[:,1] #unused at the moment
         return peaks_mag
         
     ###########################################################################

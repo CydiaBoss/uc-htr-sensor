@@ -43,9 +43,6 @@ class ParserProcess(multiprocessing.Process):
         self._out_queue_A_multi = data_queue_A_multi 
         # phase out queue
         self._out_queue_P_multi = data_queue_P_multi 
-
-        #print(TAG, 'Process ready')
-        #Log.d(TAG, "Process ready")
         
     ###########################################################################
     # Add new raw data and calculated data to the corresponding internal queue

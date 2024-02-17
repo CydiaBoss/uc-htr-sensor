@@ -19,7 +19,6 @@ TAG = ""#"[Calibration]"
 ###############################################################################
 class CalibrationProcess(multiprocessing.Process):
     
-    
     ###########################################################################
     # BASELINE ESTIMATION
     # Estimates Baseline with Least Squares Polynomial Fit (LSP)
@@ -30,8 +29,7 @@ class CalibrationProcess(multiprocessing.Process):
         # Evaluate a polynomial at specific values
         poly_fitted = np.polyval(coeffs,x) 
         return poly_fitted,coeffs       
-      
-        
+    
     ###########################################################################
     # BASELINE CORRECTION
     # estimates signal-baseline for amplitude and phase
@@ -46,7 +44,6 @@ class CalibrationProcess(multiprocessing.Process):
         (self._polyfitted_all_phase,self._coeffs_all_phase) = self.baseline_estimation(readFREQ,data_ph,8)
         self._phase_beseline_corrected_all = data_ph - self._polyfitted_all_phase 
         return self._mag_beseline_corrected_all, self._phase_beseline_corrected_all
-    
     
     ###########################################################################
     # PEAK DETECTION
@@ -69,7 +66,6 @@ class CalibrationProcess(multiprocessing.Process):
         
         return self.max_freq_mag, self.max_value_mag, self.max_freq_phase, self.max_value_phase
 
-
     ###########################################################################
     # Initializing values for process
     ###########################################################################
@@ -84,8 +80,6 @@ class CalibrationProcess(multiprocessing.Process):
         # Instantiate a ParserProcess class for each communication channels
         self._parser1 = parser_process
         self._parser2 = parser_process
-        #self._parser3 = parser_process
-        #self._parser4 = parser_process
         self._parser5 = parser_process
         self._parser6 = parser_process
         self._serial = serial.Serial()
@@ -113,17 +107,12 @@ class CalibrationProcess(multiprocessing.Process):
         self._QCStype = speed
         
         # Variable to process the exception
-        #wrong = False
         # Checks QCStype to calibrate
         if self._QCStype == '5 MHz':
            self._QCStype_int = 0
         elif self._QCStype =='10 MHz':
            self._QCStype_int = 1
-        #else: 
-        #   wrong = True
-        #   print(TAG, "Warning: wrong QCM Sensor selected, set default to @5MHz") 
-        #   self._QCStype_int = 0
-        #if not wrong:
+           
         print(TAG, "Selected Quartz Crystal Sensor:",self._QCStype)
         return self._is_port_available(self._serial.port)
     
@@ -150,10 +139,6 @@ class CalibrationProcess(multiprocessing.Process):
         if self._is_port_available(self._serial.port):
             
             # Sets start, stop, step and range frequencies 
-            #startFreq = Constants.calibration_frequency_start
-            #stopFreq  = Constants.calibration_frequency_stop
-            #samples   = Constants.calibration_default_samples 
-            #fStep     = Constants.calibration_fStep
             readFREQ  = Constants.calibration_readFREQ
             # Gets the state of the serial port
             if not self._serial.isOpen(): 
@@ -207,20 +192,16 @@ class CalibrationProcess(multiprocessing.Process):
                         # CHANGED v2.0
                         # INCREASED maxval=1000000 TO AVOID bar.update(len.buffer) BREAKS THE CALIBRATION  
                         #################################################################################
-                        # bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=830000).start()
                         # READS and decodes sweep from the serial port
                         while 1:
                             buffer += self._serial.read(self._serial.inWaiting()).decode() #Constants.app_encoding 
-                            #len_buffer = len(buffer)
-                            #bar.update(len_buffer)
                             if 's' in buffer:
                                  break
+                            
                         #################################################################################
                         # CHANGED v2.0
                         # PRINT LEN BUFFER WHEN THE EOM is RECEIVED
                         #################################################################################    
-                        #print("len_buffer = " + str(len_buffer))
-                        # bar.finish()
                         
                         # from a full buffer to a list of string
                         data_raw = buffer.split('\n')
@@ -243,7 +224,6 @@ class CalibrationProcess(multiprocessing.Process):
                             data_ph=data_ph[1:]
                         temp1=np.append(temp1,data_mag)
                         temp2=np.append(temp2,data_ph)
-                        #print('len=',len(temp1),len(temp2))
                         #------------------------------
                         print(TAG,"signal section #{}/{} acquired successfully\n".format(k+1,Constants.calib_sections), end='\r') #10
                             
@@ -252,7 +232,6 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG, "WARNING: ValueError during calibration!")
                         print(TAG, "Please, repeat the calibration after disconnecting/reconnecting device!") 
                         self._flag = 1
-                        #Log.w(TAG, "Warning: ValueError during calibration!"))
 
                         #################################################################################
                         # CHANGED v2.0
@@ -267,7 +246,6 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG, "WARNING: ValueError during calibration!")
                         print(TAG, "Please, repeat the calibration after disconnecting/reconnecting device!") 
                         self._flag = 1
-                        #Log.w(TAG, "Warning (ValueError): convert Raw to float failed") 
                         
                         #################################################################################
                         # CHANGED v2.0
@@ -290,13 +268,6 @@ class CalibrationProcess(multiprocessing.Process):
                         self.stop()
                         break
                 #### END SWEEPS LOOP ####
-                '''
-                # CALLS baseline_correction method
-                (data_mag_baseline, data_ph_baseline) = self.baseline_correction(readFREQ,temp1,temp2)
-                ## ADDS serial data (baseline corrected) to internal queue
-                self._parser1.add1(data_mag_baseline)
-                self._parser2.add2(data_ph_baseline)
-                '''
                 #### STORING DATA TO FILE ###
 		        # CHECKS QCM Sensor type for saving calibration
                 if self._QCStype_int == 0:
@@ -323,8 +294,7 @@ class CalibrationProcess(multiprocessing.Process):
                    print(TAG, "Finding peaks in acquired signals...")
                    try:
                      # CALLS FindPeak method
-                     #(max_freq_mag, max_value_mag, max_freq_phase, max_value_phase)= self.FindPeak(readFREQ, data_mag_baseline, data_ph_baseline, dist=distance)
-                     (max_freq_mag, max_value_mag, max_freq_phase, max_value_phase)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
+                     (max_freq_mag, _, max_freq_phase, _)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
                      print(TAG, "{} peaks were found at frequencies: {} Hz\n".format(len(max_freq_mag),max_freq_mag))
                      if (len(max_freq_mag)==5 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (len(max_freq_mag)==3 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
                         # SAVES independently of the state of the export box
@@ -334,33 +304,28 @@ class CalibrationProcess(multiprocessing.Process):
                         FileStorage.TXT_sweeps_save(filename_calib, Constants.csv_calibration_export_path, readFREQ, temp1, temp2)
                         print(TAG, "Calibration for {} saved in: {}".format(self._QCStype,path_calib))
                      else:
-                        #print('a',max_freq_mag, max_freq_phase)
                         print(TAG, "WARNING: Error during peak detection, incompatible peaks number or frequencies!")
                         print(TAG, "Please, repeat the calibration!")
                         self._flag2 = 1
                    except:
-                     #print('b',max_freq_mag, max_freq_phase)
                      print(TAG, "WARNING: Error during peak detection, incompatible peaks number or frequencies!")
                      print(TAG, "Please, repeat the calibration!") 
                      self._flag2 = 1
 		             
                 if self._flag == 0 and self._flag2 == 0:
                      print(TAG, 'Calibration success for baseline correction!')
-                     #print(TAG, 'Please, now click STOP to terminate')
+
                 # ADDS error flags to internal queue
                 self._parser5.add5([self._flag,self._flag2])    
-                #self._parser6.add6([self._flag,self._flag2,self._flag2,len_buffer])
                 #### CLOSES serial port ####
                 self._serial.close()
                 
-          
     ###########################################################################
     # Stops acquiring data
     ###########################################################################
     def stop(self):
         #Signals the process to stop acquiring data.
         self._exit.set()
-        
         
     ###########################################################################    
     # Automatically selects the serial ports for Teensy (macox/windows)
@@ -382,13 +347,9 @@ class CalibrationProcess(multiprocessing.Process):
                 if port[2].startswith("USB VID:PID=16C0:0483"):
                     found = True
                     port_connected.append(port[0])
-                #else:
-                #    Gets a list of the available serial ports.
-                #    found_ports.append(port[0])
             if found:
                found_ports = port_connected 
             return found_ports
-
 
     ###########################################################################
     # Gets a list of the common serial baud rates, in bps (only 115200 used)
@@ -397,7 +358,6 @@ class CalibrationProcess(multiprocessing.Process):
     def get_speeds():
         #:return: List of the common baud rates, in bps :rtype: str list.
         return [str(v) for v in ['10 MHz', '5 MHz']]
-
 
     ###########################################################################
     # Checks if the serial port is currently connected

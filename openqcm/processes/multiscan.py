@@ -21,7 +21,6 @@ from openqcm.common.architecture import Architecture,OSType
 
 TAG = ""#"[Multiscan]"
 
-
 class MultiscanProcess(multiprocessing.Process):
 
     # BASELINE CORRECTION
