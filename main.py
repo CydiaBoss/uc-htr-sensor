@@ -1076,6 +1076,12 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):
+        # Warn if saving is off
+        if not self.auto_export.isChecked():
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to start without saving any data?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
+
         # Disable
         self.disable_all_ctrls()
         
