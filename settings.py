@@ -1,4 +1,5 @@
 import configparser
+from typing import Union
 
 class Settings:
     """
@@ -27,11 +28,14 @@ class Settings:
         f.write(f"""[DEFAULT]\nref_resist={self.DEFAULT["REF_RESIST"]}\nref_resist_unit={self.DEFAULT["REF_RESIST_UNIT"]}\nref_volt={self.DEFAULT["REF_VOLT"]}""")
         f.close()
         
-    def get_setting(self, key : str):
+    def get_setting(self, key : str) -> Union[str, None]:
         """
         Read settings
         """
-        return self.config['DEFAULT'][key]
+        if key in self.config['DEFAULT']:
+            return self.config['DEFAULT'][key]
+        else:
+            return None
 
     def update_setting(self, key : str, value):
         """

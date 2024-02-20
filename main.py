@@ -73,12 +73,16 @@ class Window(Ui_MainWindow):
         # Enable Ports
         self.enable_ports()
 
-        # Make Peak List
+        # Make Calibration Stuff
+        self.qcm_calibrated = False
         self.peaks = []
 
         # Set Size
         self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
         self.resize(MIN_WIDTH, MIN_HEIGHT)
+
+        # Startup Stuff
+        self.setup_memory()
 
     def setup_plots(self):
         '''
@@ -189,6 +193,25 @@ class Window(Ui_MainWindow):
 
         # Measurement Selection
         self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
+
+    def setup_memory(self):
+        """
+        Restore previous positions
+        """
+        # Restore COM selection
+        htr_serial_memory = SETTINGS.get_setting("last_htr_port")
+        qcm_serial_memory = SETTINGS.get_setting("last_qcm_port")
+
+        if htr_serial_memory is not None and self.htr_serial.findText(htr_serial_memory) != -1:
+            self.htr_serial.setCurrentText(htr_serial_memory)
+
+        if qcm_serial_memory is not None and self.qcm_serial.findText(qcm_serial_memory) != -1:
+            self.qcm_serial.setCurrentText(qcm_serial_memory)
+
+        # Restore QC Chip Type selection
+        qc_type = SETTINGS.get_setting("last_qc_chip")
+        if qc_type is not None:
+            self.qc_type.setCurrentText(qc_type)
 
     def disable_all_ctrls(self):
         """
@@ -354,6 +377,7 @@ class Window(Ui_MainWindow):
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR", 5000)
             self.htr_port = self.htr_serial.currentText()
+            SETTINGS.update_setting("last_htr_port", self.htr_port)
             self.connected.emit()
 
         # Unlock
@@ -399,6 +423,7 @@ class Window(Ui_MainWindow):
             self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM", 5000)
             self.qcm_port = self.qcm_serial.currentText()
+            SETTINGS.update_setting("last_qcm_port", self.qcm_port)
             self.connected.emit()
 
         # Unlock
@@ -412,8 +437,13 @@ class Window(Ui_MainWindow):
         Enables calibration if is
         """
         connect = self.htr_port is not None and self.qcm_port is not None
-        if connect:
+
+        # If only QCM
+        if self.qcm_port is not None:
             self.enable_calibrate()
+
+        # If only HTR
+        if self.htr_port is not None:
             self.enable_export()
             self.enable_start()
 
@@ -580,6 +610,7 @@ class Window(Ui_MainWindow):
 
         # flag for terminating calibration
         stop_flag = 0
+        success = False
 
         # vector2[0] and vector3[0] flag error
         vector2 = self.qcm_ctrl.worker.get_t3_buffer()
@@ -611,6 +642,7 @@ class Window(Ui_MainWindow):
             if vector2[0]== 0 and vector3[0]== 0:
                 labelbar = 'Calibration Success for baseline correction!'
                 stop_flag=1
+                success = True
             
             # Error Message
             elif vector2[0]== 1 or vector3[0]== 1:
@@ -630,9 +662,16 @@ class Window(Ui_MainWindow):
             self.qcm_timer.stop()
             self.qcm_ctrl.stop()
             self.enable_calibrate()
-            self.enable_measurement()
-            self.enable_export()
-            self.enable_start()
+
+            # Enable measurement if successful
+            if success:
+                self.enable_measurement()
+                self.qcm_calibrated = True
+
+            # Enable this if success or htr is already on
+            if success or self.htr_port is not None:
+                self.enable_export()
+                self.enable_start()
 
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()
@@ -1054,9 +1093,13 @@ class Window(Ui_MainWindow):
     def on_calibrate_btn_clicked(self):
         # Disable
         self.disable_all_ctrls()
+        self.qcm_calibrated = False
 
         # Start
         self.start_qcm_calibrate()
+
+        # Save QC Selection
+        SETTINGS.update_setting("last_qc_chip", self.qc_type.currentText())
 
     @QtCore.pyqtSlot()
     def on_auto_export_clicked(self):
@@ -1078,7 +1121,19 @@ class Window(Ui_MainWindow):
     def on_start_btn_clicked(self):
         # Warn if saving is off
         if not self.auto_export.isChecked():
-            confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to start without saving any data?"), QMessageBox.Yes | QMessageBox.No)
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: Saving Disabled"), _translate("MainWindow", "Are you sure you want to start without saving any data?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
+            
+        # Warn if one of the ports is not connected
+        if self.qcm_port is None or self.htr_port is None:
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: Missing Sensor"), _translate("MainWindow", f"You are missing the {'QCM' if self.qcm_port is None else "HTR"} sensor! Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
+            
+        # Warn if not calibrated
+        if self.qcm_port is not None and not self.qcm_calibrated:
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: No Calibration"), _translate("MainWindow", "You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
             if confirmation == QMessageBox.No:
                 return
 
@@ -1094,10 +1149,12 @@ class Window(Ui_MainWindow):
         self.reset_btn.setEnabled(True)
 
         # Start HTR
-        self.start_htr()
+        if self.htr_port is not None:
+            self.start_htr()
 
         # Start QCM
-        self.start_qcm()
+        if self.qcm_port is not None and self.qcm_calibrated:
+            self.start_qcm()
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):

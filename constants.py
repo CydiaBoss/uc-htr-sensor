@@ -21,6 +21,7 @@ READ_TIMEOUT = 5
 READ_DELAY = 1.0
 MIN_WIDTH = 1750
 MIN_HEIGHT = 1000
+UNCERTAINTIES = 0.10
 
 # References
 REF_RESIST = lambda : SETTINGS.get_setting("ref_resist")

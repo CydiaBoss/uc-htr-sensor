@@ -1,5 +1,5 @@
 import multiprocessing
-from constants import Constants, Architecture, OSType
+from constants import UNCERTAINTIES, Constants, Architecture, OSType
 
 from openqcm.common.fileStorage import FileStorage
 
@@ -281,34 +281,66 @@ class CalibrationProcess(multiprocessing.Process):
 		        
 		        # CHECKS the exceptions
                 if self._flag == 0:
-                   # CALLS baseline_correction method
-                   print(TAG,"Baseline Correction Process Started")
-                   (data_mag_baseline, data_ph_baseline) = self.baseline_correction(readFREQ,temp1,temp2)
-                   ## ADDS serial data (baseline corrected) to internal queue
-                   self._parser1.add1(data_mag_baseline)
-                   self._parser2.add2(data_ph_baseline)
-                   print(TAG,"Baseline Correction Process Completed")
-                   print(TAG,"Peak Detection Process Started")
-                   print(TAG, "Finding peaks in acquired signals...")
-                   try:
-                     # CALLS FindPeak method
-                     (max_freq_mag, _, max_freq_phase, _)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
-                     print(TAG, "{} peaks were found at frequencies: {} Hz\n".format(len(max_freq_mag),max_freq_mag))
-                     if (len(max_freq_mag)==5 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (len(max_freq_mag)==3 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
+                    # CALLS baseline_correction method
+                    print(TAG,"Baseline Correction Process Started")
+                    (data_mag_baseline, data_ph_baseline) = self.baseline_correction(readFREQ,temp1,temp2)
+                    ## ADDS serial data (baseline corrected) to internal queue
+                    self._parser1.add1(data_mag_baseline)
+                    self._parser2.add2(data_ph_baseline)
+                    print(TAG,"Baseline Correction Process Completed")
+                    print(TAG,"Peak Detection Process Started")
+                    print(TAG, "Finding peaks in acquired signals...")
+                    try:
+                        # CALLS FindPeak method
+                        (max_freq_mag, _, max_freq_phase, _)= self.FindPeak(readFREQ, temp1, temp2, dist=distance)
+                        print(TAG, "{} peaks were found at frequencies: {} Hz\n".format(len(max_freq_mag),max_freq_mag))
+                        if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
+                            print(TAG, "Found the fundamental frequency!")
+                        else:
+                            print(TAG, "WARNING: Error during peak detection, could not find fundamential frequency!")
+                            print(TAG, "Please, repeat the calibration!")
+                            self._flag2 = 1
+
+                        print(max_freq_mag)
+                        print(max_freq_phase)
+
+                        # If list do not match in length, attempt to match
+                        # TODO will need to fix this eventually
+                        if len(max_freq_mag) < len(max_freq_phase):
+                            temp_freq = []
+                            print(TAG, "Attempting to match missing frequencies")
+                            for i in range(len(max_freq_phase)):
+                                found = False
+                                for j in range(len(max_freq_mag)):
+                                    # Found Match
+                                    if max_freq_mag[j] < max_freq_phase[i] * (1 + UNCERTAINTIES) and max_freq_mag[j] > max_freq_phase[i] * (1 - UNCERTAINTIES):
+                                        temp_freq.append(max_freq_mag[j])
+                                        found = True
+                                        break
+
+                                    # If too big, assume none
+                                    elif max_freq_phase[i] * (1 + UNCERTAINTIES) < max_freq_mag[j]:
+                                        temp_freq.append(max_freq_phase[i])
+                                        found = True
+                                        break
+
+                                # If still not found, just add
+                                if not found:
+                                    temp_freq.append(max_freq_phase[i])
+
+                            print(temp_freq)
+                            max_freq_mag = np.array(temp_freq)
+
                         # SAVES independently of the state of the export box
                         print(TAG,"Saving data in file...")
-                        np.savetxt(path, np.column_stack([max_freq_mag,max_freq_phase]))
+                        np.savetxt(path, np.column_stack([max_freq_mag, max_freq_phase]))
                         print(TAG, "Peak frequencies for {} saved in: {}".format(self._QCStype,path))
                         FileStorage.TXT_sweeps_save(filename_calib, Constants.csv_calibration_export_path, readFREQ, temp1, temp2)
                         print(TAG, "Calibration for {} saved in: {}".format(self._QCStype,path_calib))
-                     else:
-                        print(TAG, "WARNING: Error during peak detection, incompatible peaks number or frequencies!")
-                        print(TAG, "Please, repeat the calibration!")
+                    except:
+                        print(TAG, "WARNING: Outed. Error during peak detection, incompatible peaks number or frequencies!")
+                        print(TAG, "Please, repeat the calibration!") 
                         self._flag2 = 1
-                   except:
-                     print(TAG, "WARNING: Error during peak detection, incompatible peaks number or frequencies!")
-                     print(TAG, "Please, repeat the calibration!") 
-                     self._flag2 = 1
 		             
                 if self._flag == 0 and self._flag2 == 0:
                      print(TAG, 'Calibration success for baseline correction!')
