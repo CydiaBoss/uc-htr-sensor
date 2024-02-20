@@ -16,19 +16,28 @@ import datetime
 # VER 0.1.2
 from time import time, strftime, localtime, sleep
 
-#import pywt
+# NEW Signals
+from PyQt5.QtCore import pyqtSignal, QObject
 
 TAG = ""#"[Worker]"
 
 ###############################################################################
 # Service that creates and concentrates all processes to run the application
 ###############################################################################
-class Worker:
+class Worker(QObject):
+
+    # Signals
+    progress = pyqtSignal()
+    frequency = pyqtSignal(float)
+    dissipation = pyqtSignal(float)
+    temperature = pyqtSignal(float)
 
     ###########################################################################
     # Creates all processes involved in data acquisition and processing
     ###########################################################################
-    def __init__(self,QCS_on = None,
+    def __init__(self, 
+                      parent = None,
+                      QCS_on = None,
                       port = None,
                       speed = Constants.serial_default_overtone,
                       samples = Constants.argument_default_samples,
@@ -43,6 +52,8 @@ class Worker:
         :param export_enabled: If true, data will be stored or exported in a file :type export_enabled: bool.
         :param export_path: If specified, defines where the data will be exported :type export_path: str.
         """
+        super().__init__(parent)
+
         # data queues 
         self._queue1 = Queue()
         self._queue2 = Queue()
@@ -136,8 +147,6 @@ class Worker:
         self._sampling_time = sampling_time
         self.time_elapsed = 0
         # init a ring buffer of corresponding size 
-        # VER 0.1.4 TODO checkthe default smapling time 
-        SAMPLING_TIME_DEFAULT = 7
         self.ring_buffer_len =  1
         
         # init a list of ring buffer 
@@ -198,48 +207,47 @@ class Worker:
             # SINGLE 
             # -----------------------------------------------------------------
             if self._source == SourceType.serial:
-               (self._overtone_name,
-                self._overtone_value, 
-                self._fStep, 
-                self._readFREQ, 
-                SG_window_size, 
-                spline_points, 
-                _) = self._acquisition_process.get_frequencies(self._samples)
-               
-               print("")
-               print(TAG, "DATA MAIN INFORMATION")
-               print(TAG, "Selected frequency: {} - {}Hz".format(self._overtone_name,self._overtone_value))
-               print(TAG, "Frequency start: {}Hz".format(self._readFREQ[0]))
-               print(TAG, "Frequency stop:  {}Hz".format(self._readFREQ[-1]))
-               print(TAG, "Frequency range: {}Hz".format(self._readFREQ[-1]-self._readFREQ[0]))
-               print(TAG, "Number of samples: {}".format(self._samples-1))
-               print(TAG, "Sample rate: {}Hz".format(self._fStep))
-               print(TAG, "History buffer size: 180 min\n")
-               print(TAG, "MAIN PROCESSING INFORMATION")
-               print(TAG, "Method for baseline estimation and correction:")
-               print(TAG, "Least Squares Polynomial Fit (LSP)")
-               #print(TAG, "Degree of the fitting polynomial: 8")
-               print(TAG, "Savitzky-Golay Filtering")
-               print(TAG, "Order of the polynomial fit: {}".format(Constants.SG_order))
-               print(TAG, "Size of data window (in samples): {}".format(SG_window_size))
-               print(TAG, "Oversampling using spline interpolation")
-               print(TAG, "Spline points (in samples): {}".format(spline_points-1))
-               print(TAG, "Resolution after oversampling: {}Hz".format((self._readFREQ[-1]-self._readFREQ[0])/(spline_points-1)))
+                (self._overtone_name,
+                    self._overtone_value, 
+                    self._fStep, 
+                    self._readFREQ, 
+                    SG_window_size, 
+                    spline_points, 
+                    _) = self._acquisition_process.get_frequencies(self._samples)
+                
+                print("")
+                print(TAG, "DATA MAIN INFORMATION")
+                print(TAG, "Selected frequency: {} - {}Hz".format(self._overtone_name,self._overtone_value))
+                print(TAG, "Frequency start: {}Hz".format(self._readFREQ[0]))
+                print(TAG, "Frequency stop:  {}Hz".format(self._readFREQ[-1]))
+                print(TAG, "Frequency range: {}Hz".format(self._readFREQ[-1]-self._readFREQ[0]))
+                print(TAG, "Number of samples: {}".format(self._samples-1))
+                print(TAG, "Sample rate: {}Hz".format(self._fStep))
+                print(TAG, "History buffer size: 180 min\n")
+                print(TAG, "MAIN PROCESSING INFORMATION")
+                print(TAG, "Method for baseline estimation and correction:")
+                print(TAG, "Least Squares Polynomial Fit (LSP)")
+                
+                print(TAG, "Savitzky-Golay Filtering")
+                print(TAG, "Order of the polynomial fit: {}".format(Constants.SG_order))
+                print(TAG, "Size of data window (in samples): {}".format(SG_window_size))
+                print(TAG, "Oversampling using spline interpolation")
+                print(TAG, "Spline points (in samples): {}".format(spline_points-1))
+                print(TAG, "Resolution after oversampling: {}Hz".format((self._readFREQ[-1]-self._readFREQ[0])/(spline_points-1)))
                
             # CALIBRATION
             elif self._source == SourceType.calibration:
-               print("")
-               print(TAG, "MAIN CALIBRATION INFORMATION")
-               print(TAG, "Calibration frequency start:  {}Hz".format(Constants.calibration_frequency_start))
-               print(TAG, "Calibration frequency stop:  {}Hz".format(Constants.calibration_frequency_stop))
-               print(TAG, "Frequency range: {}Hz".format(Constants.calibration_frequency_stop-Constants.calibration_frequency_start))
-               print(TAG, "Number of samples: {}".format(Constants.calibration_default_samples-1))
-               print(TAG, "Sample rate: {}Hz".format(Constants.calibration_fStep))
+                print("")
+                print(TAG, "MAIN CALIBRATION INFORMATION")
+                print(TAG, "Calibration frequency start:  {}Hz".format(Constants.calibration_frequency_start))
+                print(TAG, "Calibration frequency stop:  {}Hz".format(Constants.calibration_frequency_stop))
+                print(TAG, "Frequency range: {}Hz".format(Constants.calibration_frequency_stop-Constants.calibration_frequency_start))
+                print(TAG, "Number of samples: {}".format(Constants.calibration_default_samples-1))
+                print(TAG, "Sample rate: {}Hz".format(Constants.calibration_fStep))
                
                
             # START MULTI SCAN FREQUENCY PROCESS 
             elif self._source == SourceType.multiscan: 
-                # self._readFREQ = self._acquisition_process.get_readFREQ(self._samples)
                 # get the number of total peaks in PeakFrequencies.txt
                 data  = loadtxt(Constants.cvs_peakfrequencies_path)
                 peaks_mag = data[:,0]
@@ -468,6 +476,7 @@ class Worker:
         self._d1_store = data[1] # data
         self._t1_buffer.append(data[0])
         self._d1_buffer.append(data[1])
+        self.frequency.emit(data[1])
         
     # DISSIPATION 
     def _queue_data4(self,data):
@@ -477,6 +486,7 @@ class Worker:
         self._d2_store = data[1] # data
         self._t2_buffer.append(data[0])
         self._d2_buffer.append(data[1])
+        self.dissipation.emit(data[1])
     
     # TEMPERATURE
     def _queue_data5(self,data):
@@ -487,6 +497,10 @@ class Worker:
         
         self._t3_buffer.append(data[0])
         self._d3_buffer.append(data[1])
+        self.temperature.emit(data[1])
+
+        # Ping progress signal
+        self.progress.emit()
         
         # TODO datalog the time is now 
         # for storing relative time 

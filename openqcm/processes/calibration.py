@@ -180,7 +180,6 @@ class CalibrationProcess(multiprocessing.Process):
                         
                         # WRITES encoded command to the serial port
                         cmd = str(startFreq) + ';' + str(stopFreq) + ';' + str(int(fStep)) + '\n'
-                        #print(cmd)
                         self._serial.write(cmd.encode())
                         
                         # Initializes buffer and strs

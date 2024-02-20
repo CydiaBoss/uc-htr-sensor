@@ -41,7 +41,8 @@ FREQ_AXIS_CONFIG = {
     "text": "Frequency", 
     "units": "Hz", 
 }
-HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Temperature (degC)"\n'
+HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Temperature (degC)"'
+QCM_HEADER = f'"Time","Frequency (Hz)","Dissipation","Temperature (degC)"'
 
 # QCM Specific Constants
 ###############################################################################    

@@ -207,8 +207,10 @@ class QCMSensorCtrl(QObject):
     Class of sensor controllers for the QCM system
     '''
     # Signals
-    calibration_progress = pyqtSignal(float)
-    calibration_finished = pyqtSignal()
+    progress = pyqtSignal()
+    frequency = pyqtSignal(float)
+    dissipation = pyqtSignal(float)
+    temperature = pyqtSignal(float)
 
     # References
     reference_value_frequency = 0
@@ -250,6 +252,12 @@ class QCMSensorCtrl(QObject):
                              source = SourceType.serial,
                              export_enabled = False, 
                              sampling_time = -1)
+        
+        # Setup Slots for Single
+        self.worker.progress.connect(self.progress.emit)
+        self.worker.frequency.connect(self.frequency.emit)
+        self.worker.dissipation.connect(self.dissipation.emit)
+        self.worker.temperature.connect(self.temperature.emit)
         
         # Start
         self.worker.start()

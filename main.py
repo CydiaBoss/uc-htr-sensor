@@ -26,11 +26,17 @@ _translate = QtCore.QCoreApplication.translate
 class Window(Ui_MainWindow):
 
     # Data Storage
+    # HTR
     raw_resistance = np.array([])
     resistance = np.array([])
     humidity = np.array([])
-    temperature = np.array([])
+    htr_temperature = np.array([])
     htr_time = np.array([])
+    # QCM
+    frequency = np.array([])
+    dissipation = np.array([])
+    qcm_temperature = np.array([])
+    qcm_time = np.array([])
 
     # Signal
     connected = QtCore.pyqtSignal()
@@ -407,10 +413,10 @@ class Window(Ui_MainWindow):
 
         # Signal/Slots
         self.htr_thread.started.connect(self.htr_ctrl.run)
-        self.htr_ctrl.progress.connect(self.update_time)
+        self.htr_ctrl.progress.connect(self.update_htr_time)
         self.htr_ctrl.resistance.connect(self.resistance_processing)
         self.htr_ctrl.humidity.connect(self.humidity_processing)
-        self.htr_ctrl.temperature.connect(self.temperature_processing)
+        self.htr_ctrl.temperature.connect(self.htr_temperature_processing)
         self.htr_ctrl.finished.connect(self.htr_thread.quit)
         self.htr_ctrl.finished.connect(self.htr_ctrl.deleteLater)
         self.htr_thread.finished.connect(self.htr_thread.deleteLater)
@@ -418,11 +424,11 @@ class Window(Ui_MainWindow):
         # Initialize Data Collection
         self.htr_thread.start()
 
-    def update_time(self):
+    def update_htr_time(self):
         """
-        Update the time array
+        Update the time array for htr
         """
-        self.htr_time = np.append(self.htr_time, datetime.now().strftime("%H:%M:%S"))
+        self.htr_time = np.append(self.htr_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
 
     def resistance_processing(self, time_at : float, r_data : float):
         """
@@ -482,7 +488,7 @@ class Window(Ui_MainWindow):
         else:
             self.humd_avg_50.setText("N/A")
 
-    def temperature_processing(self, time_at : float, t_data : float):
+    def htr_temperature_processing(self, time_at : float, t_data : float):
         """
         Processes the temperature data
         """
@@ -491,20 +497,20 @@ class Window(Ui_MainWindow):
             self.temp_override = False
         else:
             self.temp_data.cb_append_data_point(t_data, time_at)
-        self.temperature = np.append(self.temperature, t_data)
+        self.htr_temperature = np.append(self.htr_temperature, t_data)
 
         # Calculate Temperature AVGs
-        temp_size = self.temperature.size
+        temp_size = self.htr_temperature.size
         
-        self.temp_avg.setText(str(round(self.temperature.mean(), 2)) + "°C")
+        self.temp_avg.setText(str(round(self.htr_temperature.mean(), 2)) + "°C")
 
         if temp_size > 15:
-            self.temp_avg_15.setText(str(round(self.temperature[-15:].mean(), 2)) + "°C")
+            self.temp_avg_15.setText(str(round(self.htr_temperature[-15:].mean(), 2)) + "°C")
         else:
             self.temp_avg_15.setText("N/A")
 
         if temp_size > 50:
-            self.temp_avg_50.setText(str(round(self.temperature[-50:].mean(), 2)) + "°C")
+            self.temp_avg_50.setText(str(round(self.htr_temperature[-50:].mean(), 2)) + "°C")
         else:
             self.temp_avg_50.setText("N/A")
 
@@ -645,6 +651,13 @@ class Window(Ui_MainWindow):
 
         # Start Timer
         self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))
+
+        # Save Data Signals if needed
+        if self.auto_export:
+            self.qcm_ctrl.progress.connect(self.update_qcm_time)
+            self.qcm_ctrl.frequency.connect(self.frequency_processing)
+            self.qcm_ctrl.dissipation.connect(self.dissipation_processing)
+            self.qcm_ctrl.temperature.connect(self.qcm_temperature_processing)
 
         # Start
         self.qcm_thread.start()
@@ -856,6 +869,30 @@ class Window(Ui_MainWindow):
         elif (index == 4):
             self.diss_d9.setText(str(label))
 
+    def update_qcm_time(self):
+        """
+        Update the time array for qcm
+        """
+        self.qcm_time = np.append(self.qcm_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
+
+    def frequency_processing(self, data : float):
+        """
+        Processes the frequency values from qcm
+        """
+        self.frequency = np.append(self.frequency, data)
+
+    def dissipation_processing(self, data : float):
+        """
+        Processes the dissipation values from qcm
+        """
+        self.dissipation = np.append(self.dissipation, data)
+
+    def qcm_temperature_processing(self, data : float):
+        """
+        Processes the temperature values from qcm
+        """
+        self.qcm_temperature = np.append(self.qcm_temperature, data)
+
     def clear_plots(self):
         """
         Clear the graphs
@@ -873,7 +910,7 @@ class Window(Ui_MainWindow):
         self.raw_resistance = np.array([])
         self.resistance = np.array([])
         self.humidity = np.array([])
-        self.temperature = np.array([])
+        self.htr_temperature = np.array([])
         self.htr_time = np.array([])
 
         # Clear Progress
@@ -893,11 +930,21 @@ class Window(Ui_MainWindow):
         f = open(self.file_dest.text().strip(), 'w')
 
         # Add header
-        f.write(HTR_HEADER)
+        f.write(HTR_HEADER + ",," + QCM_HEADER + "\n")
 
         # Write
-        for i in range(self.htr_time.size):
-            f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.temperature[i]}"\n')
+        for i in range(max(self.htr_time.size, self.qcm_time.size)):
+            # Write HTR portion first if exist
+            if self.htr_time.size > i:
+                f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
+            else:
+                f.write(",,,,,")
+
+            # Write QCM portion now if exist
+            if self.qcm_time.size > i:
+                f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
+            else:
+                f.write(",,,\n")
 
             # Flush in parts
             if i % AUTO_FLUSH == 0:
