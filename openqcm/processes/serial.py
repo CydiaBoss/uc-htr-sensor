@@ -1,11 +1,8 @@
 import multiprocessing
-import datetime
-
-from constants import Constants
+from constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
-from openqcm.common.architecture import Architecture,OSType
 
 from time import time
 import serial

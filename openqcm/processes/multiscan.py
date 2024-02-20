@@ -1,5 +1,5 @@
 import multiprocessing
-from constants import Constants
+from constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.fileStorage import FileStorage
@@ -15,9 +15,6 @@ from scipy.interpolate import UnivariateSpline
 from time import sleep
 
 from numpy import loadtxt
-
-# DEV RAWDATA
-from openqcm.common.architecture import Architecture,OSType
 
 TAG = ""#"[Multiscan]"
 

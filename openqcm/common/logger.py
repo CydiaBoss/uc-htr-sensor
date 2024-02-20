@@ -3,9 +3,8 @@ import logging.handlers
 import sys
 from enum import Enum
 
-from openqcm.common.architecture import Architecture
 from openqcm.common.fileManager import FileManager
-from constants import Constants
+from constants import Constants, Architecture
 
 ###############################################################################
 # Logging package - All packages can use this module

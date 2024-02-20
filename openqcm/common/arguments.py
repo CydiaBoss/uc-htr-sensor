@@ -4,22 +4,18 @@ from openqcm.common.logger import Logger as Log
 from openqcm.common.logger import LoggerLevel
 from constants import Constants
 
-
 TAG = ""#"Arguments"
-
 
 ###############################################################################
 # Creates and parses the arguments to be used by the application
 ###############################################################################
 class Arguments:
-
-    
+  
     ###########################################################################
     # Initializes
     ###########################################################################
     def __init__(self):
         self._parser = None
-
 
     ###########################################################################
     # Creates and parses the arguments to be used by the application.
@@ -52,7 +48,6 @@ class Arguments:
                             help="Specify number of sample to show on plot"
                             )
         self._parser = parser.parse_args()
-
 
     ###########################################################################
     # Sets the user specified log level
