@@ -55,34 +55,22 @@ class Window(Ui_MainWindow):
         # Setup Graphs
         self.setup_plots()
 
-        # Setup Ports
-        self.htr_port : str = None
-        self.qcm_port : str = None
-
-        # Setup Dropdowns
-        self.ports = []
-        self.update_ports()
-
         # Setup Signals
         self.setup_signals()
 
-        # Setup Controllers
-        self.htr_ctrl : HTRSensorCtrl = None
-        self.qcm_ctrl : QCMSensorCtrl = None
+        # Setup Variables
+        self.setup_variable()
 
         # Enable Ports
+        self.update_ports()
         self.enable_ports()
 
-        # Make Calibration Stuff
-        self.qcm_calibrated = False
-        self.peaks = []
+        # Startup Memory Stuff
+        self.setup_memory()
 
         # Set Size
         self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
         self.resize(MIN_WIDTH, MIN_HEIGHT)
-
-        # Startup Stuff
-        self.setup_memory()
 
     def setup_plots(self):
         '''
@@ -193,6 +181,28 @@ class Window(Ui_MainWindow):
 
         # Measurement Selection
         self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
+
+    def setup_variable(self):
+        """
+        Setup all the local variables
+        """
+        # Setup Ports
+        self.htr_port : str = None
+        self.qcm_port : str = None
+
+        # Setup Dropdowns
+        self.ports = []
+
+        # Setup Controllers
+        self.htr_ctrl : HTRSensorCtrl = None
+        self.qcm_ctrl : QCMSensorCtrl = None
+
+        # Make Calibration Stuff
+        self.qcm_calibrated = False
+        self.peaks = []
+
+        # File Save Related
+        self.saved = False
 
     def setup_memory(self):
         """
@@ -960,6 +970,12 @@ class Window(Ui_MainWindow):
         self.humd_override = True
         self.temp_override = True
 
+        # Override other plots with empty data
+        self.amp_data.cb_set_data([0,], [0,])
+        self.phase_data.cb_set_data([0,], [0,])
+        self.freq_data.cb_set_data([0,], [0,])
+        self.dissipate_data.cb_set_data([0,], [0,])
+
     def clear_data(self):
         """
         Clear the graphs
@@ -1148,6 +1164,9 @@ class Window(Ui_MainWindow):
         self.stop_btn.setEnabled(True)
         self.reset_btn.setEnabled(True)
 
+        # Update save status
+        self.saved = False
+
         # Start HTR
         if self.htr_port is not None:
             self.start_htr()
@@ -1167,6 +1186,7 @@ class Window(Ui_MainWindow):
         # Save if wanted
         if self.auto_export.isChecked():
             self.save_data()
+            self.saved = True
 
         # Enable button
         self.start_btn.setEnabled(True)
@@ -1179,6 +1199,11 @@ class Window(Ui_MainWindow):
         self.clear_plots()
         self.clear_data()
         self.stop_sensors()
+
+        # Check Saved & Do if not
+        if self.auto_export.isChecked() and not self.saved:
+            self.save_data()
+            self.saved = True
 
         # Enable stuff
         self.enable_measurement()
