@@ -1,6 +1,7 @@
 import re
 import time
 from datetime import datetime
+from typing import Union
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -141,7 +142,7 @@ class Window(Ui_MainWindow):
         self.freq_plot.setParent(None)
         self.freq_plot.deleteLater()
         self.freq_axis = LiveAxis('left', text=_translate("MainWindow", "Frequency"), units="Hz")
-        self.freq_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Frequency"), axisItems={"left": self.freq_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Frequency") + " (dB)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.freq_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Frequency"), axisItems={"left": self.freq_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Frequency") + " (Hz)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.freq_curve = LiveLinePlot(brush="blue", pen="blue")
         self.freq_plot.addItem(self.freq_curve)
         self.freq_plot.setBackground(background="w")
@@ -719,13 +720,18 @@ class Window(Ui_MainWindow):
         if prep_process:
             return
 
+        # Freq Plot
         vector1 = np.array(vector1) - self.qcm_ctrl.reference_value_frequency
-        print(vector1)
         self.freq_data.cb_set_data(x=self.qcm_ctrl.worker.get_t1_buffer(), y=vector1, pen=Constants.plot_colors[6])
 
+        # Dissipationi Plot
         vector2 = np.array(vector2) - self.qcm_ctrl.reference_value_dissipation
-        print(vector2)
         self.dissipate_data.cb_set_data(x=self.qcm_ctrl.worker.get_t2_buffer(), y=vector2, pen=Constants.plot_colors[7])
+
+        # Update indicators
+        for i in range(5):
+            self.update_indicator_freq(i, None if self.freq_list.currentIndex() != i else vector1[0])
+            self.update_indicator_dissipationn(i, None if self.freq_list.currentIndex() != i else vector2[0])
         
     def multi_processing(self):
         """
@@ -809,6 +815,46 @@ class Window(Ui_MainWindow):
 
         self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
         self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+
+    def update_indicator_freq(self, index : int, value : Union[float, None]):
+        """
+        Update the indicator fields for frequencies
+        """
+        if type(value) == float:
+            label = round(value, 2)
+        else:
+            label = "NAN"
+
+        if (index == 0):
+            self.freq_f1.setText(str(label))
+        elif (index == 1):
+            self.freq_f3.setText(str(label))
+        elif (index == 2):
+            self.freq_f5.setText(str(label))
+        elif (index == 3):
+            self.freq_f7.setText(str(label))
+        elif (index == 4):
+            self.freq_f9.setText(str(label))
+
+    def update_indicator_dissipationn(self, index : int, value : Union[float, None]):
+        """
+        Update the indicator fields for dissipation
+        """
+        if type(value) == float:
+            label = round(value, 2)
+        else:
+            label = "NAN"
+
+        if (index == 0):
+            self.diss_d1.setText(str(label))
+        elif (index == 1):
+            self.diss_d3.setText(str(label))
+        elif (index == 2):
+            self.diss_d5.setText(str(label))
+        elif (index == 3):
+            self.diss_d7.setText(str(label))
+        elif (index == 4):
+            self.diss_d9.setText(str(label))
 
     def clear_plots(self):
         """

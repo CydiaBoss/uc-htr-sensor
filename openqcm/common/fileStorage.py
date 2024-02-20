@@ -46,9 +46,7 @@ class FileStorage:
          # inserts the header if it doesn't exist
          if not header_exists:
             tempFileWriter.writerow(["Date","Time","Relative_time","Temperature", "Resonance_Frequency", "Dissipation"])
-         #csv_time_prefix = strftime(Constants.csv_default_prefix, localtime())
-         #now = datetime.datetime.now()
-         #csv_time_prefix = "{}-{}-{}.{}:{}:{}.{}".format(now.year,now.month,now.day,now.hour,now.minute,now.second,now.microsecond)         
+                    
          fix1= "%Y-%m-%d"
          fix2= "%H:%M:%S"
          csv_time_prefix1 = (strftime(fix1, localtime()))
@@ -56,9 +54,9 @@ class FileStorage:
          d0=float("{0:.2f}".format(data_save0))
          d1=float("{0:.2f}".format(data_save1))
          d2=float("{0:.2f}".format(data_save2))
-         #d3=float("{0:.4e}".format(data_save3))
+         
          tempFileWriter.writerow([csv_time_prefix1,csv_time_prefix2, d0, d1, d2, data_save3])
-         #tempFileWriter.writerow([csv_time_prefix, data_save1, data_save2, data_save3])
+         
         tempFile.close()
     
     # LOG DATA FILE IN MULTISAN MODE 

@@ -226,7 +226,7 @@ class Constants:
     csv_default_prefix = "%Y-%b-%d_%H-%M-%S"#"%H-%M-%S-%d-%b-%Y" # Hour-Minute-Second-month-day-Year
     csv_extension = "csv"
     txt_extension = "txt"
-    csv_export_path = "logged_data"
+    csv_export_path = "data"
     csv_filename = (strftime(csv_default_prefix, localtime()))#+'_DataLog')
     csv_sweeps_export_path = "{}{}{}".format(csv_export_path,slash,csv_filename)
     csv_sweeps_filename = "sweep"

@@ -585,6 +585,9 @@ class Worker:
     ###########################################################################
     def store_data(self): 
         # Checks the type of source
+        # NEW Ignore if _export is false
+        if not self._export:
+            return
         
         # SINGLE
         # ---------------------------------------------------------------------
@@ -597,13 +600,13 @@ class Worker:
           
           FileStorage.CSVsave(filenameCSV, Constants.csv_export_path, time() - self._timestart, self._d3_store, self._d1_store, self._d2_store)
 
-          if self._export:   
-              # Storing acquired sweeps
-              filename = "{}_{}_{}".format(Constants.csv_sweeps_filename, self._overtone_name,self._count)
-              #filename = "{}_{}".format(Constants.csv_sweeps_filename,self._count)
-              path = "{}_{}".format(Constants.csv_sweeps_export_path, self._overtone_name) 
-              #FileStorage.CSV_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
-              FileStorage.TXT_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
+        #   if self._export:   
+        #       # Storing acquired sweeps
+        #       filename = "{}_{}_{}".format(Constants.csv_sweeps_filename, self._overtone_name,self._count)
+        #       #filename = "{}_{}".format(Constants.csv_sweeps_filename,self._count)
+        #       path = "{}_{}".format(Constants.csv_sweeps_export_path, self._overtone_name) 
+        #       #FileStorage.CSV_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
+        #       FileStorage.TXT_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
           self._count+=1
            
         # MULTI

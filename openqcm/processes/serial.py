@@ -227,9 +227,7 @@ class SerialProcess(multiprocessing.Process):
             vec_app1t = self.savitzky_golay(self._temperature_buffer.get_all(), window_size = Constants.SG_window_environment, order = Constants.SG_order_environment)
             temperature_mean = np.average(vec_app1t)
             
-        epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
-        ts_mult=1e6
-        w = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult)) #datetime.datetime.utcnow()
+        w = time() - timestamp
 
         ##############
         ## ADDS new serial data to internal queue

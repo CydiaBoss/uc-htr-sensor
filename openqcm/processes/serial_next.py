@@ -310,10 +310,7 @@ class SerialProcess(multiprocessing.Process):
         
         #######################################################
         ##############
-        import datetime
-        epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
-        ts_mult=1e6
-        w = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult)) #datetime.datetime.utcnow()
+        w = time() - timestamp
         ##############
         ## ADDS new serial data to internal queue
         self._parser1.add1(filtered_mag) ##############
