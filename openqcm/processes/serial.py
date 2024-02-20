@@ -491,13 +491,14 @@ class SerialProcess(multiprocessing.Process):
         peaks_mag = self.load_frequencies_file()
        
         # Checks QCS type 5Mhz or 10MHz
+        # TODO need to make better way to do this
         # Sets start and stop frequencies for the corresponding overtone
-        if len(peaks_mag) == 5:
+        if len(peaks_mag) > 3:
             switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
             # 0=fundamental, 1=3th overtone and so on
             (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
             print(TAG,"openQCM Device setup: 5 MHz")
-        elif len(peaks_mag) == 3:
+        else:
             switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
             (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
             print(TAG,"openQCM Device setup: 10 MHz")
@@ -529,9 +530,9 @@ class SerialProcess(multiprocessing.Process):
         peaks_mag = self.load_frequencies_file()
         
         # Checks QCS type 5Mhz or 10MHz
-        if len(peaks_mag) == 5:
+        if len(peaks_mag) > 3:
            filename = Constants.csv_calibration_path
-        elif len(peaks_mag) == 3:
+        else:
            filename = Constants.csv_calibration_path10 
         data  = loadtxt(filename)
         freq_all  = data[:,0]

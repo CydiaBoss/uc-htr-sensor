@@ -298,8 +298,7 @@ class CalibrationProcess(multiprocessing.Process):
                             print(TAG, "Found the fundamental frequency!")
                         else:
                             print(TAG, "WARNING: Error during peak detection, could not find fundamential frequency!")
-                            print(TAG, "Please, repeat the calibration!")
-                            self._flag2 = 1
+                            print(TAG, "Ideally, please repeat the calibration, or proceed with caution")
 
                         print(max_freq_mag)
                         print(max_freq_phase)
