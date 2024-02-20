@@ -231,17 +231,17 @@ class Constants:
     csv_sweeps_export_path = "{}{}{}".format(csv_export_path,slash,csv_filename)
     csv_sweeps_filename = "sweep"
     
-    # Calibration: scan (WRITE for @5MHz and @10MHz QCS) path: 'common\'
+    # Calibration: scan (WRITE for 5 MHz and 10 MHz QCS) path: 'common\'
     csv_calibration_filename    = "calibration_5MHz"
     csv_calibration_filename10  = "calibration_10MHz"
     csv_calibration_export_path = "core" #"common"
     
     ################## 
-    # Calibration: baseline correction (READ for @5MHz and @10MHz QCS) path: 'common\'
+    # Calibration: baseline correction (READ for 5 MHz and 10 MHz QCS) path: 'common\'
     csv_calibration_path   = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename,txt_extension)
     csv_calibration_path10 = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_calibration_filename10,txt_extension)
     
-    # Frequencies: Fundamental and overtones (READ and WRITE for @5MHz and @10MHz QCS)
+    # Frequencies: Fundamental and overtones (READ and WRITE for 5 MHz and 10 MHz QCS)
     csv_peakfrequencies_filename   = "peak_freq"
     cvs_peakfrequencies_path    = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename,txt_extension)
     #cvs_peakfrequencies_path10 = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename10,txt_extension)    
@@ -270,8 +270,8 @@ class Constants:
     dist10MHz = 10000000 
     
     # Peak Detection - distance in samples between neighbouring peaks
-    dist5  =  8000 # for @5MHz
-    dist10 =  10000 # for @10MHz
+    dist5  =  8000 # for 5 MHz
+    dist10 =  10000 # for 10 MHz
     calibration_default_samples = 50001
     calibration_frequency_start =  1000000
     calibration_frequency_stop  = 51000000 

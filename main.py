@@ -142,7 +142,7 @@ class Window(Ui_MainWindow):
         self.freq_plot.setParent(None)
         self.freq_plot.deleteLater()
         self.freq_axis = LiveAxis('left', text=_translate("MainWindow", "Frequency"), units="Hz")
-        self.freq_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Frequency"), axisItems={"left": self.freq_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Frequency") + " (Hz)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.freq_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resonance Frequency"), axisItems={"left": self.freq_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Frequency") + " (Hz)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.freq_curve = LiveLinePlot(brush="blue", pen="blue")
         self.freq_plot.addItem(self.freq_curve)
         self.freq_plot.setBackground(background="w")
@@ -820,10 +820,10 @@ class Window(Ui_MainWindow):
         """
         Update the indicator fields for frequencies
         """
-        if type(value) == float:
+        if value is not None:
             label = round(value, 2)
         else:
-            label = "NAN"
+            label = "N/A"
 
         if (index == 0):
             self.freq_f1.setText(str(label))
@@ -840,10 +840,10 @@ class Window(Ui_MainWindow):
         """
         Update the indicator fields for dissipation
         """
-        if type(value) == float:
+        if value is not None:
             label = round(value, 2)
         else:
-            label = "NAN"
+            label = "N/A"
 
         if (index == 0):
             self.diss_d1.setText(str(label))
