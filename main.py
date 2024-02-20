@@ -76,6 +76,10 @@ class Window(Ui_MainWindow):
         # Make Peak List
         self.peaks = []
 
+        # Set Size
+        self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
+        self.resize(MIN_WIDTH, MIN_HEIGHT)
+
     def setup_plots(self):
         '''
         Setups the graphs for live data collectrion
@@ -176,6 +180,10 @@ class Window(Ui_MainWindow):
         """
         Setup all essential connections
         """
+        # Port Detection singal
+        self.htr_serial.currentIndexChanged.connect(self.port_conflict_detection)
+        self.qcm_serial.currentIndexChanged.connect(self.port_conflict_detection)
+
         # Connection signal
         self.connected.connect(self.is_connected)
 
@@ -219,7 +227,8 @@ class Window(Ui_MainWindow):
         """
         self.htr_serial.setEnabled(True)
         self.qcm_serial.setEnabled(True)
-        self.connect_btn.setEnabled(True)
+        if self.htr_serial.currentText() != self.qcm_serial.currentText():
+            self.connect_btn.setEnabled(True)
 
     def enable_calibrate(self):
         """
@@ -296,6 +305,16 @@ class Window(Ui_MainWindow):
 
         # Update
         self.statusBar().showMessage("New Ports Discovered", 5000)
+
+    def port_conflict_detection(self):
+        """
+        Ensures valid port selection
+        """
+        if self.htr_serial.currentText() == self.qcm_serial.currentText():
+            self.connect_btn.setEnabled(False)
+            self.statusBar().showMessage("HTR and QCM cannot be on same port", 2500)
+        else:
+            self.connect_btn.setEnabled(True)
 
     def test_htr_port(self):
         '''

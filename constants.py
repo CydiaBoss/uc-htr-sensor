@@ -16,6 +16,8 @@ BAUD = 9600
 SENSOR_TIMEOUT = 0.1
 READ_TIMEOUT = 5
 READ_DELAY = 1.0
+MIN_WIDTH = 1750
+MIN_HEIGHT = 1000
 
 # References
 REF_RESIST = lambda : SETTINGS.get_setting("ref_resist")
