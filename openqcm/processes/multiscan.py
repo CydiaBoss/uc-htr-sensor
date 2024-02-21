@@ -2,7 +2,7 @@ import multiprocessing
 from constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
-from openqcm.common.fileStorage import FileStorage
+from openqcm.common.file_storage import FileStorage
 from logger import Logger as Log
 
 from time import time

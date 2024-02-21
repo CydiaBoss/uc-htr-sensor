@@ -1,5 +1,5 @@
 import csv
-from openqcm.common.fileManager import FileManager
+from openqcm.common.file_manager import FileManager
 from constants import Constants
 from logger import Logger as Log
 from time import strftime, localtime

@@ -1,7 +1,7 @@
 import multiprocessing
 from constants import UNCERTAINTIES, Constants, Architecture, OSType
 
-from openqcm.common.fileStorage import FileStorage
+from openqcm.common.file_storage import FileStorage
 
 import serial
 from serial.tools import list_ports

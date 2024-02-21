@@ -6,7 +6,6 @@ from openqcm.processes.parser import ParserProcess
 from openqcm.processes.serial import SerialProcess
 from openqcm.processes.calibration import CalibrationProcess
 from openqcm.processes.multiscan import MultiscanProcess
-from openqcm.common.fileStorage import FileStorage
 from logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
 import numpy as np
@@ -302,7 +301,7 @@ class Worker(QObject):
             sleep(1)
             
         self._parser_process.stop()
-        
+
         Log.i(TAG, "Running processes stopped...")
         Log.i(TAG, "Processes finished")
         
@@ -517,9 +516,6 @@ class Worker(QObject):
                 self.time_pre =  self._timestart
             
             self._flag = False
-        
-        # Data Storage in csv and/or txt file 
-        self.store_data()
     
         #####
     def _queue_data6(self,data):
@@ -591,102 +587,6 @@ class Worker(QObject):
     # get TEC status and pass the value to the main 
     def get_TEC_status(self): 
         return self._TEC_status
-    
-    ###########################################################################
-    # Exports data in csv and/or txt file if export box is checked
-    ###########################################################################
-    def store_data(self): 
-        # Checks the type of source
-        # NEW Ignore if _export is false
-        if not self._export:
-            return
-        
-        # SINGLE
-        # ---------------------------------------------------------------------
-        if self._source == SourceType.serial:
-          # VER 0.1.2 
-          # init the new datalog file in single mode
-          filenameCSV = "{}_{}".format(self._csv_filename, self._overtone_name)
-          
-          # VER 0.1.4 TODO time controlled sampling time in sigle mode 
-          
-          FileStorage.CSVsave(filenameCSV, Constants.csv_export_path, time() - self._timestart, self._d3_store, self._d1_store, self._d2_store)
-
-        #   if self._export:   
-        #       # Storing acquired sweeps
-        #       filename = "{}_{}_{}".format(Constants.csv_sweeps_filename, self._overtone_name,self._count)
-        #       #filename = "{}_{}".format(Constants.csv_sweeps_filename,self._count)
-        #       path = "{}_{}".format(Constants.csv_sweeps_export_path, self._overtone_name) 
-        #       #FileStorage.CSV_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
-        #       FileStorage.TXT_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
-          self._count+=1
-           
-        # MULTI
-        # ---------------------------------------------------------------------
-        elif  self._source == SourceType.multiscan:
-            
-            # VER 0.1.2
-            # init the new datalog file in single mode
-            filenameCSV = "{}_{}".format(self._csv_filename, "multi_")
-            
-            index_store = 0
-            _millisec = 1e6
-            
-            # VER 0.1.4
-            SAMPLING_TIME_INTERVAL = self._sampling_time
-
-            # VER 0.1.4 check if time elapsed is greater than zero 
-            if  ( (self._time_store[index_store] - self._timestart)/_millisec > 0 ):
-                
-                # get current time 
-                epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
-                ts_mult=1e6
-                time_current = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult))
-                
-                self.time_elapsed = int((time_current - self.time_pre)/_millisec)
-                
-                # VER 0.1.4
-                # default / maximum sampling rate 
-                if (SAMPLING_TIME_INTERVAL == -1): 
-                    if (self._overtone_number == index_store):
-                        FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-                                                  int((time_current - self._timestart))/_millisec, 
-                                                  self._d3_store, self._F_store, self._D_store)
-                        # VER 0.1.4 store the current time for the next loop 
-                        self.time_pre = time_current
-                
-                # VER 0.1.4
-                # time controlled sampling time 
-                else: 
-
-                    # VER 0.1.4 create a circular buffer of size corresponding to the length of the datalog sampling time
-                    # init the new data in circular buffer 
-                    self._F_store_buffer[self._overtone_number].append(self._F_store[self._overtone_number])
-                    self._D_store_buffer[self._overtone_number].append(self._D_store[self._overtone_number])
-                    self._T_store_buffer[self._overtone_number].append(self._d3_store)
-                    
-                    # averaging 
-                    for idx in range(len(Constants.overtone_dummy)):
-                        self._F_store_buffer_averaging[idx] = np.average( self._F_store_buffer[idx].get_all())
-                        self._D_store_buffer_averaging[idx] = np.average( self._D_store_buffer[idx].get_all() )
-                        self._T_store_buffer_averaging[idx] = np.average( self._T_store_buffer[idx].get_all() )
-                    
-                    # VER 0.1.4
-                    # check the sampling time 
-                    if ( ((time_current - self.time_pre)/_millisec) >  SAMPLING_TIME_INTERVAL ):
-                        FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-                                                  int((time_current - self._timestart)/_millisec), 
-                                                  self._d3_store, self._F_store_buffer_averaging, self._D_store_buffer_averaging)
-                    
-                        # VER 0.1.4 store the current time for the next loop 
-                        self.time_pre = time_current
-                
-                # DEV RAWDATA save single raw date here should work also here 
-                RAWDATA = False
-                if (RAWDATA):
-                    print (" save single sweep raw data here: TODO" )
-                    # the code line blow works 
-                    print (self.get_A_values_buffer(0))
     
     # VER 0.1.4
     def get_time_elapsed (self):
