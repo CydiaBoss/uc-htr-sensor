@@ -1,6 +1,3 @@
-# ================================ #
-# Code to communicate with sensors #
-# ================================ #
 import re
 import numpy as np
 from serial import Serial
@@ -9,6 +6,8 @@ import time, atexit
 
 from constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST, REF_RESIST_UNIT, REF_VOLT, Constants, SourceType, Architecture, OSType
 from openqcm.core.worker import Worker
+
+from logger import Logger as Log
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -22,6 +21,9 @@ class HTRSensorCtrl(QObject):
     resistance = pyqtSignal(float, float)
     humidity = pyqtSignal(float, float)
     temperature = pyqtSignal(float, float)
+
+    # Tag
+    tag = "HTRSensorController"
 
     def __init__(self, parent: QObject=None, port : str="", baud : int=9600, timeout=0.1):
         super().__init__(parent)
@@ -38,7 +40,7 @@ class HTRSensorCtrl(QObject):
         Open connection to HTR
         """
         # Opening Port
-        print("Connecting to HTR sensor...")
+        Log.i(self.tag,"Connecting to HTR sensor...")
         self.serial = Serial(port=self.port, baudrate=self.baud, timeout=self.timeout)
 
         # Wait for Launch Message
@@ -46,7 +48,7 @@ class HTRSensorCtrl(QObject):
         while "Running" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                print("Could not connect to specified port")
+                Log.e(self.tag,"Could not connect to specified port")
                 self.serial.close()
                 break
             tick_to_timeout += 1
@@ -54,7 +56,7 @@ class HTRSensorCtrl(QObject):
 
         if not self.serial.is_open:
             # Success
-            print(f"HTR sensor connected at port {self.port}!")
+            Log.i(self.tag,f"HTR sensor connected at port {self.port}!")
 
             # Prep for exit
             atexit.register(self.serial.close)
@@ -135,7 +137,7 @@ class HTRSensorCtrl(QObject):
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                print("Reference resistor failed to update")
+                Log.e(self.tag,"Reference resistor failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)
@@ -151,7 +153,7 @@ class HTRSensorCtrl(QObject):
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                print("Reference voltage failed to update")
+                Log.e(self.tag,"Reference voltage failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)

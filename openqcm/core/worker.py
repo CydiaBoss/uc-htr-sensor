@@ -7,7 +7,7 @@ from openqcm.processes.serial import SerialProcess
 from openqcm.processes.calibration import CalibrationProcess
 from openqcm.processes.multiscan import MultiscanProcess
 from openqcm.common.fileStorage import FileStorage
-from openqcm.common.logger import Logger as Log
+from logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
 import numpy as np
 from numpy import loadtxt
@@ -301,10 +301,8 @@ class Worker(QObject):
             # wait for a while 
             sleep(1)
             
-        self._parser_process.stop()            
-
-        print(TAG, 'Running processes stopped...')
-        print(TAG, 'Processes finished')
+        self._parser_process.stop()
+        
         Log.i(TAG, "Running processes stopped...")
         Log.i(TAG, "Processes finished")
         

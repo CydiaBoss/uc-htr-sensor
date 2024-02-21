@@ -3,7 +3,7 @@ from constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.fileStorage import FileStorage
-from openqcm.common.logger import Logger as Log
+from logger import Logger as Log
 
 from time import time
 import serial
@@ -664,12 +664,6 @@ class MultiscanProcess(multiprocessing.Process):
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
         
-# =============================================================================
-#         Log.i(TAG, "OPEN SERIAL PORT")
-#         print("OPEN SERIAL PORT")
-# =============================================================================
-        
-       
         # TODO SOLVED
         # ---------------------------------------------------------------------
         # GET the SELECTED FREQUENCY OVERTONE from the MAIN WINDOW  
@@ -839,8 +833,7 @@ class MultiscanProcess(multiprocessing.Process):
                             strs = ["" for x in range(samples + 2)]
                         
                         except:
-                            print(TAG, "Info: exception serial write fail", end='\n')
-                            Log.i(TAG, "Info: exception serial write fail")
+                            Log.e(TAG, "Info: exception serial write fail")
                             self._flag_error_usb = 1
                             
                         if self._flag_error_usb == 0:
@@ -911,25 +904,6 @@ class MultiscanProcess(multiprocessing.Process):
                                     
                                     # exit the for loop to prevent overtone mixing
                                     break
-# =============================================================================
-#                                     if nlines > Constants.argument_default_samples + 1:
-#                                         print("EXCEPTION: exceed number of lines at serial port")
-#                                         Log.i(TAG, "EXCEPTION: exceed number of lines at serial port")
-#                                         
-#                                         # reset input output buffer
-#                                         self._serial.reset_input_buffer()
-#                                         self._serial.reset_output_buffer()
-#                                         
-#                                         print("OVERTONE INDEX = ")
-#                                         print (overtone_index)
-#                                         
-#                                         print(buffer)
-#                                         
-#                                         # self._flag_error_usb = 1
-#                                         self._boolean_buffer_length = 1
-#                                         break
-# =============================================================================
-                                   
      
                                 # STOP SWEEP 
                                 # -----------------------------------------
@@ -1099,7 +1073,6 @@ class MultiscanProcess(multiprocessing.Process):
                                 
                             except:
                                 print(TAG, "Info: set temperature control failed", end='\n')
-                                # Log.i(TAG, "EXCEPTION: exception at serial port read process")
                                 self._flag_error_usb = 1
                             
 # =============================================================================

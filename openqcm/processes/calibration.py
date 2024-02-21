@@ -301,8 +301,8 @@ class CalibrationProcess(multiprocessing.Process):
                             print(TAG, "Ideally, please repeat the calibration, or proceed with caution")
                             print(TAG, "Will attempt to find the fundamental frequency in the phase data")
 
-                        print(max_freq_mag)
-                        print(max_freq_phase)
+                        print(TAG, "Current frequencies found:", max_freq_mag)
+                        print(TAG, "Current frequencies phases found:", max_freq_phase)
 
                         # If list do not match in length, attempt to match
                         # TODO will need to fix this eventually
@@ -328,7 +328,7 @@ class CalibrationProcess(multiprocessing.Process):
                                 if not found:
                                     temp_freq.append(max_freq_phase[i])
 
-                            print(temp_freq)
+                            print(TAG, "Newly discovered frequencies:", temp_freq)
                             max_freq_mag = np.array(temp_freq)
                         
                         if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):

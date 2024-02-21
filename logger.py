@@ -30,7 +30,7 @@ class Logger:
         :type level: int.
         """
         log_format_file = logging.Formatter('%(asctime)s,%(levelname)s,%(message)s')
-        log_format_console = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        log_format_console = logging.Formatter('%(levelname)s %(message)s')
         self.logger = logging.getLogger()
         self.logger.setLevel(level.value)
 
@@ -64,27 +64,27 @@ class Logger:
     # Logs at debug level (debug,info,warning and error messages)
     ###########################################################################
     @staticmethod
-    def d(tag, msg):
+    def d(tag, *msg):
         """
         :param tag: TAG to identify the log :type tag: str.
         :param msg: Message to log.         :type msg: str.
         """
-        logging.debug("[{}] {}".format(str(tag), str(msg)))
+        logging.debug("[{}] {}".format(str(tag), ' '.join(msg)))
     
     ####
     @staticmethod
-    def i(tag, msg):
-        logging.info("[{}] {}".format(str(tag), str(msg)))
+    def i(tag, *msg):
+        logging.info("[{}] {}".format(str(tag), ' '.join(msg)))
     
     ####
     @staticmethod
-    def w(tag, msg):
-        logging.warning("[{}] {}".format(str(tag), str(msg)))
+    def w(tag, *msg):
+        logging.warning("[{}] {}".format(str(tag), ' '.join(msg)))
     
     ####
     @staticmethod
-    def e(tag, msg):
-        logging.error("[{}] {}".format(str(tag), str(msg)))
+    def e(tag, *msg):
+        logging.error("[{}] {}".format(str(tag), ' '.join(msg)))
 
 
     ###########################################################################
@@ -92,8 +92,8 @@ class Logger:
     ###########################################################################
     @staticmethod
     def _show_user_info():
-        tag = "STARTUP"
-        Logger.i(tag, " {} - {}".format(Constants.app_title,Constants.app_version))
+        tag = "Startup"
+        Logger.i(tag, "{} - {}".format(Constants.app_title,Constants.app_version))
         Logger.i(tag, "Platform: {}".format(Architecture.get_os_name()))
         Logger.i(tag, "Path: {}".format(Architecture.get_path()))
         Logger.i(tag, "Python version: {}".format(Architecture.get_python_version()))
