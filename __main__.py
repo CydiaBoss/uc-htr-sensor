@@ -1,4 +1,5 @@
 import ctypes, sys
+from logger import Logger
 
 from main import Window
 
@@ -9,6 +10,9 @@ if __name__ == "__main__":
     myappid = 'medal.sensorfusion.h2'
     if sys.platform.startswith('win'):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+    # Start Logger
+    Logger()
 
     # Prep App Launch
     app = QApplication(sys.argv)

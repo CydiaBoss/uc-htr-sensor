@@ -1,5 +1,4 @@
-import re
-import time
+import os, re, time
 from datetime import datetime
 from typing import Union
 
@@ -1002,6 +1001,9 @@ class Window(Ui_MainWindow):
         if self.file_dest.text().strip() == "":
             self.statusBar().showMessage("Could not save file, no destination specified")
             return
+
+        # Make directory if needed
+        os.makedirs(os.path.dirname(self.file_dest.text().strip()), exist_ok=True)
         
         # Open file
         f = open(self.file_dest.text().strip(), 'w')
@@ -1124,8 +1126,8 @@ class Window(Ui_MainWindow):
     def on_auto_export_clicked(self):
         # If Check and Empty, set default
         if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
-            self.file_dest.setText(f"data/data-{int(time.time())}.csv")
-        elif not self.auto_export.isChecked() and self.file_dest.text().startswith("data/data-"):
+            self.file_dest.setText(f"{DATA_FOLDER}/data-{int(time.time())}.csv")
+        elif not self.auto_export.isChecked() and self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
             self.file_dest.clear()
 
     @QtCore.pyqtSlot()

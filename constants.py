@@ -23,6 +23,10 @@ MIN_WIDTH = 1750
 MIN_HEIGHT = 1000
 UNCERTAINTIES = 0.10
 
+# Folders
+DATA_FOLDER = "data"
+LOG_FOLDER = "logs"
+
 # References
 REF_RESIST = lambda : SETTINGS.get_setting("ref_resist")
 REF_RESIST_UNIT = lambda : SETTINGS.get_setting("ref_resist_unit") or " "

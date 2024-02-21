@@ -5,3 +5,4 @@ data
 core/*
 dist
 build
+logs
