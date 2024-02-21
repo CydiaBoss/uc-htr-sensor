@@ -1,5 +1,5 @@
 import os
-from constants import Architecture,OSType
+from misc.constants import Architecture,OSType
 
 ###############################################################################
 # File operations: create directory, full path and check if the existing file

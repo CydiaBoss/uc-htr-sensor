@@ -4,10 +4,9 @@ import numpy as np
 from pyqtgraph import AxisItem
 from time import strftime, localtime
 from datetime import datetime 
-
-from settings import Settings
-    
 import platform, sys
+
+from misc.settings import Settings
 
 from enum import Enum
 

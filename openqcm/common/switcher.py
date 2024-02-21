@@ -1,4 +1,4 @@
-from constants import Constants
+from misc.constants import Constants
 
 TAG = "[Switcher]"
 

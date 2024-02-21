@@ -1,8 +1,10 @@
 import multiprocessing
-from constants import Constants, Architecture, OSType
+
+from misc.constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
+from openqcm.processes.parser import ParserProcess
 
 from time import time
 import serial
@@ -10,10 +12,8 @@ from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
-
 from math import factorial
 
-from openqcm.processes.parser import ParserProcess
 
 TAG = ""#"[Serial]"
 

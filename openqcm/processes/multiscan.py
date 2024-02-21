@@ -1,20 +1,17 @@
 import multiprocessing
-from constants import Constants, Architecture, OSType
+
+from misc.constants import Constants, Architecture, OSType
+from misc.logger import Logger as Log
 
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.file_storage import FileStorage
-from logger import Logger as Log
 
-from time import time
+from time import time, sleep
 import serial
 from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
-
-from time import sleep
-
-from numpy import loadtxt
 
 TAG = ""#"[Multiscan]"
 

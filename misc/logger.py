@@ -4,7 +4,7 @@ import logging.handlers
 from enum import Enum
 import time
 
-from constants import LOG_FOLDER, Constants, Architecture
+from misc.constants import LOG_FOLDER, Constants, Architecture
 
 ###############################################################################
 # Enumeration for the Logger levels

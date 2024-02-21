@@ -2,15 +2,16 @@ import os, re, time
 from datetime import datetime
 from typing import Union
 
+from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
+from misc.constants import *
+from misc.tools import active_ports, identical_list
+
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
-from controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 
 from main_gui import Ui_MainWindow
-from constants import *
-from tools import active_ports, identical_list
 
 from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot

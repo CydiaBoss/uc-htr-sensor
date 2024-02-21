@@ -1,5 +1,6 @@
 import multiprocessing
-from constants import UNCERTAINTIES, Constants, Architecture, OSType
+
+from misc.constants import UNCERTAINTIES, Constants, Architecture, OSType
 
 from openqcm.common.file_storage import FileStorage
 

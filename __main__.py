@@ -1,9 +1,10 @@
 import ctypes, sys
-from logger import Logger
 
-from main import Window
+from misc.logger import Logger
 
 from PyQt5.QtWidgets import QApplication
+
+from main import Window
 
 if __name__ == "__main__":
     # Update App ID if Windows

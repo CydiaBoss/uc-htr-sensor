@@ -4,10 +4,10 @@ from serial import Serial
 from serial.tools import list_ports
 import time, atexit
 
-from constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST, REF_RESIST_UNIT, REF_VOLT, Constants, SourceType, Architecture, OSType
-from openqcm.core.worker import Worker
+from misc.constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST, REF_RESIST_UNIT, REF_VOLT, Constants, SourceType, Architecture, OSType
+from misc.logger import Logger as Log
 
-from logger import Logger as Log
+from openqcm.core.worker import Worker
 
 from PyQt5.QtCore import QObject, pyqtSignal
 

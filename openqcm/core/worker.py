@@ -1,13 +1,14 @@
 from multiprocessing import Queue
 
-from constants import Constants, SourceType
+from misc.constants import Constants, SourceType
+from misc.logger import Logger as Log
 
 from openqcm.processes.parser import ParserProcess
 from openqcm.processes.serial import SerialProcess
 from openqcm.processes.calibration import CalibrationProcess
 from openqcm.processes.multiscan import MultiscanProcess
-from logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
+
 import numpy as np
 from numpy import loadtxt
 import datetime
