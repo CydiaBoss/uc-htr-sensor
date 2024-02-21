@@ -677,6 +677,8 @@ class Window(Ui_MainWindow):
             if success:
                 self.enable_measurement()
                 self.qcm_calibrated = True
+            else:
+                self.statusBar().showMessage(_translate("MainWindow", "Calibration failed as the expected fundamental frequency could not be found."))
 
             # Enable this if success or htr is already on
             if success or self.htr_port is not None:
