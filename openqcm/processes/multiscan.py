@@ -1624,8 +1624,6 @@ class MultiscanProcess(multiprocessing.Process):
         
         # Loads frequencies from calibration file
         peaks_mag = self.load_frequencies_file()
-        # get numbers of overtones stored in calibration
-        # peaks_mag_length = len(peaks_mag)
         
         # 10 MHz quartz resonators
         if (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
@@ -1722,18 +1720,6 @@ class MultiscanProcess(multiprocessing.Process):
     def load_calibration_file(self):
         # Loads Fundamental frequency and Overtones from file
         peaks_mag = self.load_frequencies_file()
-        
-        ############################### 
-        # TODO check the damn QCM type 
-        ###############################
-        
-        '''
-        # Checks QCS type 5Mhz or 10MHz
-        if len(peaks_mag) == 5:
-           filename = Constants.csv_calibration_path
-        elif len(peaks_mag) == 3:
-           filename = Constants.csv_calibration_path10 
-        '''
         
         # Checks QCS type 5Mhz or 10MHz
         if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):

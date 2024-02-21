@@ -259,7 +259,9 @@ class Window(Ui_MainWindow):
         Enable all port ctrls
         """
         self.htr_serial.setEnabled(True)
-        self.qcm_serial.setEnabled(True)
+        if self.qcm_port is None or not self.qcm_calibrated:
+            self.qcm_serial.setEnabled(True)
+
         if self.htr_serial.currentText() != self.qcm_serial.currentText():
             self.connect_btn.setEnabled(True)
 
@@ -586,8 +588,6 @@ class Window(Ui_MainWindow):
 
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
-        # self.qcm_timer.moveToThread(self.qcm_thread)
-
         self.qcm_timer.timeout.connect(self.calibration_processing)
 
         # Setup Signals
@@ -682,6 +682,9 @@ class Window(Ui_MainWindow):
             if success or self.htr_port is not None:
                 self.enable_export()
                 self.enable_start()
+
+            # Open ports
+            self.enable_ports()
 
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()

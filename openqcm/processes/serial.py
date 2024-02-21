@@ -489,19 +489,21 @@ class SerialProcess(multiprocessing.Process):
         """
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
-       
+        
         # Checks QCS type 5Mhz or 10MHz
-        # TODO need to make better way to do this
         # Sets start and stop frequencies for the corresponding overtone
-        if len(peaks_mag) > 3:
+        if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
             switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
             # 0=fundamental, 1=3th overtone and so on
             (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
             print(TAG,"openQCM Device setup: 5 MHz")
-        else:
+        elif (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
             switch = Overtone_Switcher_10MHz(peak_frequencies = peaks_mag)
             (overtone_name, overtone_value, self._startFreq, self._stopFreq, SG_window_size, spline_factor) = switch.overtone10MHz_to_freq_range(self._overtone_int)
             print(TAG,"openQCM Device setup: 10 MHz")
+        else:
+            print(TAG, "QC Chip type could not be determined")
+            return None, None, None, None, None, None
         
         # Sets the frequency step 
         fStep = (self._stopFreq-self._startFreq)/(samples-1)
@@ -530,10 +532,14 @@ class SerialProcess(multiprocessing.Process):
         peaks_mag = self.load_frequencies_file()
         
         # Checks QCS type 5Mhz or 10MHz
-        if len(peaks_mag) > 3:
+        if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
            filename = Constants.csv_calibration_path
-        else:
+        elif (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
            filename = Constants.csv_calibration_path10 
+        else:
+            print(TAG, "QC Chip type could not be determined")
+            return None, None, None
+        
         data  = loadtxt(filename)
         freq_all  = data[:,0]
         mag_all   = data[:,1]

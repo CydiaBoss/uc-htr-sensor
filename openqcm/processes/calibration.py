@@ -297,8 +297,9 @@ class CalibrationProcess(multiprocessing.Process):
                         if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
                             print(TAG, "Found the fundamental frequency!")
                         else:
-                            print(TAG, "WARNING: Error during peak detection, could not find fundamential frequency!")
+                            print(TAG, "WARNING: Could not find fundamential frequency!")
                             print(TAG, "Ideally, please repeat the calibration, or proceed with caution")
+                            print(TAG, "Will attempt to find the fundamental frequency in the phase data")
 
                         print(max_freq_mag)
                         print(max_freq_phase)
@@ -329,6 +330,13 @@ class CalibrationProcess(multiprocessing.Process):
 
                             print(temp_freq)
                             max_freq_mag = np.array(temp_freq)
+                        
+                        if (self._QCStype_int == 0 and (max_freq_mag[0]>4e+06 and max_freq_mag[0]<6e+06)) or (self._QCStype_int == 1 and (max_freq_mag[0]>9e+06 and max_freq_mag[0]<11e+06)):
+                            print(TAG, "Found the fundamental frequency in the phase !")
+                        else:
+                            print(TAG, "WARNING: Error during peak detection, could not find fundamential frequency in the phase.")
+                            print(TAG, "Please, repeat the calibration!")
+                            raise Exception()
 
                         # SAVES independently of the state of the export box
                         print(TAG,"Saving data in file...")
