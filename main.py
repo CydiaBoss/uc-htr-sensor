@@ -199,7 +199,7 @@ class Window(Ui_MainWindow):
 
         # Make Calibration Stuff
         self.qcm_calibrated = False
-        self.peaks = []
+        self.peaks = np.array([])
 
         # File Save Related
         self.saved = False
@@ -837,70 +837,52 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue_D_multi()
         self.qcm_ctrl.worker.consume_queue_A_multi()
 
-        # flag for terminating calibration
-        stop_flag = 0
+        # Early Process
+        prep_process = False
 
-        # vector2[0] and vector3[0] flag error
-        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
-        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
+        # Data
+        vector1 = self.qcm_ctrl.worker.get_d1_buffer()
 
-        labelbar = 'The operation might take just over a minute to complete... please wait...'
-        
-        # progressbar
-        error1, _, _, self._ser_control, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
-        
-        if self._ser_control < (Constants.calib_sections):
-            self._completed = (self._ser_control/(Constants.calib_sections))*100
+        # TODO update plot
+        self._ser_error1, self._ser_error2, self._ser_control, self._ser_err_usb, self._overtone_number = self.worker.get_ser_error()
 
-        # calibration buffer empty
-        if error1== 1 and vector3[0]==1:
-            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
+        if vector1.any():
+            # progressbar
+            if self._ser_control <= Constants.environment:
+                # VER 0.1.2 just a little thing  
+                self._completed = self._ser_control * 100 / Constants.environment
+                
+                # VER 0.1.2
+                # Optimize and update infobar and infostatus in multiscan mode
+                labelbar = 'Please wait, processing early data...'
 
-        # calibration buffer empty and ValueError from the serial port
-        elif error1== 1 and vector2[0]==1:
-            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
+            else:
+                prep_process = True
 
-        # calibration buffer not empty
-        elif error1==0:
-            labelbar = 'The operation might take just over a minute to complete... please wait...'
-
-            # Success!
-            if vector2[0]== 0 and vector3[0]== 0:
-                labelbar = 'Calibration Success for baseline correction!'
-                stop_flag=1
-            
-            # Error Message
-            elif vector2[0]== 1 or vector3[0]== 1:
-                if vector2[0]== 1:
-                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
-                    stop_flag=1 ##
-                elif vector3[0]== 1:
-                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
-                    stop_flag=1 ##
+                labelbar = "Monitoring!"
                     
         # progressbar -------------
         self.calibration_bar.setValue(int(self._completed + 10))
 
-        # terminate the  calibration (simulate clicked stop)
-        if stop_flag == 1:
-            self.qcm_timer.stop()
-            self.qcm_ctrl.stop()
-            self.enable_calibrate()
-            self.enable_measurement()
-            self.enable_export()
-            self.enable_start()
-            self.statusBar().showMessage(f"{labelbar}", 5000)
+        # Message
+        self.statusBar().showMessage(labelbar, 5000)
 
         # Update Plot
-        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
-        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+        for idx in range(self.peaks.size):
+            # get and scale frequency axis
+            x_sweep_axis = self.qcm_ctrl.worker.get_F_Sweep_values_buffer(idx) - self.peaks[idx]
+            # get amplitude axis
+            y_sweep_axis = self.qcm_ctrl.worker.get_A_values_buffer(idx)
+            # plot sweep
+            if isinstance(x_sweep_axis, np.ndarray):
+                self._plt0.plot ( x = x_sweep_axis, y = y_sweep_axis, pen = Constants.plot_color_multi[idx] )
 
-        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
-
-        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
-        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+        # Continue to wait until process is done
+        if prep_process:
+            return
+        
+        # Start Ploting other stuff
+        # TODO add other graphs
 
     def update_indicator_freq(self, index : int, value : Union[float, None]):
         """
