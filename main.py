@@ -650,6 +650,9 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl = QCMSensorCtrl(port=self.qcm_port)
         self.qcm_ctrl.moveToThread(self.qcm_thread)
 
+        # Reset
+        self.calibration_bar.setStyleSheet("")
+
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
         self.qcm_timer.timeout.connect(self.calibration_processing)
@@ -742,6 +745,7 @@ class Window(Ui_MainWindow):
                 self.enable_measurement()
                 self.qcm_calibrated = True
             else:
+                self.calibration_bar.setStyleSheet("chunk { background-color: red; }")
                 self.statusBar().showMessage(_translate("MainWindow", "Calibration failed as the expected fundamental frequency could not be found."))
 
             # Enable this if success or htr is already on
