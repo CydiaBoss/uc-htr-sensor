@@ -6,7 +6,7 @@ from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 from misc.constants import *
 from misc.tools import active_ports, identical_list
 
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -167,6 +167,63 @@ class Window(Ui_MainWindow):
         self.resist_override = True
         self.humd_override = True
         self.temp_override = True
+        
+        # Set Indicator Colours
+        odd_num = [1, 3, 5, 7, 9]
+        for c in ['f', 'd']:
+            for i in range(5):
+                colour_frame : QFrame = getattr(self, f"{c}{odd_num[i]}_colour")
+                colour_frame.setStyleSheet(f"background-color:{Constants.plot_color_multi[i]};")
+
+    def setup_qcm_plots_multi(self):
+        """
+        Convert the single plots to support multi
+        """
+        # Reset current data if any
+        # Plots
+        for curve in self.multi_amp_curves:
+            self.amp_plot.removeItem(curve)
+            curve.deleteLater()
+        for curve in self.multi_freq_curves:
+            self.freq_plot.removeItem(curve)
+            curve.deleteLater()
+        for curve in self.multi_dissipate_curves:
+            self.dissipate_plot.removeItem(curve)
+            curve.deleteLater()
+
+        # Data Connectors
+        for data in self.multi_amp_datas:
+            data.deleteLater()
+        for data in self.multi_freq_datas:
+            data.deleteLater()
+        for data in self.multi_dissipate_datas:
+            data.deleteLater()
+
+        # Add new multi plots
+        for i in range(self.peaks.size):
+            # Update Amplitude
+            temp_amp_curve = LiveLinePlot(brush=Constants.plot_color_multi[i], pen=Constants.plot_color_multi[i])
+            self.amp_plot.addItem(temp_amp_curve)
+            temp_amp_data = DataConnector(temp_amp_curve, update_rate=1.0)
+            self.multi_amp_curves.append(temp_amp_curve)
+            self.multi_amp_datas.append(temp_amp_data)
+            
+            # Update Frequency
+            temp_freq_curve = LiveLinePlot(brush=Constants.plot_color_multi[i], pen=Constants.plot_color_multi[i])
+            self.freq_plot.addItem(temp_freq_curve)
+            temp_freq_data = DataConnector(temp_freq_curve, update_rate=1.0)
+            self.multi_freq_curves.append(temp_freq_curve)
+            self.multi_freq_datas.append(temp_freq_data)
+            
+            # Update Dissipation
+            temp_dissipate_curve = LiveLinePlot(brush=Constants.plot_color_multi[i], pen=Constants.plot_color_multi[i])
+            self.dissipate_plot.addItem(temp_dissipate_curve)
+            temp_dissipate_data = DataConnector(temp_dissipate_curve, update_rate=1.0)
+            self.multi_dissipate_curves.append(temp_dissipate_curve)
+            self.multi_dissipate_datas.append(temp_dissipate_data)
+
+        # Signal multi mode
+        self.multi_mode = True
 
     def setup_signals(self):
         """
@@ -203,6 +260,15 @@ class Window(Ui_MainWindow):
 
         # File Save Related
         self.saved = False
+
+        # Setup Multi Plot
+        self.multi_mode = False
+        self.multi_amp_curves : list[LiveLinePlot] = []
+        self.multi_freq_curves : list[LiveLinePlot] = []
+        self.multi_dissipate_curves : list[LiveLinePlot] = []
+        self.multi_amp_datas : list[DataConnector] = []
+        self.multi_freq_datas : list[DataConnector] = []
+        self.multi_dissipate_datas : list[DataConnector] = []
 
     def setup_memory(self):
         """
@@ -719,6 +785,7 @@ class Window(Ui_MainWindow):
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
         # Multi
         elif self.measure_type.currentIndex() == 1:
+            self.setup_qcm_plots_multi()
             self.qcm_timer.timeout.connect(self.multi_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
 
@@ -857,8 +924,8 @@ class Window(Ui_MainWindow):
                 labelbar = 'Please wait, processing early data...'
 
             else:
+                # Continue to monitor
                 prep_process = True
-
                 labelbar = "Monitoring!"
                     
         # progressbar -------------
@@ -866,6 +933,10 @@ class Window(Ui_MainWindow):
 
         # Message
         self.statusBar().showMessage(labelbar, 5000)
+
+        # Continue to wait until process is done
+        if prep_process:
+            return
 
         # Update Plot
         for idx in range(self.peaks.size):
@@ -876,10 +947,6 @@ class Window(Ui_MainWindow):
             # plot sweep
             if isinstance(x_sweep_axis, np.ndarray):
                 self._plt0.plot ( x = x_sweep_axis, y = y_sweep_axis, pen = Constants.plot_color_multi[idx] )
-
-        # Continue to wait until process is done
-        if prep_process:
-            return
         
         # Start Ploting other stuff
         # TODO add other graphs

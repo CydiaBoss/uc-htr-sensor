@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="main">
+    <file>calibrate.png</file>
     <file>connect.png</file>
     <file>reset.png</file>
     <file>uclogo.png</file>
