@@ -4,7 +4,7 @@ from typing import Union
 
 from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
 from misc.constants import *
-from misc.tools import active_ports, identical_list
+from misc.tools import active_ports, identical_list, noise_filtering
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -31,6 +31,9 @@ class Window(Ui_MainWindow):
     resistance = np.array([])
     humidity = np.array([])
     htr_temperature = np.array([])
+    resistance_time = np.array([])
+    humidity_time = np.array([])
+    htr_temperature_time = np.array([])
     htr_time = np.array([])
     # QCM
     frequency = np.array([])
@@ -162,11 +165,6 @@ class Window(Ui_MainWindow):
         self.dissipate_plot.setBackground(background="w")
         self.dissipate_data = DataConnector(self.dissipate_curve, update_rate=1.0)
         self.qcm_layout.addWidget(self.dissipate_plot, 1, 1, 1, 1)
-
-        # Set Override
-        self.resist_override = True
-        self.humd_override = True
-        self.temp_override = True
         
         # Set Indicator Colours
         odd_num = [1, 3, 5, 7, 9]
@@ -565,14 +563,14 @@ class Window(Ui_MainWindow):
         if r_data == np.inf:
             self.raw_resistance = np.append(self.raw_resistance, r_data)
             return
-
-        if self.resist_override:
-            self.resist_data.cb_set_data([r_data,], [time_at,])
-            self.resist_override = False
-        else:
-            self.resist_data.cb_append_data_point(r_data, time_at)
+        
+        # Add to list
         self.raw_resistance = np.append(self.raw_resistance, r_data)
         self.resistance = np.append(self.resistance, r_data)
+        self.resistance_time = np.append(self.resistance_time, time_at)
+
+        # Plot with noise filter
+        self.resist_data.cb_set_data(noise_filtering(self.resistance), self.resistance_time)
 
         # Calculate Resist AVGs
         resist_size = self.resistance.size
@@ -593,12 +591,12 @@ class Window(Ui_MainWindow):
         """
         Processes the humidity data
         """
-        if self.humd_override:
-            self.humd_data.cb_set_data([h_data,], [time_at,])
-            self.humd_override = False
-        else:
-            self.humd_data.cb_append_data_point(h_data, time_at)
+        # Add to list
         self.humidity = np.append(self.humidity, h_data)
+        self.humidity_time = np.append(self.humidity_time, time_at)
+
+        # Plot
+        self.humd_data.cb_set_data(noise_filtering(self.humidity), self.humidity_time)
 
         # Calculate Humidity AVGs
         humd_size = self.humidity.size
@@ -619,12 +617,12 @@ class Window(Ui_MainWindow):
         """
         Processes the temperature data
         """
-        if self.temp_override:
-            self.temp_data.cb_set_data([t_data,], [time_at,])
-            self.temp_override = False
-        else:
-            self.temp_data.cb_append_data_point(t_data, time_at)
+        # Add to list
         self.htr_temperature = np.append(self.htr_temperature, t_data)
+        self.htr_temperature_time = np.append(self.htr_temperature_time, time_at)
+
+        # Plot
+        self.temp_data.cb_set_data(noise_filtering(self.htr_temperature), self.htr_temperature_time)
 
         # Calculate Temperature AVGs
         temp_size = self.htr_temperature.size
@@ -1020,9 +1018,9 @@ class Window(Ui_MainWindow):
         Clear the graphs
         """
         # Set Override Plot
-        self.resist_override = True
-        self.humd_override = True
-        self.temp_override = True
+        self.resist_data.cb_set_data([0,], [0,])
+        self.humd_data.cb_set_data([0,], [0,])
+        self.temp_data.cb_set_data([0,], [0,])
 
         # Override other plots with empty data
         self.amp_data.cb_set_data([0,], [0,])

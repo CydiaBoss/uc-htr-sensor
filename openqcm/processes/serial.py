@@ -107,7 +107,7 @@ class SerialProcess(multiprocessing.Process):
         try:
             window_size = np.abs(int(window_size))
             order = np.abs(int(order)) 
-        except ValueError as msg:
+        except ValueError:
             raise ValueError("WARNING: window size and order have to be of type int!")
         
         if window_size % 2 != 1 or window_size < 1:
