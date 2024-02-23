@@ -83,8 +83,8 @@ class Window(Ui_MainWindow):
         self.htr_layout.removeWidget(self.resist_plot)
         self.resist_plot.setParent(None)
         self.resist_plot.deleteLater()
-        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ohm", unitPrefix=REF_RESIST_UNIT().strip())
-        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT()}Ohm)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ω", unitPrefix=REF_RESIST_UNIT().strip())
+        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT().strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
         self.resist_plot.setBackground(background="w")
@@ -274,6 +274,9 @@ class Window(Ui_MainWindow):
         # Setup Style
         # QProgressBar
         self.setStyleSheet(QPB_DEFAULT_STYLE)
+
+        # Update Ohm SI Mult
+        self.resist_label.setText(_translate("MainWindow", f'<html><head/><body><p><span style=" font-weight:600;">Resistance ({REF_RESIST_UNIT().strip()}Ω)</span></p></body></html>'))
 
     def setup_memory(self):
         """

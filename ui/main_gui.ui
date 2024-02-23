@@ -162,14 +162,14 @@
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_15">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_21">
+             <widget class="QLabel" name="resist_label">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resistance (Ohm)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resistance (Ω)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -281,7 +281,7 @@
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_16">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_22">
+             <widget class="QLabel" name="humd_label">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
@@ -385,14 +385,14 @@
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_23">
+             <widget class="QLabel" name="temp_label">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Temperature (degC)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Temperature (°C)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
