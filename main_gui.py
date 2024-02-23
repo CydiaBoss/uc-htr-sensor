@@ -910,12 +910,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionAbsorption.setObjectName("actionAbsorption")
         self.action_Refresh_Ports = QtWidgets.QAction(MainWindow)
         self.action_Refresh_Ports.setObjectName("action_Refresh_Ports")
+        self.action_Noise_Reduction = QtWidgets.QAction(MainWindow)
+        self.action_Noise_Reduction.setObjectName("action_Noise_Reduction")
         self.menu_File.addAction(self.action_Refresh_Ports)
         self.menu_File.addSeparator()
         self.menu_File.addAction(self.action_Quit)
         self.menu_Update.addAction(self.action_Resistor)
         self.menu_Update.addAction(self.action_Voltage)
         self.menu_Edit.addAction(self.menu_Update.menuAction())
+        self.menu_Edit.addSeparator()
+        self.menu_Edit.addAction(self.action_Noise_Reduction)
         self.menu_Edit.addSeparator()
         self.menu_Edit.addAction(self.action_Reset_Software)
         self.menubar.addAction(self.menu_File.menuAction())
@@ -1057,5 +1061,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.actionAbsorption.setText(_translate("MainWindow", "Resonance &Frequency"))
         self.action_Refresh_Ports.setText(_translate("MainWindow", "&Refresh Ports"))
         self.action_Refresh_Ports.setToolTip(_translate("MainWindow", "Refresh the connected serial devices list"))
+        self.action_Noise_Reduction.setText(_translate("MainWindow", "&Noise Reduction"))
 from pglive.sources.live_plot_widget import LivePlotWidget
 import main_rc

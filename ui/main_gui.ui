@@ -1752,6 +1752,8 @@
     </widget>
     <addaction name="menu_Update"/>
     <addaction name="separator"/>
+    <addaction name="action_Noise_Reduction"/>
+    <addaction name="separator"/>
     <addaction name="action_Reset_Software"/>
    </widget>
    <addaction name="menu_File"/>
@@ -1853,6 +1855,11 @@
    </property>
    <property name="toolTip">
     <string>Refresh the connected serial devices list</string>
+   </property>
+  </action>
+  <action name="action_Noise_Reduction">
+   <property name="text">
+    <string>&amp;Noise Reduction</string>
    </property>
   </action>
  </widget>

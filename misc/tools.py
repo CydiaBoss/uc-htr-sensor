@@ -54,13 +54,13 @@ def identical_list(a : list, b : list) -> bool:
 		return False
 	return True
 
-def noise_filtering(data : NDArray[np.floating], n=15):
+def noise_filtering(data : NDArray[np.floating], n=5):
 	"""
 	Removes noise from a dataset
 
 	Args:
 		data: the dataset values
-		n: iterations (15 default)
+		n: iterations (5 default)
 
 	Returns:
 		The filtered dataset

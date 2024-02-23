@@ -73,7 +73,7 @@ class Window(Ui_MainWindow):
         self.resist_plot.addItem(self.resist_curve)
         self.resist_plot.setBackground(background="w")
         self.resist_plot.show_crosshair()
-        self.resist_data = DataConnector(self.resist_curve, max_points=300, update_rate=1.0)
+        self.resist_data = DataConnector(self.resist_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.resist_plot)
         
         # Setup Humidity Graph
@@ -86,7 +86,7 @@ class Window(Ui_MainWindow):
         self.humd_plot.addItem(self.humd_curve)
         self.humd_plot.setBackground(background="w")
         self.humd_plot.show_crosshair()
-        self.humd_data = DataConnector(self.humd_curve, max_points=300, update_rate=1.0)
+        self.humd_data = DataConnector(self.humd_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.humd_plot)
         
         # Setup Temperature Graph
@@ -99,7 +99,7 @@ class Window(Ui_MainWindow):
         self.temp_plot.addItem(self.temp_curve)
         self.temp_plot.setBackground(background="w")
         self.temp_plot.show_crosshair()
-        self.temp_data = DataConnector(self.temp_curve, max_points=300, update_rate=1.0)
+        self.temp_data = DataConnector(self.temp_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.temp_plot)
         
         # Setup Amplitude Graph
@@ -253,6 +253,12 @@ class Window(Ui_MainWindow):
         self.dissipation = np.array([])
         self.qcm_temperature = np.array([])
         self.qcm_time = np.array([])
+
+        # Read Noise Reduction value
+        self.noise_reduce = SETTINGS.get_setting("noise_reduce")
+        if self.noise_reduce is None:
+            self.noise_reduce = 5
+            SETTINGS.update_setting("noise_reduce", str(self.noise_reduce))
 
         # Fill Frequency List
         self.fill_frequency_list()
@@ -609,7 +615,7 @@ class Window(Ui_MainWindow):
         self.resistance_time = np.append(self.resistance_time, time_at)
 
         # Plot with noise filter
-        self.resist_data.cb_set_data(noise_filtering(self.resistance), self.resistance_time)
+        self.resist_data.cb_set_data(noise_filtering(self.resistance, self.noise_reduce), self.resistance_time)
 
         # Calculate Resist AVGs
         resist_size = self.resistance.size
@@ -635,7 +641,7 @@ class Window(Ui_MainWindow):
         self.humidity_time = np.append(self.humidity_time, time_at)
 
         # Plot
-        self.humd_data.cb_set_data(noise_filtering(self.humidity), self.humidity_time)
+        self.humd_data.cb_set_data(noise_filtering(self.humidity, self.noise_reduce), self.humidity_time)
 
         # Calculate Humidity AVGs
         humd_size = self.humidity.size
@@ -661,7 +667,7 @@ class Window(Ui_MainWindow):
         self.htr_temperature_time = np.append(self.htr_temperature_time, time_at)
 
         # Plot
-        self.temp_data.cb_set_data(noise_filtering(self.htr_temperature), self.htr_temperature_time)
+        self.temp_data.cb_set_data(noise_filtering(self.htr_temperature, self.noise_reduce), self.htr_temperature_time)
 
         # Calculate Temperature AVGs
         temp_size = self.htr_temperature.size
@@ -1097,6 +1103,9 @@ class Window(Ui_MainWindow):
         self.resistance = np.array([])
         self.humidity = np.array([])
         self.htr_temperature = np.array([])
+        self.resistance_time = np.array([])
+        self.humidity_time = np.array([])
+        self.htr_temperature_time = np.array([])
         self.htr_time = np.array([])
 
         # Clear Progress
@@ -1200,6 +1209,17 @@ class Window(Ui_MainWindow):
         if volt[1]:
             SETTINGS.update_setting("ref_volt", str(volt[0]))
             self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
+
+    @QtCore.pyqtSlot()
+    def on_action_Noise_Reduction_triggered(self):
+        # Prompt user for new voltage
+        noise = QInputDialog.getInt(self, _translate("MainWindow", "Noise Reduction"), _translate("MainWindow", "Enter the number of times to apply the noise filter."), self.noise_reduce, 0)
+
+        # Update
+        if noise[1]:
+            SETTINGS.update_setting("noise_reduce", str(noise[0]))
+            self.noise_reduce = noise[0]
+            self.statusBar().showMessage(f"Noise reduction filter will now iterate {noise[0]} times", 5000)
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
