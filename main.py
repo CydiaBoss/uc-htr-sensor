@@ -1109,7 +1109,7 @@ class Window(Ui_MainWindow):
         f = open(self.file_dest.text().strip(), 'w')
 
         # Add header
-        f.write(HTR_HEADER + ",," + QCM_HEADER + "\n")
+        f.write(f'"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)","Humidity (%RH)","Temperature (degC)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
 
         # Write
         for i in range(max(self.htr_time.size, self.qcm_time.size)):

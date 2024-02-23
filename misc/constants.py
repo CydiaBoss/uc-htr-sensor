@@ -27,7 +27,7 @@ DATA_FOLDER = "data"
 LOG_FOLDER = "logs"
 
 # References
-REF_RESIST = lambda : SETTINGS.get_setting("ref_resist")
+REF_RESIST = lambda : float(SETTINGS.get_setting("ref_resist"))
 REF_RESIST_UNIT = lambda : SETTINGS.get_setting("ref_resist_unit") or " "
 REF_VOLT = lambda : float(SETTINGS.get_setting("ref_volt"))
 
@@ -50,8 +50,6 @@ FREQ_AXIS_CONFIG = {
     "text": "Frequency", 
     "units": "Hz", 
 }
-HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Temperature (degC)"'
-QCM_HEADER = f'"Time","Frequency (Hz)","Dissipation","Temperature (degC)"'
 
 # Progress
 QPB_DEFAULT_STYLE = """
