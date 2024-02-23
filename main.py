@@ -25,22 +25,6 @@ _translate = QtCore.QCoreApplication.translate
 
 class Window(Ui_MainWindow):
 
-    # Data Storage
-    # HTR
-    raw_resistance = np.array([])
-    resistance = np.array([])
-    humidity = np.array([])
-    htr_temperature = np.array([])
-    resistance_time = np.array([])
-    humidity_time = np.array([])
-    htr_temperature_time = np.array([])
-    htr_time = np.array([])
-    # QCM
-    frequency = np.array([])
-    dissipation = np.array([])
-    qcm_temperature = np.array([])
-    qcm_time = np.array([])
-
     # Signal
     connected = QtCore.pyqtSignal()
 
@@ -58,11 +42,11 @@ class Window(Ui_MainWindow):
         # Setup Graphs
         self.setup_plots()
 
-        # Setup Signals
-        self.setup_signals()
-
         # Setup Variables
         self.setup_variable()
+
+        # Setup Signals
+        self.setup_signals()
 
         # Enable Ports
         self.update_ports()
@@ -223,20 +207,6 @@ class Window(Ui_MainWindow):
         # Signal multi mode
         self.multi_mode = True
 
-    def setup_signals(self):
-        """
-        Setup all essential connections
-        """
-        # Port Detection singal
-        self.htr_serial.currentIndexChanged.connect(self.port_conflict_detection)
-        self.qcm_serial.currentIndexChanged.connect(self.port_conflict_detection)
-
-        # Connection signal
-        self.connected.connect(self.is_connected)
-
-        # Measurement Selection
-        self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
-
     def setup_variable(self):
         """
         Setup all the local variables
@@ -268,6 +238,25 @@ class Window(Ui_MainWindow):
         self.multi_freq_datas : list[DataConnector] = []
         self.multi_dissipate_datas : list[DataConnector] = []
 
+        # Data Storage
+        # HTR
+        self.raw_resistance = np.array([])
+        self.resistance = np.array([])
+        self.humidity = np.array([])
+        self.htr_temperature = np.array([])
+        self.resistance_time = np.array([])
+        self.humidity_time = np.array([])
+        self.htr_temperature_time = np.array([])
+        self.htr_time = np.array([])
+        # QCM
+        self.frequency = np.array([])
+        self.dissipation = np.array([])
+        self.qcm_temperature = np.array([])
+        self.qcm_time = np.array([])
+
+        # Fill Frequency List
+        self.fill_frequency_list()
+
         # Update Perm Status
         self.update_perm_status(_translate("MainWindow", "Not Ready"))
 
@@ -277,6 +266,20 @@ class Window(Ui_MainWindow):
 
         # Update Ohm SI Mult
         self.resist_label.setText(_translate("MainWindow", f'<html><head/><body><p><span style=" font-weight:600;">Resistance ({REF_RESIST_UNIT().strip()}Ω)</span></p></body></html>'))
+
+    def setup_signals(self):
+        """
+        Setup all essential connections
+        """
+        # Port Detection singal
+        self.htr_serial.currentIndexChanged.connect(self.port_conflict_detection)
+        self.qcm_serial.currentIndexChanged.connect(self.port_conflict_detection)
+
+        # Connection signal
+        self.connected.connect(self.is_connected)
+
+        # Measurement Selection
+        self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
 
     def setup_memory(self):
         """
@@ -358,12 +361,10 @@ class Window(Ui_MainWindow):
         self.qc_type.setEnabled(True)
         self.calibrate_btn.setEnabled(True)
 
-    def enable_measurement(self):
+    def fill_frequency_list(self):
         """
-        Enable all measurement ctrls
+        Fills the frequency list from the file
         """
-        self.measure_type.setEnabled(True)
-
         # Populate frequency list
         self.freq_list.clear()
 
@@ -373,6 +374,15 @@ class Window(Ui_MainWindow):
 
         for peak in self.peaks:
             self.freq_list.addItem(f"{peak} Hz")
+
+    def enable_measurement(self):
+        """
+        Enable all measurement ctrls
+        """
+        self.measure_type.setEnabled(True)
+
+        # Reread
+        self.fill_frequency_list()
 
         self.freq_list.setEnabled(True)
         # self.qcm_temp_ctrl.setEnabled(True)
@@ -1190,6 +1200,35 @@ class Window(Ui_MainWindow):
         if volt[1]:
             SETTINGS.update_setting("ref_volt", str(volt[0]))
             self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
+
+    @QtCore.pyqtSlot()
+    def on_action_Reset_Software_triggered(self):
+        # Ask for confirmation before resetting
+        confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to reset everything? All data not saved will be lost."), QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.No:
+            # ignore
+            return
+
+        # Disable All
+        self.disable_all_ctrls()
+        self.reset_calibration_bar()
+        self.reset_progress_bar()
+
+        # Setup Graphs
+        self.setup_plots()
+
+        # Setup Variables
+        self.setup_variable()
+
+        # Setup Signals
+        self.setup_signals()
+
+        # Enable Ports
+        self.update_ports()
+        self.enable_ports()
+
+        # Startup Memory Stuff
+        self.setup_memory()
 
     @QtCore.pyqtSlot()
     def on_connect_btn_clicked(self):
