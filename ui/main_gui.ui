@@ -1294,7 +1294,7 @@
                     <number>2</number>
                    </property>
                    <item>
-                    <layout class="QGridLayout" name="gridLayout_4">
+                    <layout class="QGridLayout" name="gridLayout_4" columnstretch="7,5">
                      <property name="verticalSpacing">
                       <number>2</number>
                      </property>
@@ -1606,7 +1606,13 @@
                 </widget>
                </item>
                <item row="0" column="5">
-                <widget class="QComboBox" name="qcm_serial"/>
+                <widget class="QComboBox" name="qcm_serial">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_13">
@@ -1730,23 +1736,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <widget class="QMenu" name="menu_Export">
-     <property name="title">
-      <string>&amp;Export</string>
-     </property>
-     <addaction name="action_All"/>
-     <addaction name="separator"/>
-     <addaction name="action_Resistance"/>
-     <addaction name="action_Humidity"/>
-     <addaction name="action_Temperature"/>
-     <addaction name="action_Amplitude"/>
-     <addaction name="action_Phase"/>
-     <addaction name="actionDissipation"/>
-     <addaction name="actionAbsorption"/>
-    </widget>
-    <addaction name="action_Refresh"/>
-    <addaction name="separator"/>
-    <addaction name="menu_Export"/>
+    <addaction name="action_Refresh_Ports"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
@@ -1763,7 +1753,7 @@
     </widget>
     <addaction name="menu_Update"/>
     <addaction name="separator"/>
-    <addaction name="action_Reset_Recorded_Data"/>
+    <addaction name="action_Reset_Software"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -1798,9 +1788,9 @@
     <string>Update the reference voltage</string>
    </property>
   </action>
-  <action name="action_Reset_Recorded_Data">
+  <action name="action_Reset_Software">
    <property name="text">
-    <string>&amp;Reset Recorded Data</string>
+    <string>&amp;Reset Software</string>
    </property>
    <property name="toolTip">
     <string>Reset the recorded data up to this point</string>
@@ -1858,9 +1848,9 @@
     <string>Resonance &amp;Frequency</string>
    </property>
   </action>
-  <action name="action_Refresh">
+  <action name="action_Refresh_Ports">
    <property name="text">
-    <string>&amp;Refresh</string>
+    <string>&amp;Refresh Ports</string>
    </property>
    <property name="toolTip">
     <string>Refresh the connected serial devices list</string>

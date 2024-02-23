@@ -1108,7 +1108,7 @@ class Window(Ui_MainWindow):
     
     # Slots
     @QtCore.pyqtSlot()
-    def on_action_Refresh_triggered(self):
+    def on_action_Refresh_Ports_triggered(self):
         self.update_ports()
 
     @QtCore.pyqtSlot()
