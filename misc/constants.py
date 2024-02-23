@@ -53,6 +53,33 @@ FREQ_AXIS_CONFIG = {
 HTR_HEADER = f'"Time","Resistance ({REF_RESIST_UNIT()}Ohm)","Humidity (%RH)","Temperature (degC)"'
 QCM_HEADER = f'"Time","Frequency (Hz)","Dissipation","Temperature (degC)"'
 
+# Progress
+QPB_DEFAULT_STYLE = """
+QProgressBar{
+    border: 1px solid grey;
+    border-radius: 5px;
+    text-align: center
+}
+
+QProgressBar::chunk {
+    background-color: lightblue;
+    width: 10px;
+    margin: 1px;
+}
+"""
+
+QPB_COMPLETED_STYLE = """
+QProgressBar::chunk {
+    background-color: lightgreen;
+}
+"""
+
+QPB_ERROR_STYLE = """
+QProgressBar::chunk {
+    background-color: lightpink;
+}
+"""
+
 # QCM Specific Constants
 ###############################################################################
 # Architecture specific methods: OS types, Python version

@@ -268,6 +268,13 @@ class Window(Ui_MainWindow):
         self.multi_freq_datas : list[DataConnector] = []
         self.multi_dissipate_datas : list[DataConnector] = []
 
+        # Update Perm Status
+        self.update_perm_status(_translate("MainWindow", "Not Ready"))
+
+        # Setup Style
+        # QProgressBar
+        self.setStyleSheet(QPB_DEFAULT_STYLE)
+
     def setup_memory(self):
         """
         Restore previous positions
@@ -299,7 +306,6 @@ class Window(Ui_MainWindow):
         # Calibration
         self.qc_type.setEnabled(False)
         self.calibrate_btn.setEnabled(False)
-        self.calibration_bar.setValue(0)
         
         # Measurement
         self.measure_type.setEnabled(False)
@@ -316,7 +322,20 @@ class Window(Ui_MainWindow):
         self.start_btn.setEnabled(False)
         self.stop_btn.setEnabled(False)
         self.reset_btn.setEnabled(False)
+
+    def reset_calibration_bar(self):
+        """
+        Reset Calibration Bar
+        """
+        self.calibration_bar.setValue(0)
+        self.calibration_bar.setStyleSheet("")
+
+    def reset_progress_bar(self):
+        """
+        Reset Progress Bar
+        """
         self.progress_bar.setValue(0)
+        self.progress_bar.setStyleSheet("")
 
     def enable_ports(self):
         """
@@ -405,6 +424,12 @@ class Window(Ui_MainWindow):
         # Update
         self.statusBar().showMessage("New Ports Discovered", 5000)
 
+    def update_perm_status(self, msg : str):
+        """
+        Update the status info box
+        """
+        self.perm_status.setText("<font color=#0000ff > Status </font>" + msg)
+
     def port_conflict_detection(self):
         """
         Ensures valid port selection
@@ -452,6 +477,7 @@ class Window(Ui_MainWindow):
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR", 5000)
+            self.update_perm_status(_translate("MainWindow", "HTR Ready"))
             self.htr_port = self.htr_serial.currentText()
             SETTINGS.update_setting("last_htr_port", self.htr_port)
             self.connected.emit()
@@ -742,10 +768,12 @@ class Window(Ui_MainWindow):
 
             # Enable measurement if successful
             if success:
+                self.calibration_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+                self.update_perm_status(_translate("MainWindow", "QCM Ready"))
                 self.enable_measurement()
                 self.qcm_calibrated = True
             else:
-                self.calibration_bar.setStyleSheet("chunk { background-color: red; }")
+                self.calibration_bar.setStyleSheet(QPB_ERROR_STYLE)
                 self.statusBar().showMessage(_translate("MainWindow", "Calibration failed as the expected fundamental frequency could not be found."))
 
             # Enable this if success or htr is already on
@@ -838,6 +866,9 @@ class Window(Ui_MainWindow):
                 labelbar = 'Please wait, processing early data...'
                 prep_process = True
 
+                # Status
+                self.update_perm_status(_translate("MainWindow", "Environment Reading..."))
+
             elif (str(vector1[0])=='nan' and (_ser_error1 or _ser_error2)):
                 if _ser_error1 and _ser_error2:
                     labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
@@ -845,9 +876,18 @@ class Window(Ui_MainWindow):
                     labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
                 elif _ser_error2:
                     labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
+    
+                # Update QPB Style
+                self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
             else:
                 if not _ser_error1 and not _ser_error2:
                     labelbar = 'Monitoring!'
+        
+                    # Update QPB Style
+                    self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+
+                    # Status
+                    self.update_perm_status(_translate("MainWindow", labelbar))
                 else:
                     if _ser_error1 and _ser_error2:
                         labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
@@ -855,6 +895,9 @@ class Window(Ui_MainWindow):
                         labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
                     elif _ser_error2:
                         labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
+    
+                    # Update QPB Style
+                    self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
                     
         # progressbar 
         self.progress_bar.setValue(int(self.qcm_progress + 2))
@@ -1157,6 +1200,8 @@ class Window(Ui_MainWindow):
 
         # Disable
         self.disable_all_ctrls()
+        self.reset_calibration_bar()
+        self.reset_progress_bar()
         
         # Test HTR
         self.test_htr_port()
@@ -1168,6 +1213,7 @@ class Window(Ui_MainWindow):
     def on_calibrate_btn_clicked(self):
         # Disable
         self.disable_all_ctrls()
+        self.reset_calibration_bar()
         self.qcm_calibrated = False
 
         # Start
@@ -1214,6 +1260,7 @@ class Window(Ui_MainWindow):
 
         # Disable
         self.disable_all_ctrls()
+        self.reset_progress_bar()
         
         # Clear
         self.clear_plots()
