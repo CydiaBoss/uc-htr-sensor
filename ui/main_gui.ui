@@ -1735,7 +1735,16 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menu_DAQ">
+     <property name="title">
+      <string>&amp;DAQ</string>
+     </property>
+     <addaction name="action_Scan_Connections"/>
+     <addaction name="action_Disconnect"/>
+    </widget>
     <addaction name="action_Refresh_Ports"/>
+    <addaction name="separator"/>
+    <addaction name="menu_DAQ"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
@@ -1860,6 +1869,19 @@
   <action name="action_Noise_Reduction">
    <property name="text">
     <string>&amp;Noise Reduction</string>
+   </property>
+  </action>
+  <action name="action_Scan_Connections">
+   <property name="text">
+    <string>&amp;Scan Connections</string>
+   </property>
+  </action>
+  <action name="action_Disconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Disconnect</string>
    </property>
   </action>
  </widget>

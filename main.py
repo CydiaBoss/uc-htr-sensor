@@ -2,7 +2,7 @@ import os, re, time
 from datetime import datetime
 from typing import Union
 
-from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester
+from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester, RSensorCtrl
 from misc.constants import *
 from misc.tools import active_ports, identical_list, noise_filtering
 
@@ -17,6 +17,8 @@ from pglive.sources.data_connector import DataConnector
 from pglive.sources.live_plot import LiveLinePlot
 from pglive.sources.live_plot_widget import LivePlotWidget
 from pglive.sources.live_axis import LiveAxis
+
+from nidaqmx.system.system import System
 
 import main_rc
 
@@ -214,6 +216,7 @@ class Window(Ui_MainWindow):
         # Setup Ports
         self.htr_port : str = None
         self.qcm_port : str = None
+        self.r_device : str = None
 
         # Setup Dropdowns
         self.ports = []
@@ -221,6 +224,7 @@ class Window(Ui_MainWindow):
         # Setup Controllers
         self.htr_ctrl : HTRSensorCtrl = None
         self.qcm_ctrl : QCMSensorCtrl = None
+        self.r_ctrl : RSensorCtrl = None
 
         # Make Calibration Stuff
         self.qcm_calibrated = False
@@ -248,6 +252,7 @@ class Window(Ui_MainWindow):
         self.humidity_time = np.array([])
         self.htr_temperature_time = np.array([])
         self.htr_time = np.array([])
+        self.r_time = np.array([])
         # QCM
         self.frequency = np.array([])
         self.dissipation = np.array([])
@@ -255,7 +260,7 @@ class Window(Ui_MainWindow):
         self.qcm_time = np.array([])
 
         # Read Noise Reduction value
-        self.noise_reduce = SETTINGS.get_setting("noise_reduce")
+        self.noise_reduce = int(SETTINGS.get_setting("noise_reduce"))
         if self.noise_reduce is None:
             self.noise_reduce = 5
             SETTINGS.update_setting("noise_reduce", str(self.noise_reduce))
@@ -314,6 +319,7 @@ class Window(Ui_MainWindow):
         self.htr_serial.setEnabled(False)
         self.qcm_serial.setEnabled(False)
         self.connect_btn.setEnabled(False)
+        self.action_Disconnect.setEnabled(False)
 
         # Calibration
         self.qc_type.setEnabled(False)
@@ -359,6 +365,9 @@ class Window(Ui_MainWindow):
 
         if self.htr_serial.currentText() != self.qcm_serial.currentText():
             self.connect_btn.setEnabled(True)
+
+        if self.r_device is not None:
+            self.action_Disconnect.setEnabled(True)
 
     def enable_calibrate(self):
         """
@@ -429,6 +438,10 @@ class Window(Ui_MainWindow):
         self.htr_serial.clear()
         self.qcm_serial.clear()
 
+        # Add empty placeholder
+        self.htr_serial.addItem("---")
+        self.qcm_serial.addItem("---")
+
         # Add New COM Menu
         for port in self.ports:
             self.htr_serial.addItem(port)
@@ -442,6 +455,24 @@ class Window(Ui_MainWindow):
 
         # Update
         self.statusBar().showMessage("New Ports Discovered", 5000)
+
+    def look_for_daq(self):
+        """
+        Detect the DAQ sensor
+        """
+        # Look for DAQs for resistance replacement
+        if len(System.local().devices) > 0:
+            r_daq = QInputDialog.getItem(self, _translate("MainWindow", "DAQ Detected"), _translate("MainWindow", "It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?\nThe HTR's resistor sensor will be disabled if so."), [x.name for x in System.local().devices], editable=False)
+            
+            # Look for r_daq
+            if r_daq[1]:
+                self.r_device = r_daq[0]
+
+                # Success
+                self.statusBar().showMessage(f"DAQ {r_daq[0]} selected", 5000)
+
+        else:
+            self.statusBar().showMessage(f"No DAQ detected", 5000)
 
     def update_perm_status(self, msg : str):
         """
@@ -570,6 +601,34 @@ class Window(Ui_MainWindow):
 
         return connect
 
+    def start_r(self):
+        '''
+        Start running R sampling
+        '''
+        # Make Data Thread
+        self.r_thread = QtCore.QThread(self)
+        
+        # Create controller
+        self.r_ctrl = RSensorCtrl(device=self.r_device, voltage=REF_VOLT(), reference_resist=REF_RESIST())
+        self.r_ctrl.moveToThread(self.r_thread)
+
+        # Signal/Slots
+        self.r_thread.started.connect(self.r_ctrl.run)
+        self.r_ctrl.progress.connect(self.update_r_time)
+        self.r_ctrl.resistance.connect(self.resistance_processing)
+        self.r_ctrl.finished.connect(self.r_thread.quit)
+        self.r_ctrl.finished.connect(self.r_ctrl.deleteLater)
+        self.r_thread.finished.connect(self.r_thread.deleteLater)
+    
+        # Initialize Data Collection
+        self.r_thread.start()
+
+    def update_r_time(self):
+        """
+        Update the time array for r
+        """
+        self.r_time = np.append(self.r_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
+
     def start_htr(self):
         '''
         Start running HTR sampling
@@ -584,7 +643,11 @@ class Window(Ui_MainWindow):
         # Signal/Slots
         self.htr_thread.started.connect(self.htr_ctrl.run)
         self.htr_ctrl.progress.connect(self.update_htr_time)
-        self.htr_ctrl.resistance.connect(self.resistance_processing)
+
+        # Ignore if r_device is None
+        if self.r_device is None:
+            self.htr_ctrl.resistance.connect(self.resistance_processing)
+
         self.htr_ctrl.humidity.connect(self.humidity_processing)
         self.htr_ctrl.temperature.connect(self.htr_temperature_processing)
         self.htr_ctrl.finished.connect(self.htr_thread.quit)
@@ -1107,6 +1170,7 @@ class Window(Ui_MainWindow):
         self.humidity_time = np.array([])
         self.htr_temperature_time = np.array([])
         self.htr_time = np.array([])
+        self.r_time = np.array([])
 
         # Clear Progress
         self.calibration_bar.setValue(0)
@@ -1127,26 +1191,53 @@ class Window(Ui_MainWindow):
         # Open file
         f = open(self.file_dest.text().strip(), 'w')
 
-        # Add header
-        f.write(f'"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)","Humidity (%RH)","Temperature (degC)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
+        # Is R sensor override?
+        if self.r_device is None:
+            f.write(f'"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)","Humidity (%RH)","Temperature (degC)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
+        
+            # Write
+            for i in range(max(self.htr_time.size, self.qcm_time.size)):
+                # Write HTR portion first if exist
+                if self.htr_time.size > i:
+                    f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
+                else:
+                    f.write(",,,,,")
 
-        # Write
-        for i in range(max(self.htr_time.size, self.qcm_time.size)):
-            # Write HTR portion first if exist
-            if self.htr_time.size > i:
-                f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
-            else:
-                f.write(",,,,,")
+                # Write QCM portion now if exist
+                if self.qcm_time.size > i:
+                    f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
+                else:
+                    f.write(",,,\n")
 
-            # Write QCM portion now if exist
-            if self.qcm_time.size > i:
-                f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
-            else:
-                f.write(",,,\n")
+                # Flush in parts
+                if i % AUTO_FLUSH == 0:
+                    f.flush()
+        else:
+            f.write(f'"Time","Humidity (%RH)","Temperature (degC)",,"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
 
-            # Flush in parts
-            if i % AUTO_FLUSH == 0:
-                f.flush()
+            # Write
+            for i in range(max(self.htr_time.size, self.qcm_time.size, self.r_time.size)):
+                # Write HTR portion first if exist
+                if self.htr_time.size > i:
+                    f.write(f'"{self.htr_time[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
+                else:
+                    f.write(",,,,")
+
+                # Write R portion now if exist
+                if self.r_time.size > i:
+                    f.write(f'"{self.r_time[i]}","{self.raw_resistance[i]}",,')
+                else:
+                    f.write(",,,")
+
+                # Write QCM portion now if exist
+                if self.qcm_time.size > i:
+                    f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
+                else:
+                    f.write(",,,\n")
+
+                # Flush in parts
+                if i % AUTO_FLUSH == 0:
+                    f.flush()
 
         # Final flush
         f.flush()
@@ -1170,11 +1261,39 @@ class Window(Ui_MainWindow):
                 self.qcm_timer.stop()
                 self.qcm_timer.deleteLater()
                 self.qcm_timer = None
+
+        # Close R stuff
+        if self.r_ctrl is not None:
+            self.r_ctrl.stop()
     
     # Slots
     @QtCore.pyqtSlot()
     def on_action_Refresh_Ports_triggered(self):
         self.update_ports()
+
+    @QtCore.pyqtSlot()
+    def on_action_Scan_Connections_triggered(self):
+        self.look_for_daq()
+
+        # Unlock stuff if connected
+        if self.r_device is not None:
+            self.action_Disconnect.setEnabled(True)
+            self.enable_export()
+            self.enable_start()
+
+            self.update_perm_status(_translate("MainWindow", "R Ready"))
+
+    @QtCore.pyqtSlot()
+    def on_action_Disconnect_triggered(self):
+        # Ask for confirmation before disconnecting
+        confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to disconnect the DAQ? The HTR's resistor sensor will be re-enabled."), QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.No:
+            # ignore
+            return
+        
+        # Disable and remove
+        self.action_Disconnect.setEnabled(False)
+        self.r_device = None
 
     @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
@@ -1265,11 +1384,13 @@ class Window(Ui_MainWindow):
         self.reset_calibration_bar()
         self.reset_progress_bar()
         
-        # Test HTR
-        self.test_htr_port()
+        # Test HTR (Ignore if ---)
+        if self.htr_serial.currentIndex() != 0:
+            self.test_htr_port()
                 
-        # Test QCM
-        self.test_qcm_port()
+        # Test QCM (Ignore if ---)
+        if self.qcm_serial.currentIndex() != 0:
+            self.test_qcm_port()
 
     @QtCore.pyqtSlot()
     def on_calibrate_btn_clicked(self):
@@ -1308,9 +1429,15 @@ class Window(Ui_MainWindow):
             if confirmation == QMessageBox.No:
                 return
             
-        # Warn if one of the ports is not connected
-        if self.qcm_port is None or self.htr_port is None:
-            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: Missing Sensor"), _translate("MainWindow", f"You are missing the {'QCM' if self.qcm_port is None else "HTR"} sensor! Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
+        # Warn if QCM is not connected
+        if self.qcm_port is None:
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: Missing QCM Sensor"), _translate("MainWindow", f"You are missing the QCM sensor! Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
+            
+        # Warn if HTR is not connected
+        if self.htr_port is None:
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: Missing HTR Sensor"), _translate("MainWindow", f"You are missing the HTR sensor! Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
             if confirmation == QMessageBox.No:
                 return
             
@@ -1342,6 +1469,10 @@ class Window(Ui_MainWindow):
         # Start QCM
         if self.qcm_port is not None and self.qcm_calibrated:
             self.start_qcm()
+
+        # Start R
+        if self.r_device is not None:
+            self.start_r()
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):

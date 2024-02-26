@@ -11,6 +11,114 @@ from openqcm.core.worker import Worker
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from nidaqmx import Task
+from nidaqmx.system.system import System
+
+class RSensorCtrl(QObject):
+    '''
+    Class of sensor controls for the DAQ R system
+    '''
+    # Signals
+    finished = pyqtSignal()
+    progress = pyqtSignal()
+    resistance = pyqtSignal(float, float)
+
+    # Tag
+    tag = "RSensorController"
+
+    def __init__(self, parent: QObject=None, device : str="", voltage : float=10.0, reference_resist : float=10.0):
+        super().__init__(parent)
+        # Record ports
+        self.device = device
+        self.device_object = None
+        
+        # Looper
+        self.loop = True
+
+        # Set the voltage supply
+        self.volt_supply = voltage
+
+        # Set the resistance reference
+        self.ref_resist = reference_resist
+
+        # Task
+        self.volt_task = None
+        self.measure_task = None
+
+    def open(self) -> bool:
+        devices = System.local().devices
+        # Device not connected
+        if self.device not in devices:
+            Log.e(self.tag, "R sensor not connected to computer")
+            return False
+        
+        # Save
+        self.device_object = devices[self.device]
+
+        try:
+            # Attempt to self check
+            self.device_object.self_test_device()
+
+            # Attempt to self calibrate
+            self.device_object.self_cal()
+
+            # Return Success!
+            return True
+        except:
+            return False
+        
+    def stop(self):
+        # Disable Loop
+        self.loop = False
+
+        # Disable voltage channel
+        if self.volt_task is not None:
+            self.volt_task.write(0.0)
+            self.volt_task.stop()
+            self.volt_task.close()
+            self.volt_task = None
+
+        # Disable measure channel
+        if self.measure_task is not None:
+            self.measure_task.stop()
+            self.measure_task.close()
+            self.measure_task = None
+
+    def run(self):
+        # Open connection and test
+        self.open()
+
+        # Create voltage supply task
+        self.volt_task = Task("voltage_supply")
+        self.volt_task.ao_channels.add_ao_voltage_chan(self.device_object.ao_physical_chans["ao0"].name)
+        self.volt_task.write(self.volt_supply)
+
+        # Create measuring task
+        self.measure_task = Task("measuring_task")
+        self.measure_task.ai_channels.add_ai_voltage_chan(self.device_object.ai_physical_chans["ai0"].name)
+
+        # Start measuring
+        self.volt_task.start()
+        self.start_time = time.time()
+        while self.loop:
+            # Read value
+            data = self.measure_task.read()
+
+            # Progress
+            self.progress.emit()
+
+            # Calculate resistance
+            resist = data*self.ref_resist/(self.volt_supply - data)
+
+            # Send signal
+            self.resistance.emit(time.time() - self.start_time, resist)
+
+            # Sleep for a bit
+            time.sleep(READ_DELAY)
+
+        # Finish signal
+        self.finished.emit()
+
 class HTRSensorCtrl(QObject):
     '''
     Class of sensor controls for the HTR system
