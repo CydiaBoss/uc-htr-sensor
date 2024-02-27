@@ -319,6 +319,7 @@ class Window(Ui_MainWindow):
         self.htr_serial.setEnabled(False)
         self.qcm_serial.setEnabled(False)
         self.connect_btn.setEnabled(False)
+        self.action_Scan_Connections.setEnabled(False)
         self.action_Disconnect.setEnabled(False)
 
         # Calibration
@@ -366,6 +367,7 @@ class Window(Ui_MainWindow):
         if self.htr_serial.currentText() != self.qcm_serial.currentText():
             self.connect_btn.setEnabled(True)
 
+        self.action_Scan_Connections.setEnabled(True)
         if self.r_device is not None:
             self.action_Disconnect.setEnabled(True)
 
