@@ -27,9 +27,7 @@ DATA_FOLDER = "data"
 LOG_FOLDER = "logs"
 
 # References
-REF_RESIST = lambda : float(SETTINGS.get_setting("ref_resist"))
 REF_RESIST_UNIT = lambda : SETTINGS.get_setting("ref_resist_unit") or " "
-REF_VOLT = lambda : float(SETTINGS.get_setting("ref_volt"))
 
 # QC Types
 QC_5MHZ = "5 MHz"

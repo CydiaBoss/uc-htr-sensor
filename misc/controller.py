@@ -4,7 +4,7 @@ from serial import Serial
 from serial.tools import list_ports
 import time, atexit
 
-from misc.constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST, REF_RESIST_UNIT, REF_VOLT, Constants, SourceType, Architecture, OSType
+from misc.constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST_UNIT, SETTINGS, Constants, SourceType, Architecture, OSType
 from misc.logger import Logger as Log
 
 from openqcm.core.worker import Worker
@@ -196,8 +196,8 @@ class HTRSensorCtrl(QObject):
         self.open()
 
         # Adjust references
-        self.update_ref_resist(REF_RESIST(), REF_RESIST_UNIT())
-        self.update_ref_volt(REF_VOLT())
+        self.update_ref_resist(float(SETTINGS.get_setting("ref_resist")), REF_RESIST_UNIT())
+        self.update_ref_volt(float(SETTINGS.get_setting("ref_volt")))
 
         # Processing Loop
         self.loop = True

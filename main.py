@@ -591,7 +591,7 @@ class Window(Ui_MainWindow):
         self.r_thread = QtCore.QThread(self)
         
         # Create controller
-        self.r_ctrl = RSensorCtrl(device=self.r_device, voltage=REF_VOLT(), reference_resist=REF_RESIST())
+        self.r_ctrl = RSensorCtrl(device=self.r_device, voltage=float(SETTINGS.get_setting("ref_volt")), reference_resist=float(SETTINGS.get_setting("ref_resist")))
         self.r_ctrl.moveToThread(self.r_thread)
 
         # Signal/Slots
@@ -1305,7 +1305,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Resistor_triggered(self):
         # Prompt user for new voltage
-        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{REF_RESIST()}{REF_RESIST_UNIT()}")
+        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting("ref_resist"))}{REF_RESIST_UNIT()}")
 
         # Update
         if raw_resist[1]:
@@ -1331,7 +1331,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Voltage_triggered(self):
         # Prompt user for new voltage
-        volt = QInputDialog.getDouble(self, _translate("MainWindow", "Reference Voltage"), _translate("MainWindow", "Enter the new reference voltage from the controller."), REF_VOLT(), 0.0, decimals=4)
+        volt = QInputDialog.getDouble(self, _translate("MainWindow", "Reference Voltage"), _translate("MainWindow", "Enter the new reference voltage from the controller."), float(SETTINGS.get_setting("ref_volt")), 0.0, decimals=4)
 
         # Update
         if volt[1]:
