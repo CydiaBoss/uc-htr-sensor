@@ -75,6 +75,7 @@ class Worker(QObject):
         self._P_multi = None 
         
         self._A_multi_buffer = None
+        self._P_multi_buffer = None
         self._F_Sweep_multi_buffer = None
         
         # data buffers
@@ -448,6 +449,25 @@ class Worker(QObject):
             
     def get_A_values_buffer(self, idx=0): 
         return self._A_multi_buffer[idx]
+    
+    def consume_queue_P_multi(self):
+        while not self._queue_P_multi.empty():
+            self._queue_data_P_multi(self._queue_P_multi.get(False))
+    
+    def _queue_data_P_multi(self, data):
+        # Add values
+        self._store_signal_values_P (data[1])
+        self._store_signal_values_F_sweep (data[0])
+    
+    def _store_signal_values_P (self, values):
+        # detect how many data are present 
+        size = len(values)
+        # store the data in respective buffers
+        for idx in range(size):
+            self._P_multi_buffer[idx] = values[idx]
+            
+    def get_P_values_buffer(self, idx=0): 
+        return self._P_multi_buffer[idx]
         
     
     def get_F_Sweep_values_buffer(self, idx = 0):

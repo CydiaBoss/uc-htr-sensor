@@ -6,12 +6,17 @@ from misc.logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.file_storage import FileStorage
 
+import datetime
 from time import time, sleep
 import serial
 from serial.tools import list_ports
 import numpy as np
 from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
+
+from math import factorial
+
+from openqcm.processes.parser import ParserProcess
 
 TAG = ""#"[Multiscan]"
 
@@ -92,8 +97,6 @@ class MultiscanProcess(multiprocessing.Process):
            W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
            Cambridge University Press ISBN-13: 9780521880688
         """
-        import numpy as np
-        from math import factorial
         try:
             window_size = np.abs(int(window_size))
             order = np.abs(int(order)) 
@@ -153,7 +156,7 @@ class MultiscanProcess(multiprocessing.Process):
                     print(TAG, 'WARNING: Right value not found')
                     self._err2 = 1
                     break
-                index_M = index_M+1;
+                index_M = index_M+1
             
             # linearly interpolate between the previous values to find the value of freq at the trailing edge
             m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
@@ -188,7 +191,7 @@ class MultiscanProcess(multiprocessing.Process):
                     print(TAG, 'WARNING: Right value not found')
                     self._err2 = 1
                     break
-                index_M = index_M+1;
+                index_M = index_M+1
             
             # linearly interpolate between the previous values to find the value of freq at the trailing edge
             m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
@@ -220,7 +223,6 @@ class MultiscanProcess(multiprocessing.Process):
     
     # ELABORATE SIGNAL 
     # -------------------------------------------------------------------------
-    # TODO elaborate multi signal     
     def elaborate_multi(self, k, overtone_number, coeffs_all, readFREQ, samples, 
                   Xm, Xp, temperature, SG_window_size, Spline_points, Spline_factor, timestamp):
         
@@ -311,7 +313,6 @@ class MultiscanProcess(multiprocessing.Process):
              
         # TIME EPOCH TODO 
         # ---------------------------------------------------------------------
-        import datetime
         epoch = datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
         ts_mult = 1e6
         
@@ -359,7 +360,7 @@ class MultiscanProcess(multiprocessing.Process):
 
     # INIT PROCESS 
     # -------------------------------------------------------------------------
-    def __init__(self, parser_process):
+    def __init__(self, parser_process : ParserProcess):
         """
         :param parser_process: Reference to a ParserProcess instance.
         :type parser_process: ParserProcess.
@@ -391,6 +392,7 @@ class MultiscanProcess(multiprocessing.Process):
                                         self.P_share_set_old, 
                                         self.I_share_set_old, 
                                         self.D_share_set_old]
+        
         # self.temperature_set_old = loadtxt(Constants.manual_frequencies_path)
         self.Temperature_Pid_default = loadtxt(Constants.manual_frequencies_path)
         
@@ -398,7 +400,6 @@ class MultiscanProcess(multiprocessing.Process):
         # control temperature switch default value 
         self.ctrl_bool_pre = 0
         
-        # TODO INIT PARSER PROCESS for MULTISCAN
         # Frequency 
         self._parser_F_multi = parser_process
         # Dissipation 
