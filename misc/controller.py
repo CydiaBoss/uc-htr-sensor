@@ -90,12 +90,12 @@ class RSensorCtrl(QObject):
 
         # Create voltage supply task
         self.volt_task = Task("voltage_supply")
-        self.volt_task.ao_channels.add_ao_voltage_chan(self.device_object.ao_physical_chans["ao0"].name)
+        self.volt_task.ao_channels.add_ao_voltage_chan(self.device_object.ao_physical_chans["ao0"].name, min_val=0)
         self.volt_task.write(self.volt_supply)
 
         # Create measuring task
         self.measure_task = Task("measuring_task")
-        self.measure_task.ai_channels.add_ai_voltage_chan(self.device_object.ai_physical_chans["ai0"].name)
+        self.measure_task.ai_channels.add_ai_voltage_chan(self.device_object.ai_physical_chans["ai0"].name, min_val=0, max_val=10)
 
         # Start measuring
         self.volt_task.start()
@@ -118,6 +118,14 @@ class RSensorCtrl(QObject):
 
         # Finish signal
         self.finished.emit()
+
+    def set_voltage(self, voltage : float):
+        self.volt_supply = voltage
+        if self.volt_task is not None:
+            self.volt_task.write(self.volt_supply)
+
+    def set_ref_resist(self, resist : float):
+        self.ref_resist = resist
 
 class HTRSensorCtrl(QObject):
     '''

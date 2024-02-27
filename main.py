@@ -1295,6 +1295,14 @@ class Window(Ui_MainWindow):
         self.action_Disconnect.setEnabled(False)
         self.r_device = None
 
+        # Disable stuff if needed
+        if self.htr_port is None and (self.qcm_port is None or not self.qcm_calibrated):
+            self.disable_all_ctrls()
+            self.reset_progress_bar()
+            self.enable_ports()
+
+            self.update_perm_status(_translate("MainWindow", "Not Ready"))
+
     @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
@@ -1319,6 +1327,12 @@ class Window(Ui_MainWindow):
 
             self.statusBar().showMessage(f"Reference resistance updated to {resist.group(1)} {resist.group(3)}Ω", 5000)
 
+            # Update R Sensor if needed
+            if self.r_ctrl is not None:
+                self.r_ctrl.set_ref_resist(float(resist.group(1)))
+            elif self.htr_ctrl is not None:
+                self.htr_ctrl.update_ref_resist(float(resist.group(1)))
+
     @QtCore.pyqtSlot()
     def on_action_Voltage_triggered(self):
         # Prompt user for new voltage
@@ -1328,6 +1342,12 @@ class Window(Ui_MainWindow):
         if volt[1]:
             SETTINGS.update_setting("ref_volt", str(volt[0]))
             self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
+
+            # Update R Sensor if needed
+            if self.r_ctrl is not None:
+                self.r_ctrl.set_voltage(volt[0])
+            elif self.htr_ctrl is not None:
+                self.htr_ctrl.update_ref_volt(volt[0])
 
     @QtCore.pyqtSlot()
     def on_action_Noise_Reduction_triggered(self):
