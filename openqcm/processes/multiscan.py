@@ -120,44 +120,6 @@ class MultiscanProcess(multiprocessing.Process):
     ###########################################################################
     def parameters_finder(self,freq, signal, overtone_number, threshold):
         
-# =============================================================================
-#         # VER 0.1.2
-#         # [BUG] dissipation calculation fails when the sweep signal goes under zero level
-#         
-#         # Developed a new algorithm for the calculation of dissipation: 
-# 		# - shift the signal up make the gain resonance curve positive 
-# 		# - select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-# 		# - multiply x2 the bandwith	
-# =============================================================================
-        
-        
-# =============================================================================
-#         # VER 0.1.3
-#         # change the frequency and dissipation calculation, as below: 
-#         # FREQUENCY
-#         #   - resonance frequency at fundamental is defined as the peak of the maximum
-#         #   - resonance frequency at overtones is defined as the middle point between the maximum and minimum of the gain resonance curve 
-#         # DISSIPATION: 
-#         #   - dissipation at fundamenatl is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve at 75% of maximum
-#         #   - dissipation at overtones is defined as the inverse of the bandwidth. Bandwidth is defined as width of the resonance curve 
-#         #   between the resonance curve at 90% on the left and the minimum of the resonanance curve
-# =============================================================================
-        
-        # VER 0.1.4
-        # Change resonance frequency measurement as the maximum of amplitude signal, same for fundamental and higher overtone. 
-        # Change dissipation measurement defined as bandwidth at -0.3 dB below the maximum for fundamental and overtones
-        
-        # find minimum 
-        f_min = np.min(signal)
-        # find index of minimum 
-        i_min = np.argmin(signal,axis=0)
-        
-        # VER 0.1.4 do not rescale the signal at the minimum 
-# =============================================================================
-#         # rescale the signal 
-#         signal = signal - f_min
-# =============================================================================
-        
         f_max = np.max(signal)          # Find maximum
         i_max= np.argmax(signal,axis=0) # Find index of maximum
         
@@ -170,9 +132,6 @@ class MultiscanProcess(multiprocessing.Process):
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the bandwidth
             while signal[index_m] > (f_max - threshold):  
-# =============================================================================
-#             while signal[index_m] > percent*f_max:
-# =============================================================================
                 if index_m < 1:
                    print(TAG, 'WARNING: Left value not found')
                    self._err1 = 1
@@ -181,9 +140,6 @@ class MultiscanProcess(multiprocessing.Process):
             #linearly interpolate between the previous values to find the value of freq at the leading edge
             m = (signal[index_m+1] - signal[index_m])/(freq[index_m+1] - freq[index_m])
             c = signal[index_m] - freq[index_m]*m
-# =============================================================================
-#             i_leading = (percent*f_max - c)/m
-# =============================================================================
             # VER 0.1.4 find the left index for the bandwidth
             i_leading = (f_max - threshold - c)/m
             
@@ -193,9 +149,6 @@ class MultiscanProcess(multiprocessing.Process):
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the badwidth
             while signal[index_M] > (f_max - threshold):
-# =============================================================================
-#             while signal[index_M] > percent*f_max:
-# =============================================================================
                 if index_M >= len(signal)-1:
                     print(TAG, 'WARNING: Right value not found')
                     self._err2 = 1
@@ -205,29 +158,12 @@ class MultiscanProcess(multiprocessing.Process):
             # linearly interpolate between the previous values to find the value of freq at the trailing edge
             m = (signal[index_M-1] - signal[index_M])/(freq[index_M-1] - freq[index_M])
             c = signal[index_M] - freq[index_M]*m
-# =============================================================================
-#             i_trailing = (percent*f_max - c)/m
-# =============================================================================
             # VER 0.1.4 find the right index for the bandwidth
             i_trailing = (f_max - threshold - c)/m
             
             bandwidth = abs(i_trailing - i_leading)
       
         else: 
-# =============================================================================
-#             bandwidth = 0
-#             index_m = 0
-#             index_M = 0
-#             PERCENT_OVERTONE = 0.90
-#             INDEX_OVERTONE_LEFT = i_max
-#             while signal[INDEX_OVERTONE_LEFT] > PERCENT_OVERTONE * f_max:
-#                 if INDEX_OVERTONE_LEFT < 1:
-#                    print(TAG, 'WARNING: Left value not found')
-#                    self._err1 = 1
-#                    break
-#                 INDEX_OVERTONE_LEFT = INDEX_OVERTONE_LEFT - 1     
-# =============================================================================
-            
             # loop until the index at FWHM/others is found
             # VER 0.1.4 find the index for the bandwidth
             while signal[index_m] > (f_max - threshold):  
@@ -261,21 +197,6 @@ class MultiscanProcess(multiprocessing.Process):
             i_trailing = (f_max - threshold - c)/m
             
             bandwidth = abs(i_trailing - i_leading)
-            
-        
-        #compute the FWHM/others
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # bandwidth = abs(i_trailing - i_leading)
-        
-        # VER 0.1.2
-        # select the bandwith at 50% threshold of the maximum gain, considering only the right-side of the resonance curve
-        # multiply x2 the bandwith	
-# =============================================================================
-#         bandwidth = (freq[index_M] - freq[i_max])*2
-#         
-# =============================================================================
-        # Qfac=freq[i_max]/bandwidth
         
         # VER 0.1.3
         # frequency and dissipation at fundamental 
@@ -288,17 +209,8 @@ class MultiscanProcess(multiprocessing.Process):
         # VER 0.1.3
         # frequency and dissipation at overtones 
         else:
-            
-# =============================================================================
-#             freq_resonance = (freq[i_min] + freq[i_max])/2
-# =============================================================================
-            
             # VER 0.1.4 resonance frequency as the peak
             freq_resonance = freq[i_max]
-            
-# =============================================================================
-#             Qfac = (freq[i_min] - freq[INDEX_OVERTONE_LEFT])
-# =============================================================================
             # VER 0.1.4
             Qfac = bandwidth
 
@@ -344,12 +256,6 @@ class MultiscanProcess(multiprocessing.Process):
         # FILTERING - Savitzky-Golay
         filtered_mag = self.savitzky_golay(mag_beseline_corrected, window_size = SG_window_size, order = Constants.SG_order)
         
-        # peak, index e frequency of max detection baseline corrected (filtering optional)
-        #self._vector_max_baseline_corrected.append(max(mag_beseline_corrected))   #Z axis (max)
-        #self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0)) # X axis (max position)
-        #h=self._index_max_baseline_corrected.append(np.argmax(mag_beseline_corrected, axis=0))
-        #self._freq_max_baseline_corrected.append(readFREQ[int(h)])
-        
         # FITTING/INTERPOLATING - SPLINE
         xrange = range(len(filtered_mag))
         freq_range = np.linspace(self._readFREQ[0], self._readFREQ[-1], points)
@@ -357,20 +263,9 @@ class MultiscanProcess(multiprocessing.Process):
         xs = np.linspace(0, len(filtered_mag)-1, points)
         mag_result_fit = s(xs)
         
-        # PARAMETERS FINDER
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, index_f1_fit, index_f2_fit, Qfac_fit) = self.parameters_finder(freq_range, mag_result_fit, percent = 0.707)
-# =============================================================================
-        # VER 0.1.3
-        # change the parameter finder algorithm
-# =============================================================================
-#         (index_peak_fit, max_peak_fit, bandwidth_fit, 
-#          index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, overtone_number, percent = 0.7)
-# =============================================================================
-        
         # VER 0.1.4 chenge the bandwith threshold value to the constant value THRESHOLD_DB = 0.3
-        (index_peak_fit, max_peak_fit, bandwidth_fit, 
-         index_f1_fit,index_f2_fit, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, overtone_number, Constants.THRESHOLD_DB)
+        (index_peak_fit, _, _, 
+         _,_, Qfac_fit, frequency_resonance) = self.parameters_finder(freq_range, mag_result_fit, overtone_number, Constants.THRESHOLD_DB)
        
         # self._my_list_f[overtone_number].append( freq_range[int(index_peak_fit)] )
         # VER 0.1.4
@@ -413,14 +308,6 @@ class MultiscanProcess(multiprocessing.Process):
         else:
             # current value as average 
             self.freq_res_current_array [overtone_number] = int( self._freq_range_mean [overtone_number])
-        
-# =============================================================================
-#         else:
-#              # TODO necessary to avoid exception when calling elaborate_multi() when k < Constants.environment
-#              self._freq_range_mean [overtone_number] = 0
-#              self._diss_mean [overtone_number] = 0
-#              self._temperature_mean = 0
-# =============================================================================
              
         # TIME EPOCH TODO 
         # ---------------------------------------------------------------------
@@ -450,12 +337,6 @@ class MultiscanProcess(multiprocessing.Process):
         self._parser4.add4([self._my_time,0]) 
         self._parser5.add5([self._my_time, self._temperature_mean])
         
-        # add multi overtone average date to parser queue
-# =============================================================================
-#         self._parser_F_multi.add_F_multi( [ self._my_time, self._freq_range_mean] )
-#         self._parser_D_multi.add_D_multi( [ self._my_time, self._diss_mean] )
-# =============================================================================
-        
         # add multi overtone frequency - dissipation and correpsonding time array to the parser queues
         self._parser_F_multi.add_F_multi( [ self._my_time_array, self._freq_range_mean] )
         self._parser_D_multi.add_D_multi( [ self._my_time_array, self._diss_mean] )
@@ -463,14 +344,6 @@ class MultiscanProcess(multiprocessing.Process):
         # TODO single sweeep data log 
        
     def elaborate_ampli_phase_multi(self, overtone_index, poly_coeff, freq_sweep, amp_sweep, phase_sweep):
-# =============================================================================
-#         # init variable TODO filtering - Savitzky-Golay
-#         amp_filtered = np.zeros(Constants.SAMPLES) # unused 
-#         
-#         freq_np = np.linspace(0,0,self._samples)
-#         amp_np = np.linspace(0,0,self._samples)
-#         phase_np = np.linspace(0,0,self._samples)
-# =============================================================================
         
         # calculate polynomial at frequency sweep points
         amp_baseline = np.polyval(poly_coeff, freq_sweep)
@@ -633,9 +506,6 @@ class MultiscanProcess(multiprocessing.Process):
         # just another dummy counter
         self._just_another_counter = 0
         
-        
-        
-        
     # SERIAL PORT OPEN and general setting   
     # -------------------------------------------------------------------------
     def open(self, port,  speed = Constants.serial_default_overtone, 
@@ -675,10 +545,6 @@ class MultiscanProcess(multiprocessing.Process):
         for i in range(len(peaks_mag)):
             if self._overtone == peaks_mag[i]:
                self._overtone_int = i
-# =============================================================================
-#                print("self._overtone_int ")
-#                print(self._overtone_int)
-# =============================================================================
                
         # Checks for correct frequency selection
         if self._overtone_int == None:
@@ -714,17 +580,8 @@ class MultiscanProcess(multiprocessing.Process):
 
         # get baseline coefficient 
         coeffs_all = self.baseline_coeffs()
-
-        # init readline object 
-        # line = rl(self._serial)
-        
-        frequencies_file_length = 0
         
         # set initial values of sweep buffer 
-# =============================================================================
-#         self._amp_sweep_0 = self._zerolistmaker(Constants.SAMPLES)
-#         self._phase_sweep_0 = self._zerolistmaker(Constants.SAMPLES)
-# =============================================================================
         for nn in Constants.overtone_dummy:
             self._my_list_amp[nn] = self._zerolistmaker(Constants.SAMPLES)
             self._my_list_phase[nn] = self._zerolistmaker(Constants.SAMPLES)
@@ -738,7 +595,6 @@ class MultiscanProcess(multiprocessing.Process):
             
             # TODO get the number of overtones in the peak frequencies file 
             frequencies_file = self.load_frequencies_file() 
-            frequencies_file_length = len(frequencies_file)
             
             # Get array sweep paramaters 
             (startF, stopF, stepF, readF, 
@@ -763,15 +619,10 @@ class MultiscanProcess(multiprocessing.Process):
                 self._frequency_buffer   = RingBuffer(self._environment)
                 self._dissipation_buffer = RingBuffer(self._environment)
                 self._temperature_buffer = RingBuffer(self._environment)
-                
-                # Initializes the progress bar  
-                # bar = ProgressBar(widgets=[TAG,' ', Bar(marker='>'),' ',Percentage(),' ', Timer()], maxval=self._environment).start() #
-                
+
                 # ACQUISITION LOOP
                 # -------------------------------------------------------------
                 while not self._exit.is_set():
-                    
-                    
                     # VER 0.1.4
                     # get resonance frequencies in acquisition loop. 
                     # get and set sweep start, stop and set frequencies sweep parameters, as function of the number of samples
@@ -799,9 +650,6 @@ class MultiscanProcess(multiprocessing.Process):
                     # cycle on all overtones 
                     for overtone_index in range(len(frequencies_file)):
                         
-                        # DEBUG_0.1.1a
-                        # print( "for loop overtone index and param= ", overtone_index, startF[overtone_index], stopF[overtone_index], int(stepF[overtone_index]) )
-                       
                         try:
                             # amplitude/phase convert bit to dB/Deg parameters
                             vmax = 3.3
@@ -848,29 +696,8 @@ class MultiscanProcess(multiprocessing.Process):
                                     # check the time elapsed in serial read loop
                                     _time_elapsed = time() - timeStart
                                     
-                                    # print ("acquiring buffer", _time_elapsed, overtone_index, "\n" )
-                                    
-# =============================================================================
-#                                     nlines = buffer.count('\n')
-# =============================================================================
-                                
-                                    # TODO use read line to decrease sampling time 
-                                    # buffer += line.readline().decode() 
-                                    
                                     # check for EOM character 
                                     if 's' in buffer:
-                                        # print (_time_elapsed)
-# =============================================================================
-#                                         # reset input output buffer
-#                                         self._serial.reset_input_buffer()
-#                                         self._serial.reset_output_buffer()
-#                                         sleep(0.1)
-# =============================================================================
-                                        # DEBUG_0.1.1a
-                                        # print ("find EOM ovetone number = ", overtone_index)
-                                        # DEBUG_0.1.1a
-                                        #print(TAG, "EOM: byte at port = ", self.byte_at_port, end='\n')
-                                        
                                         # VER 0.1.4
                                         # add a little delay at the end of the sweep 
                                         sleep(Constants.SLEEP_EOM_MULTISCAN)
@@ -897,7 +724,6 @@ class MultiscanProcess(multiprocessing.Process):
                                     self._serial.reset_output_buffer()
                                     sleep(0.5)
                                     self._flag_error_usb = 1
-                                    # print(TAG, "INFO: current overtone index = ", overtone_index , end='\n')
                                     
                                     # exit the for loop to prevent overtone mixing
                                     break
@@ -906,10 +732,6 @@ class MultiscanProcess(multiprocessing.Process):
                                 # -----------------------------------------
                                 
                                 if ( self._flag_error_usb == 0 ):
-                                    # meaure time elapsed 
-                                    # print ("Time elapsed for sweep")
-                                    # print (time() - timestamp)
-                                    
                                     # split each line
                                     data_raw = buffer.split('\n')
                                     length = len(data_raw)
@@ -938,8 +760,6 @@ class MultiscanProcess(multiprocessing.Process):
                                         # split data via semicolon ";"
                                         for i in range (length):
                                             strs[i] = data_raw[i].split(';')
-                                            
-                                        # TODO check the number of lines to read
                                         
                                         # converts data values to gain and phase 
                                         for i in range (length - 1):
@@ -971,26 +791,6 @@ class MultiscanProcess(multiprocessing.Process):
                                         FileStorage.TXT_sweeps_save( (overtone_index * 2) + 1 , 
                                                                     str("openQCM") + slash  +  Constants.sweep_export_path, 
                                                                     data_f,  data_mag, data_ph)
-                                
-# =============================================================================
-#                             if (overtone_index == 0):
-#                                 self._amp_sweep_0 = data_mag.tolist()
-#                                 self._phase_sweep_0 = data_ph.tolist()
-#                                 
-#                                 _sweep_path = Constants.sweep_file_path
-#                                 np.savetxt( _sweep_path, np.row_stack(self._amp_sweep_0) )
-# =============================================================================
-                                
-# =============================================================================
-#                             self._my_list_amp [overtone_index] = data_mag.tolist()
-#                             self._my_list_phase [overtone_index] = data_ph.tolist()
-#                             self._my_list_freq [overtone_index] = readF [overtone_index]
-#                             
-#                             # SAVE DATA FILE TO DEBUG 
-#                             if overtone_index == 0:
-#                                 _sweep_path = Constants.sweep_file_path
-#                                 np.savetxt( _sweep_path, np.row_stack(self._my_list_freq [overtone_index]) )
-# =============================================================================
 
                                         # get the temperature value from the buffer 
                                         data_temp = float((strs[length - 1][0]))
@@ -1021,31 +821,6 @@ class MultiscanProcess(multiprocessing.Process):
                                                 if i > 0: 
                                                     # PRINT THE ERROR MESSAGE, except bit = 0 "Enable pin not set"
                                                     print ("WARNING: MTD415T Temperature control error: ", Constants.ERROR_REG_EVENT[i])
-                                                    
-                                                    
-# =============================================================================
-#                                     
-#                                         # DEBUG_0.1.1a
-#                                         # ==================================================================================
-#                                         # SAVE DATA FILE TO DEBUG 
-#                                         _debug_path = Constants.debug_file_path
-#                                         self._my_list_amp [overtone_index] = data_mag.tolist()
-#                                         self._my_list_phase [overtone_index] = data_ph.tolist()
-#                                         self._my_list_freq [overtone_index] = readF [overtone_index]
-#                                         np.savetxt( _debug_path, np.column_stack([self._my_list_freq [overtone_index],
-#                                                                                self._my_list_amp [overtone_index], 
-#                                                                                self._my_list_phase [overtone_index] ]) )
-#                                         # ==================================================================================
-# =============================================================================
-                                    
-                                
-                                # DEBUG_0.1.1a 
-# =============================================================================
-#                                     
-#                                 # SET TEMPERATURE and PID PARAMETERS
-#                                 # ------------------------------------------------- 
-#                                 self._Temperature_PID_control()
-# =============================================================================
                             
                             except:
                                  print(TAG, "Info: exception at serial port read process, overtone =", overtone_index, end='\n')
@@ -1071,63 +846,9 @@ class MultiscanProcess(multiprocessing.Process):
                             except:
                                 print(TAG, "Info: set temperature control failed", end='\n')
                                 self._flag_error_usb = 1
-                            
-# =============================================================================
-#                                  # =================================================
-#                                  # WHAT HAPPEN ?
-#                                  print ("BUFFER = ")
-#                                  print(buffer)
-#                                  print(buffer)
-#                                  print("DATA RAW ")
-#                                  print(data_raw)
-# =============================================================================
-                                 
-# =============================================================================
-#                         # specify handlers for different exceptions        
-#                         except ValueError:
-#                             print(TAG, "WARNING (ValueError): convert raw to float failed", end='\n')
-#                             #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
-#                         except:
-#                             #if self._flag_error_usb == 1:
-#                             print(TAG, "WARNING: general exception at serial port read process", end='\n')
-#                             self._flag_error_usb += 1
-#                             
-#                             # =================================================
-#                             # WHAT HAPPEN ?
-#                             print ("BUFFER = ")
-#                             print(buffer)
-#                             print("DATA RAW ")
-#                             print(data_raw)
-#                             # =================================================
-#                             
-#                             # close and open the serial port 
-#                             # close serial port
-#                             self._serial.close()
-#                             sleep(0.1) 
-#                             # open the serial port 
-#                             self._serial.open() 
-# =============================================================================
-                            
-# =============================================================================
-#                             # TODO something is occured at the serial port 
-#                             # blocking the program 
-#                             self._serial.flushInput()
-#                             self._serial.flushOutput()
-#                             self._serial.close()
-#                             self._serial.open() 
-# =============================================================================
-                            #Log.w(TAG, "Warning (ValueError): convert Raw to float failed")
-                            
-                        # -----------------------------------------------------
-                        # DO THE DATA_PROCESSING PROCESS HERE !!!!!!!!!!!!!!!!!
-                        # TODO add new serial data to parser queue
-                        #self._parser1.add1(data_mag)
-                        #self._parser2.add2(data_ph)
-                        # -----------------------------------------------------
                         
                         # DATA PROCESSING 
                         # -----------------------------------------------------
-                        # TODO if an exception is encountered before do not elaborate 
                         
                         if self._flag_error_usb == 0:
                             
@@ -1144,51 +865,20 @@ class MultiscanProcess(multiprocessing.Process):
                             
                             except ValueError:
                                 self._flag_error = 1
-                                #if k > self._environment:
-                                #   print(TAG, "WARNING (ValueError): miscalculation")
-                                # self._flag_error_usb = 1
                                 print(TAG, "Info: value error elaborate data", end='\n')
                                 Log.i(TAG, "Info: value error elaborate data")
 
                                 
                             except:
                                 self._flag_error = 1
-                                #if k > self._environment:
-                                #   print(TAG, "WARNING (ValueError): miscalculation")
-                                # self._flag_error_usb = 1
                                 if (k > Constants.environment):
                                     print(TAG, "Info: exception general error elaborate data", end='\n')
                                     Log.i(TAG, "Info: exception general error elaborate data")
-                        
-# =============================================================================
-#                         # DEBUG_0.1.1a    
-#                         elif self._flag_error_usb == 1:
-#                             # DEBUG_0.1.1a
-#                             data_mag = np.linspace(0,0,samples)   
-#                             data_ph  = np.linspace(0,0,samples)
-#                             data_temp = 0
-#                             self.elaborate_multi(k, overtone_index,coeffs_all, readF[overtone_index], 
-#                                                samples, data_mag, data_ph, data_temp, sg_window_size[overtone_index], spline_points[overtone_index], 
-#                                                spline_factor[overtone_index], timestamp) 
-#                             self.elaborate_ampli_phase_multi(overtone_index, coeffs_all, readF[overtone_index], data_mag, data_ph)
-# =============================================================================
-                        
-# =============================================================================
-#                         # add data to the "strange" parameter queue
-#                         self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, overtone_index])
-# =============================================================================
                         
                         # VER 0.1.4
                         # add a new element to the error / status parser for the TEC STATUS variable 
 
                         self._parser6.add6([self._err1, self._err2, k, self._flag_error_usb, overtone_index, self._data_status])
-    
-                        # DEBUG_0.1.1a
-# =============================================================================
-#                         if (self._flag_error_usb == 1):
-#                             print(" a general error occured on overtone", overtone_index)
-# =============================================================================
-    
     
                         # refreshes error variables at each single overtone sweep
                         self._err1 = 0
@@ -1199,11 +889,6 @@ class MultiscanProcess(multiprocessing.Process):
                     
                     # Increases sweep counter 
                     k += 1    
-# =============================================================================
-#                 if k == self._environment:
-#                    bar.finish()
-#                    print ("bar finished")
-# =============================================================================
                 
                 # END ACQUISITION LOOP
                 # -------------------------------------------------------------
@@ -1269,7 +954,6 @@ class MultiscanProcess(multiprocessing.Process):
         #DEV    
         # check if temperature control is enabled 
         if (_ctrl_bool != self.ctrl_bool_pre):  # value changed 
-            # print("DEBUG: temperature control switch I/O ", _ctrl_bool)
             # init message 
             cmd = 'X' + str(int(_ctrl_bool)) + '\n'
             # wait for a while before complete the communication
@@ -1294,7 +978,6 @@ class MultiscanProcess(multiprocessing.Process):
     
     # STOP 
     def stop(self):
-        
         # close serial port
         # DEBUG 0.1.1c
         try:
@@ -1316,13 +999,8 @@ class MultiscanProcess(multiprocessing.Process):
         np.savetxt(path_RT, np.column_stack([frequency_calibration_array, 
                                              frequency_calibration_array]))
     
-
     # GET FREQUENCIES 
-    # TODO
     def get_frequencies(self, samples):
-
-        # TODO 
-
         """
         :param samples: Number of samples :type samples: int.
         :return: overtone :rtype: float.
@@ -1343,22 +1021,6 @@ class MultiscanProcess(multiprocessing.Process):
         peaks_mag = self.load_frequencies_file()
         # get numbers of overtones stored in calibration
         peaks_mag_length = len(peaks_mag)
-        
-        
-#        # Checks QCS type 5Mhz or 10MHz
-#        # Sets start and stop frequencies for the corresponding overtone
-#        
-#        if (peaks_mag[0] >4e+06 and peaks_mag[0]<6e+06):
-#            switch = Overtone_Switcher_5MHz(peak_frequencies = peaks_mag)
-#            # 0=fundamental, 1=3th overtone and so on
-#            (overtone_name,
-#             overtone_value, 
-#             self._startFreq,
-#             self._stopFreq,
-#             SG_window_size,
-#             spline_factor) = switch.overtone5MHz_to_freq_range(self._overtone_int)
-#            
-#            print(TAG,"openQCM Device setup: 5 MHz")
         
         # 10 MHz get frequency sweep param
         if (peaks_mag[0] >9e+06 and peaks_mag[0]<11e+06):
@@ -1422,20 +1084,7 @@ class MultiscanProcess(multiprocessing.Process):
                 # assign value 
                 readFREQ.append(frequencies_array_temp)
         
-        
-        
-        # Sets the frequency step 
-        # fStep = (self._stopFreq-self._startFreq)/(samples-1)
-        
-        # Sets spline points for fitting
-        # spline_points = int((self._stopFreq-self._startFreq))+1
-        
-        # Sets the frequency range for the corresponding overtone
-        # readFREQ = np.arange(samples) * (fStep) + self._startFreq 
-        
-        
         return (startF, stopF, fStep, readFREQ, SG_window_size, spline_factor, spline_points)
-    
     
     # VER 0.1.4
     # get the current values of resonance frequencies
@@ -1448,11 +1097,6 @@ class MultiscanProcess(multiprocessing.Process):
         fStep = []
         spline_points= []
         readFREQ = []
-        
-# =============================================================================
-#         # Loads frequencies from calibration file
-#         peaks_mag = self.load_frequencies_file()
-# =============================================================================
         
         # VER 0.1.4 get current values of resonance frequency from file 
         # open the realt-time resonance frequencies file          
@@ -1653,7 +1297,6 @@ class MultiscanProcess(multiprocessing.Process):
         
         return frequencies_array_temp
         
-    
     # VER 0.1.4
     # set the current values of resonance frequencies in file 
     def set_frequencies_RT(self, overtone_RT, frequency_RT):

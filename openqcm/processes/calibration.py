@@ -268,15 +268,15 @@ class CalibrationProcess(multiprocessing.Process):
                         break
                 #### END SWEEPS LOOP ####
                 #### STORING DATA TO FILE ###
+                path = Constants.cvs_peakfrequencies_path
+                pathrt = Constants.cvs_peakfrequencies_RT_path
 		        # CHECKS QCM Sensor type for saving calibration
                 if self._QCStype_int == 0:
                     distance = Constants.dist5
-                    path = Constants.cvs_peakfrequencies_path
                     path_calib = Constants.csv_calibration_path
                     filename_calib = Constants.csv_calibration_filename  #
                 elif self._QCStype_int == 1:
                     distance = Constants.dist10
-                    path = Constants.cvs_peakfrequencies_path
                     path_calib = Constants.csv_calibration_path10
                     filename_calib = Constants.csv_calibration_filename10  #
 		        
@@ -343,6 +343,8 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG,"Saving data in file...")
                         np.savetxt(path, np.column_stack([max_freq_mag, max_freq_phase]))
                         print(TAG, "Peak frequencies for {} saved in: {}".format(self._QCStype,path))
+                        np.savetxt(pathrt, np.column_stack([max_freq_mag, max_freq_phase]))
+                        print(TAG, "Peak frequencies RT for {} saved in: {}".format(self._QCStype,pathrt))
                         FileStorage.TXT_sweeps_save(filename_calib, Constants.csv_calibration_export_path, readFREQ, temp1, temp2)
                         print(TAG, "Calibration for {} saved in: {}".format(self._QCStype,path_calib))
                     except:

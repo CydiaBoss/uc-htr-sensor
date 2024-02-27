@@ -27,9 +27,6 @@ _translate = QtCore.QCoreApplication.translate
 
 class Window(Ui_MainWindow):
 
-    # Signal
-    connected = QtCore.pyqtSignal()
-
     def __init__(self, parent=None):
         # Initiate resources
         main_rc.qInitResources()
@@ -286,9 +283,6 @@ class Window(Ui_MainWindow):
         self.htr_serial.currentIndexChanged.connect(self.port_conflict_detection)
         self.qcm_serial.currentIndexChanged.connect(self.port_conflict_detection)
 
-        # Connection signal
-        self.connected.connect(self.is_connected)
-
         # Measurement Selection
         self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
 
@@ -532,12 +526,16 @@ class Window(Ui_MainWindow):
             self.update_perm_status(_translate("MainWindow", "HTR Ready"))
             self.htr_port = self.htr_serial.currentText()
             SETTINGS.update_setting("last_htr_port", self.htr_port)
-            self.connected.emit()
+            self.enable_export()
+            self.enable_start()
 
         # Unlock
         if self.qcm_serial.isEnabled():
             self.connect_btn.setEnabled(True)
         self.htr_serial.setEnabled(True)
+
+        # Casually Look for DAQ also
+        self.on_action_Scan_Connections_triggered()
 
     def test_qcm_port(self):
         '''
@@ -578,30 +576,12 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM", 5000)
             self.qcm_port = self.qcm_serial.currentText()
             SETTINGS.update_setting("last_qcm_port", self.qcm_port)
-            self.connected.emit()
+            self.enable_calibrate()
 
         # Unlock
         if self.htr_serial.isEnabled():
             self.connect_btn.setEnabled(True)
         self.qcm_serial.setEnabled(True)
-
-    def is_connected(self) -> bool:
-        """
-        Checks if the system is connected
-        Enables calibration if is
-        """
-        connect = self.htr_port is not None and self.qcm_port is not None
-
-        # If only QCM
-        if self.qcm_port is not None:
-            self.enable_calibrate()
-
-        # If only HTR
-        if self.htr_port is not None:
-            self.enable_export()
-            self.enable_start()
-
-        return connect
 
     def start_r(self):
         '''
@@ -868,6 +848,9 @@ class Window(Ui_MainWindow):
             # Open ports
             self.enable_ports()
 
+            # Stop Thread
+            self.stop_sensors()
+
         # Update Plot
         vector1 = self.qcm_ctrl.worker.get_value1_buffer()
         vector2 = self.qcm_ctrl.worker.get_value2_buffer()
@@ -1040,11 +1023,13 @@ class Window(Ui_MainWindow):
         vector1 = self.qcm_ctrl.worker.get_d1_buffer()
 
         # TODO update plot
-        self._ser_error1, self._ser_error2, self._ser_control, self._ser_err_usb, self._overtone_number = self.worker.get_ser_error()
+        self._ser_error1, self._ser_error2, self._ser_control, self._ser_err_usb, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
 
         if vector1.any():
             # progressbar
             if self._ser_control <= Constants.environment:
+                prep_process = True
+
                 # VER 0.1.2 just a little thing  
                 self._completed = self._ser_control * 100 / Constants.environment
                 
@@ -1054,7 +1039,6 @@ class Window(Ui_MainWindow):
 
             else:
                 # Continue to monitor
-                prep_process = True
                 labelbar = "Monitoring!"
                     
         # progressbar -------------
@@ -1069,16 +1053,26 @@ class Window(Ui_MainWindow):
 
         # Update Plot
         for idx in range(self.peaks.size):
+            # AMPLITUDE
             # get and scale frequency axis
             x_sweep_axis = self.qcm_ctrl.worker.get_F_Sweep_values_buffer(idx) - self.peaks[idx]
             # get amplitude axis
             y_sweep_axis = self.qcm_ctrl.worker.get_A_values_buffer(idx)
             # plot sweep
             if isinstance(x_sweep_axis, np.ndarray):
-                self._plt0.plot ( x = x_sweep_axis, y = y_sweep_axis, pen = Constants.plot_color_multi[idx] )
-        
-        # Start Ploting other stuff
-        # TODO add other graphs
+                self.multi_amp_datas[idx].cb_set_data( x = x_sweep_axis, y = y_sweep_axis, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
+
+            # FREQ & DISSIPATE
+            # get time axis
+            time_axis_new = self.qcm_ctrl.worker.get_time_values_buffer(idx)
+            
+            # get y frequency and dissipation axis
+            y_freq = np.array( self.qcm_ctrl.worker.get_F_values_buffer(idx) )
+            y_diss = np.array( self.qcm_ctrl.worker.get_D_values_buffer(idx) )
+
+            # plot frequency and dissipation data
+            self.multi_freq_datas[idx].cb_set_data(x = time_axis_new, y = y_freq, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
+            self.multi_dissipate_datas[idx].cb_set_data(x = time_axis_new, y = y_diss, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
 
     def update_indicator_freq(self, index : int, value : Union[float, None]):
         """
@@ -1175,7 +1169,6 @@ class Window(Ui_MainWindow):
         self.r_time = np.array([])
 
         # Clear Progress
-        self.calibration_bar.setValue(0)
         self.progress_bar.setValue(0)
 
     def save_data(self):
@@ -1543,3 +1536,4 @@ class Window(Ui_MainWindow):
             a0.accept()
         else:
             a0.ignore() 
+            
