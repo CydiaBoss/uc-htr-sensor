@@ -180,9 +180,8 @@ class Constants:
     ##########################
     app_title = "Real-Time QCM GUI"
     app_version = '2.1'
-    app_sources = ["Multi-Measurement", "Measurement openQCM Q-1 Device", "Calibration openQCM Q-1 Device"]
+    app_sources = ["Multi-Measurement", "Single Measurement", "Calibration"]
     app_encoding = "utf-8"
-    
     
     ###################
     # PLOT parameters #
@@ -314,15 +313,6 @@ class Constants:
     simulator_default_speed = 0.1 # not used
     parser_timeout_ms = 0.005
     
-    ##################
-    # Log parameters #
-    ##################
-    log_export_path = "logged_data"
-    log_filename = "{}.log".format(app_title)
-    log_max_bytes = 5120
-    log_default_level = 1
-    log_default_console_log = False
-    
     ######################################
     # File parameters for exporting data #
     ######################################
@@ -332,19 +322,13 @@ class Constants:
     else:
        slash="\\"
        
-    csv_delimiter = "," # for splitting data of the serial port and CSV file storage
-    csv_default_prefix = "%Y-%b-%d_%H-%M-%S"#"%H-%M-%S-%d-%b-%Y" # Hour-Minute-Second-month-day-Year
     csv_extension = "csv"
     txt_extension = "txt"
-    csv_export_path = "data"
-    csv_filename = (strftime(csv_default_prefix, localtime()))
-    csv_sweeps_export_path = "{}{}{}".format(csv_export_path,slash,csv_filename)
-    csv_sweeps_filename = "sweep"
     
-    # Calibration: scan (WRITE for 5 MHz and 10 MHz QCS) path: 'common\'
+    # Calibration: scan (WRITE for 5 MHz and 10 MHz QCS) path: 'core\'
     csv_calibration_filename    = "calibration_5MHz"
     csv_calibration_filename10  = "calibration_10MHz"
-    csv_calibration_export_path = "core" #"common"
+    csv_calibration_export_path = "core" 
     
     ################## 
     # Calibration: baseline correction (READ for 5 MHz and 10 MHz QCS) path: 'common\'
@@ -353,8 +337,7 @@ class Constants:
     
     # Frequencies: Fundamental and overtones (READ and WRITE for 5 MHz and 10 MHz QCS)
     csv_peakfrequencies_filename   = "peak_freq"
-    cvs_peakfrequencies_path    = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename,txt_extension)
-    #cvs_peakfrequencies_path10 = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename10,txt_extension)    
+    cvs_peakfrequencies_path    = "{}{}{}.{}".format(csv_calibration_export_path,slash,csv_peakfrequencies_filename,txt_extension) 
     #########################    
     
     # VER 0.1.4
@@ -371,14 +354,6 @@ class Constants:
     ##########################
     # CALIBRATION PARAMETERS #
     ##########################
-    
-    # VER 0.1.4a change the peak detection distance in accordance with the frequency step
-    # Peak Detection - distance in samples between neighbouring peaks
-    # 5 MHz sensor minimum frequency distance between successive peaks = 8 MHz
-    dist5MHz = 8000000
-    # 5 MHz sensor minimum frequency distance between successive peaks = 10 MHz
-    dist10MHz = 10000000 
-    
     # Peak Detection - distance in samples between neighbouring peaks
     dist5  =  8000 # for 5 MHz
     dist10 =  10000 # for 10 MHz
@@ -410,20 +385,23 @@ class Constants:
     
     # set temperature default parameter
     Temperature_Set_Value = 25.00
+
     # set PID default parameter 
     cycling_time_default = cycling_time_setting[1]
     P_share_default = P_share_setting[1]
     I_share_default = I_share_setting[1]
     D_share_default = D_share_setting[1]
+
     # boolean variable temperature setting 
     PID_boolean_default = 0 
+
     # boolean control temperature setting 
     CTRL_boolean_default = 0
     
     ##############################
     # Parameters for the average #
     ##############################  
-    environment = 50 #######################################################################################################
+    environment = 50 
     SG_order_environment = 1
     SG_window_environment = 3
     
@@ -489,7 +467,6 @@ class Constants:
     # VER 0.1.4 define the threshold in dB for the bandwidth calculation 
     THRESHOLD_DB = 0.3
    
-    
     # TODO MAXIMUM NUMBER OF OVERTONES 
     overtone_maximum_number = 4
     
@@ -506,30 +483,3 @@ class Constants:
     # VER 0.1.4 TODO
     # Savitzky-Golay window size definition 
     SG_WINDOW_SIZE = 51
-        
-###############################################################################
-#  Provides a date-time aware axis
-###############################################################################  
-class DateAxis(AxisItem): 
-    def __init__(self, *args, **kwargs):
-        super(DateAxis, self).__init__(*args, **kwargs)            
-          
-    def tickStrings(self, values, scale, spacing):    
-        TS_MULT_us = 1e6
-        try:
-            z= [(datetime.datetime.utcfromtimestamp(float(value)/TS_MULT_us)).strftime("%b-%d %H:%M:%S") for value in values]
-        except: 
-            z= ''
-        return z
-        #return [(datetime.datetime.utcfromtimestamp(float(value)/TS_MULT_us)).strftime("%b-%d %H:%M:%S") for value in values]
-
-
-###############################################################################
-#  Provides a non scientific axis notation
-###############################################################################  
-class NonScientificAxis(AxisItem):
-    def __init__(self, *args, **kwargs):
-        super(NonScientificAxis, self).__init__(*args, **kwargs)
-
-    def tickStrings(self, values, scale, spacing):
-        return [int(value*1) for value in values] 
