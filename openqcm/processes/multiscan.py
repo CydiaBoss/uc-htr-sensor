@@ -665,7 +665,7 @@ class MultiscanProcess(multiprocessing.Process):
                             
                             # Initializes buffer and strs record
                             buffer = ''
-                            strs = ["" for x in range(samples + 2)]
+                            strs = ["" for _ in range(samples + 2)]
                         
                         except:
                             Log.e(TAG, "Info: exception serial write fail")

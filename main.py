@@ -1037,12 +1037,21 @@ class Window(Ui_MainWindow):
                 # Optimize and update infobar and infostatus in multiscan mode
                 labelbar = 'Please wait, processing early data...'
 
+                # Status
+                self.update_perm_status(_translate("MainWindow", "Environment Reading..."))
+
             else:
                 # Continue to monitor
                 labelbar = "Monitoring!"
+        
+                # Update QPB Style
+                self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+
+                # Status
+                self.update_perm_status(_translate("MainWindow", labelbar))
                     
         # progressbar -------------
-        self.calibration_bar.setValue(int(self._completed + 10))
+        self.progress_bar.setValue(int(self._completed + 10))
 
         # Message
         self.statusBar().showMessage(labelbar, 5000)
