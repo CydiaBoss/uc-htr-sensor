@@ -377,7 +377,6 @@ class MultiscanProcess(multiprocessing.Process):
         # parser process for sweep info nd utility error
         self._parser6 = parser_process
         
-        
         self._dummy = True
         
         self.temperature_set_old = 0
@@ -385,16 +384,6 @@ class MultiscanProcess(multiprocessing.Process):
         self.P_share_set_old = 0
         self.I_share_set_old = 0
         self.D_share_set_old = 0
-        
-        # self.Temperature_Pid_default = [0, 0, 0, 0, 0]
-        self.Temperature_Pid_default = [self.temperature_set_old, 
-                                        self.cycling_time_set_old, 
-                                        self.P_share_set_old, 
-                                        self.I_share_set_old, 
-                                        self.D_share_set_old]
-        
-        # self.temperature_set_old = loadtxt(Constants.manual_frequencies_path)
-        self.Temperature_Pid_default = loadtxt(Constants.manual_frequencies_path)
         
         #DEV 
         # control temperature switch default value 
@@ -654,10 +643,10 @@ class MultiscanProcess(multiprocessing.Process):
                         try:
                             # amplitude/phase convert bit to dB/Deg parameters
                             vmax = 3.3
-                            bitmax = 4096 
+                            bitmax = 8192 
                             ADCtoVolt = vmax / bitmax
                             VCP = 0.9
-                            
+                                
                             # DEBUG_0.1.1a
                             # get swepp time start 
                             timeStart = time()
@@ -769,7 +758,6 @@ class MultiscanProcess(multiprocessing.Process):
                                             data_ph[i] = float(strs[i][1]) * ADCtoVolt / 1.5
                                             data_ph[i] = (data_ph[i]-VCP) / 0.01
                                             
-                                        
                                         # --------------------------------------------------------------------------
                                         # DEV RAWDATA  SAVE RAW SWEEP DATA 
                                         # --------------------------------------------------------------------------

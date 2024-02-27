@@ -43,16 +43,3 @@ class FileManager:
         else:
             full_path = str("{}{}{}.{}".format(path,slash, filename, extension))
         return full_path
-
-
-    ###########################################################################
-    #Checks if a file exists (True if file exists)
-    ###########################################################################
-    @staticmethod
-    def file_exists(filename):
-        """
-        :param filename: Name of the file, including path :type filename: str.
-        :return: True if file exists :rtype: bool.
-        """
-        if filename is not None:
-            return os.path.isfile(filename)

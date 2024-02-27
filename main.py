@@ -1347,7 +1347,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Noise_Reduction_triggered(self):
         # Prompt user for new voltage
-        noise = QInputDialog.getInt(self, _translate("MainWindow", "Noise Reduction"), _translate("MainWindow", "Enter the number of times to apply the noise filter."), self.noise_reduce, 0)
+        noise = QInputDialog.getInt(self, _translate("MainWindow", "Noise Reduction"), _translate("MainWindow", "Enter the number of times to apply the noise filter."), self.noise_reduce, 1)
 
         # Update
         if noise[1]:
