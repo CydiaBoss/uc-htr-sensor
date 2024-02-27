@@ -698,6 +698,7 @@ class MultiscanProcess(multiprocessing.Process):
                                     # insert a timeout in while acquisition loop to prevent freezing
                                     if  _time_elapsed > Constants.TIME_ELAPSED_TIMEOUT: 
                                         # DEBUG_0.1.1a
+                                        # TODO figure out why this is bad
                                         print(TAG, "Info: timeout at overtone index = ", overtone_index , end='\n')
                                         self._flag_error_usb = 1
                                         self.TIME_OUT = 1
