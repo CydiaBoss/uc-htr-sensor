@@ -297,7 +297,7 @@ class Constants:
     
     # VER 0.1.4
     # change / increased serial time elasped timeout to improve the serial communication 
-    TIME_ELAPSED_TIMEOUT = 4.0
+    TIME_ELAPSED_TIMEOUT = 10.0
     
     WRITE_SERIAL_WAIT = 0.1 
     

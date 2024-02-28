@@ -31,7 +31,7 @@ def active_ports() -> List[str]:
 			s = Serial(port)
 			s.close()
 			results.append(port)
-		except (OSError, SerialException):
+		except:
 			pass
 
 	return results

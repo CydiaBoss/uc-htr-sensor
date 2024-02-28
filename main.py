@@ -928,10 +928,10 @@ class Window(Ui_MainWindow):
             # progressbar
             if _ser_control<=Constants.environment:
                 self.qcm_progress = _ser_control*2
+                prep_process = True
 
             if str(vector1[0])=='nan' and not _ser_error1 and not _ser_error2:
                 labelbar = 'Please wait, processing early data...'
-                prep_process = True
 
                 # Status
                 self.update_perm_status(_translate("MainWindow", "Environment Reading..."))

@@ -658,6 +658,7 @@ class MultiscanProcess(multiprocessing.Process):
                             # -------------------------------------------------
                             cmd = str(startF[overtone_index]) + ';' + str(stopF[overtone_index]) + ';' + str(int(stepF[overtone_index])) + '\n'
                             self._serial.write(cmd.encode())
+                            print(cmd)
                             
                             # DEBUG_0.1.1a
                             # added a short sleep before read serial
