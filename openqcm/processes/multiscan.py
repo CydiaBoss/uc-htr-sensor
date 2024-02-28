@@ -18,7 +18,7 @@ from math import factorial
 
 from openqcm.processes.parser import ParserProcess
 
-TAG = ""#"[Multiscan]"
+TAG = "Multiscan"
 
 class MultiscanProcess(multiprocessing.Process):
 
@@ -498,30 +498,23 @@ class MultiscanProcess(multiprocessing.Process):
         
     # SERIAL PORT OPEN and general setting   
     # -------------------------------------------------------------------------
-    def open(self, port,  speed = Constants.serial_default_overtone, 
-             timeout = Constants.serial_timeout_ms, writeTimeout = Constants.serial_writetimeout_ms):
+    def open(self, port, speed = Constants.serial_default_speed, timeout = Constants.serial_timeout_ms, writeTimeout = Constants.serial_writetimeout_ms):
         """
         :param port: Serial port name :type port: str.
-        :param speed: Overtone selected for the analysis :type speed: str.
         :param timeout: Sets current read timeout :type timeout: float (seconds).
         :param writetTimeout: Sets current write timeout :type writeTimeout: float (seconds).
         :return: True if the port is available :rtype: bool.
         """
-    
         self._serial.port = port
         self._serial.baudrate = Constants.serial_default_speed 
         self._serial.stopbits = serial.STOPBITS_ONE
         self._serial.bytesize = serial.EIGHTBITS
         self._serial.timeout = timeout
         self._serial.writetimeout = writeTimeout
-
-        #self._overtone = float(speed)
         
-        # TODO check peaks mag vector here !!!
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
         
-        # TODO SOLVED
         # ---------------------------------------------------------------------
         # Set to fundamental peak
         self._overtone = peaks_mag[0]
@@ -644,7 +637,6 @@ class MultiscanProcess(multiprocessing.Process):
                             # -------------------------------------------------
                             cmd = str(startF[overtone_index]) + ';' + str(stopF[overtone_index]) + ';' + str(int(stepF[overtone_index])) + '\n'
                             self._serial.write(cmd.encode())
-                            print(cmd)
                             
                             # DEBUG_0.1.1a
                             # added a short sleep before read serial
@@ -677,7 +669,7 @@ class MultiscanProcess(multiprocessing.Process):
                                     if 's' in buffer:
                                         # VER 0.1.4
                                         # add a little delay at the end of the sweep 
-                                        print(buffer)
+                                        print(cmd)
                                         sleep(Constants.SLEEP_EOM_MULTISCAN)
                                         
                                         break
@@ -815,15 +807,6 @@ class MultiscanProcess(multiprocessing.Process):
                                  buffer = ""
                                  
                                  self._flag_error_usb = 1
-                            
-                            # DEBUG_0.1.1a
-                            try: 
-                                # SET TEMPERATURE and PID PARAMETERS
-                                self._Temperature_PID_control()
-                                
-                            except:
-                                print(TAG, "Info: set temperature control failed", end='\n')
-                                self._flag_error_usb = 1
                         
                         # DATA PROCESSING 
                         # -----------------------------------------------------
@@ -870,89 +853,7 @@ class MultiscanProcess(multiprocessing.Process):
                 
                 # END ACQUISITION LOOP
                 # -------------------------------------------------------------
-                
                 self._serial.close()
-    
-    def get_Temperature_set_Serial(self, value_T_set):
-        return value_T_set
-    
-    def _TempCtrl(self):
-        param = loadtxt(Constants.manual_frequencies_path)
-        temperature_set = param[0]
-        temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-        self._serial.write(temperature_msg.encode())
-    
-    def _Temperature_PID_control(self): 
-        param = loadtxt(Constants.manual_frequencies_path)
-        temperature_set = param[0]
-        cycling_time_set = param[1]
-        P_share_set= param[2]
-        I_share_set = param[3]
-        D_share_set = param[4]
-        _var_bool = param[5]
-        _ctrl_bool = param[6]
-        
-        if temperature_set != self.temperature_set_old:
-            temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-            self._serial.write(temperature_msg.encode())  
-            self.temperature_set_old = temperature_set
-        
-        if cycling_time_set != self.cycling_time_set_old:
-            cycling_time_msg = 'C' + str(int(cycling_time_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            self._serial.write(cycling_time_msg.encode())  
-            sleep(0.1)
-            self.cycling_time_set_old = cycling_time_set
-            
-        if P_share_set != self.P_share_set_old: 
-            P_Share_msg = 'P' + str(int(P_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            self._serial.write(P_Share_msg.encode())
-            sleep(0.1)
-            self.P_share_set_old = P_share_set
-            
-        if I_share_set != self.I_share_set_old: 
-            I_Share_msg = 'I' + str(int(I_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            self._serial.write(I_Share_msg.encode())
-            sleep(0.1)
-            self.I_share_set_old = I_share_set
-            
-        if D_share_set != self.D_share_set_old: 
-            D_Share_msg = 'D' + str(int(D_share_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            self._serial.write(D_Share_msg.encode())
-            sleep(0.1)
-            self.D_share_set_old = D_share_set
-        
-        #DEV    
-        # check if temperature control is enabled 
-        if (_ctrl_bool != self.ctrl_bool_pre):  # value changed 
-            # init message 
-            cmd = 'X' + str(int(_ctrl_bool)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            # serial write message 
-            self._serial.write(cmd.encode())
-            sleep(0.1)
-            # store new value
-            self.ctrl_bool_pre = _ctrl_bool
-        
-        # check if temperarure value is changed 
-        if  (_var_bool) == 1.0:
-            temperature_msg = 'T' + str(int(temperature_set)) + '\n'
-            # wait for a while before complete the communication
-            sleep(0.1)
-            self._serial.write(temperature_msg.encode()) 
-            sleep(0.1)
-            _path = Constants.manual_frequencies_path
-            # reset temperature control boolean variable
-            np.savetxt( _path,  np.row_stack( [param[0], param[1], param[2], param[3],param[4], 0.0, param[6]] ), fmt='%d' )
-            
     
     # STOP 
     def stop(self):

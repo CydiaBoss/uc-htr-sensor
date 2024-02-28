@@ -15,7 +15,7 @@ from scipy.interpolate import UnivariateSpline
 from math import factorial
 
 
-TAG = ""#"[Serial]"
+TAG = "Serial"
 
 ###############################################################################
 # Process for the serial package and the communication with the serial port

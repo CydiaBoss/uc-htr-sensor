@@ -306,21 +306,6 @@ class Worker(QObject):
 
         Log.i(TAG, "Running processes stopped...")
         Log.i(TAG, "Processes finished")
-        
-    
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def get_Temperature_set_Worker(self, value):
-         print ("SET TEMPERATURE WORKER")
-         self._acquisition_process.get_Temperature_set_Serial(value)
-        
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def my_stop(self):
-        self._acquisition_process.serial_close()
-    
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def serial_write(self, port, message):
-        # self._acquisition_process.open(port)
-        self._acquisition_process.write(port, message.encode())
                     
     ###########################################################################
     # Empties the internal queues, updating data to consumers

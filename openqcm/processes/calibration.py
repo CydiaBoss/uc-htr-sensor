@@ -11,7 +11,7 @@ import scipy.signal
 
 from openqcm.processes.parser import ParserProcess
 
-TAG = ""#"[Calibration]"
+TAG = "Calibration"
 
 ###############################################################################
 # Process for the serial package and the communication with the serial port
