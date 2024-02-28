@@ -6,15 +6,17 @@ import time
 
 from misc.constants import LOG_FOLDER, Constants, Architecture
 
+
 ###############################################################################
 # Enumeration for the Logger levels
-###############################################################################        
+###############################################################################
 class LoggerLevel(Enum):
     CRITICAL = logging.CRITICAL
     ERROR = logging.ERROR
     WARNING = logging.WARNING
     INFO = logging.INFO
     DEBUG = logging.DEBUG
+
 
 ###############################################################################
 # Logging package - All packages can use this module
@@ -29,18 +31,19 @@ class Logger:
         :param level: Level to show in log.
         :type level: int.
         """
-        log_format_file = logging.Formatter('%(asctime)s,%(levelname)s,%(message)s')
-        log_format_console = logging.Formatter('%(levelname)s %(message)s')
+        log_format_file = logging.Formatter("%(asctime)s,%(levelname)s,%(message)s")
+        log_format_console = logging.Formatter("%(levelname)s %(message)s")
         self.logger = logging.getLogger()
         self.logger.setLevel(level.value)
 
         # Make directory if needed
         os.makedirs(os.path.dirname(f"{LOG_FOLDER}/"), exist_ok=True)
 
-        file_handler = logging.handlers.RotatingFileHandler("{}/{}"
-                                                            .format(LOG_FOLDER, f"{int(time.time())}.log"),
-                                                            maxBytes=5120,
-                                                            backupCount=0)
+        file_handler = logging.handlers.RotatingFileHandler(
+            "{}/{}".format(LOG_FOLDER, f"{int(time.time())}.log"),
+            maxBytes=5120,
+            backupCount=0,
+        )
         file_handler.setFormatter(log_format_file)
         self.logger.addHandler(file_handler)
 
@@ -69,23 +72,22 @@ class Logger:
         :param tag: TAG to identify the log :type tag: str.
         :param msg: Message to log.         :type msg: str.
         """
-        logging.debug("[{}] {}".format(str(tag), ' '.join(msg)))
-    
+        logging.debug("[{}] {}".format(str(tag), " ".join(msg)))
+
     ####
     @staticmethod
     def i(tag, *msg):
-        logging.info("[{}] {}".format(str(tag), ' '.join(msg)))
-    
+        logging.info("[{}] {}".format(str(tag), " ".join(msg)))
+
     ####
     @staticmethod
     def w(tag, *msg):
-        logging.warning("[{}] {}".format(str(tag), ' '.join(msg)))
-    
+        logging.warning("[{}] {}".format(str(tag), " ".join(msg)))
+
     ####
     @staticmethod
     def e(tag, *msg):
-        logging.error("[{}] {}".format(str(tag), ' '.join(msg)))
-
+        logging.error("[{}] {}".format(str(tag), " ".join(msg)))
 
     ###########################################################################
     # logs and prints architecture-related informations
@@ -93,7 +95,7 @@ class Logger:
     @staticmethod
     def _show_user_info():
         tag = "Startup"
-        Logger.i(tag, "{} - {}".format(Constants.app_title,Constants.app_version))
+        Logger.i(tag, "{} - {}".format(Constants.app_title, Constants.app_version))
         Logger.i(tag, "Platform: {}".format(Architecture.get_os_name()))
         Logger.i(tag, "Path: {}".format(Architecture.get_path()))
         Logger.i(tag, "Python version: {}".format(Architecture.get_python_version()))

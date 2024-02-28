@@ -1,5 +1,6 @@
 import os
-from misc.constants import Architecture,OSType
+from misc.constants import Architecture, OSType
+
 
 ###############################################################################
 # File operations: create directory, full path and check if the existing file
@@ -20,10 +21,9 @@ class FileManager:
                 os.makedirs(path)
         return os.path.isdir(path)
 
-    
     ###########################################################################
     # Creates a file full path based on parameters
-    ###########################################################################    
+    ###########################################################################
     @staticmethod
     def create_full_path(filename, extension="txt", path=None):
         """
@@ -34,12 +34,12 @@ class FileManager:
         """
         # sets the slash depending on the OS types
         if Architecture.get_os() is (OSType.macosx or OSType.linux):
-            slash="/"
+            slash = "/"
         else:
-            slash="\\"
-            
+            slash = "\\"
+
         if path is None:
             full_path = str("{}.{}".format(filename, extension))
         else:
-            full_path = str("{}{}{}.{}".format(path,slash, filename, extension))
+            full_path = str("{}{}{}.{}".format(path, slash, filename, extension))
         return full_path

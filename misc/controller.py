@@ -4,7 +4,17 @@ from serial import Serial
 from serial.tools import list_ports
 import time, atexit
 
-from misc.constants import DATA_PARSE, READ_DELAY, READ_TIMEOUT, REF_RESIST_UNIT, SETTINGS, Constants, SourceType, Architecture, OSType
+from misc.constants import (
+    DATA_PARSE,
+    READ_DELAY,
+    READ_TIMEOUT,
+    REF_RESIST_UNIT,
+    SETTINGS,
+    Constants,
+    SourceType,
+    Architecture,
+    OSType,
+)
 from misc.logger import Logger as Log
 
 from openqcm.core.worker import Worker
@@ -14,10 +24,12 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from nidaqmx import Task
 from nidaqmx.system.system import System
 
+
 class RSensorCtrl(QObject):
-    '''
+    """
     Class of sensor controls for the DAQ R system
-    '''
+    """
+
     # Signals
     finished = pyqtSignal()
     progress = pyqtSignal()
@@ -26,12 +38,18 @@ class RSensorCtrl(QObject):
     # Tag
     tag = "RSensorController"
 
-    def __init__(self, parent: QObject=None, device : str="", voltage : float=10.0, reference_resist : float=10.0):
+    def __init__(
+        self,
+        parent: QObject = None,
+        device: str = "",
+        voltage: float = 10.0,
+        reference_resist: float = 10.0,
+    ):
         super().__init__(parent)
         # Record ports
         self.device = device
         self.device_object = None
-        
+
         # Looper
         self.loop = True
 
@@ -51,7 +69,7 @@ class RSensorCtrl(QObject):
         if self.device not in devices:
             Log.e(self.tag, "R sensor not connected to computer")
             return False
-        
+
         # Save
         self.device_object = devices[self.device]
 
@@ -66,7 +84,7 @@ class RSensorCtrl(QObject):
             return True
         except:
             return False
-        
+
     def stop(self):
         # Disable Loop
         self.loop = False
@@ -90,12 +108,16 @@ class RSensorCtrl(QObject):
 
         # Create voltage supply task
         self.volt_task = Task("voltage_supply")
-        self.volt_task.ao_channels.add_ao_voltage_chan(self.device_object.ao_physical_chans["ao0"].name, min_val=0)
+        self.volt_task.ao_channels.add_ao_voltage_chan(
+            self.device_object.ao_physical_chans["ao0"].name, min_val=0
+        )
         self.volt_task.write(self.volt_supply)
 
         # Create measuring task
         self.measure_task = Task("measuring_task")
-        self.measure_task.ai_channels.add_ai_voltage_chan(self.device_object.ai_physical_chans["ai0"].name, min_val=0, max_val=10)
+        self.measure_task.ai_channels.add_ai_voltage_chan(
+            self.device_object.ai_physical_chans["ai0"].name, min_val=0, max_val=10
+        )
 
         # Start measuring
         self.volt_task.start()
@@ -108,7 +130,7 @@ class RSensorCtrl(QObject):
             self.progress.emit()
 
             # Calculate resistance
-            resist = data*self.ref_resist/(self.volt_supply - data)
+            resist = data * self.ref_resist / (self.volt_supply - data)
 
             # Send signal
             self.resistance.emit(time.time() - self.start_time, resist)
@@ -119,18 +141,20 @@ class RSensorCtrl(QObject):
         # Finish signal
         self.finished.emit()
 
-    def set_voltage(self, voltage : float):
+    def set_voltage(self, voltage: float):
         self.volt_supply = voltage
         if self.volt_task is not None:
             self.volt_task.write(self.volt_supply)
 
-    def set_ref_resist(self, resist : float):
+    def set_ref_resist(self, resist: float):
         self.ref_resist = resist
 
+
 class HTRSensorCtrl(QObject):
-    '''
+    """
     Class of sensor controls for the HTR system
-    '''
+    """
+
     # Signals
     finished = pyqtSignal()
     progress = pyqtSignal()
@@ -141,7 +165,9 @@ class HTRSensorCtrl(QObject):
     # Tag
     tag = "HTRSensorController"
 
-    def __init__(self, parent: QObject=None, port : str="", baud : int=9600, timeout=0.1):
+    def __init__(
+        self, parent: QObject = None, port: str = "", baud: int = 9600, timeout=0.1
+    ):
         super().__init__(parent)
         # Record ports
         self.port = port
@@ -156,7 +182,7 @@ class HTRSensorCtrl(QObject):
         Open connection to HTR
         """
         # Opening Port
-        Log.i(self.tag,"Connecting to HTR sensor...")
+        Log.i(self.tag, "Connecting to HTR sensor...")
         self.serial = Serial(port=self.port, baudrate=self.baud, timeout=self.timeout)
 
         # Wait for Launch Message
@@ -164,7 +190,7 @@ class HTRSensorCtrl(QObject):
         while "Running" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag,"Could not connect to specified port")
+                Log.e(self.tag, "Could not connect to specified port")
                 self.serial.close()
                 break
             tick_to_timeout += 1
@@ -172,14 +198,14 @@ class HTRSensorCtrl(QObject):
 
         if not self.serial.is_open:
             # Success
-            Log.i(self.tag,f"HTR sensor connected at port {self.port}!")
+            Log.i(self.tag, f"HTR sensor connected at port {self.port}!")
 
             # Prep for exit
             atexit.register(self.serial.close)
 
             return True
         return False
-    
+
     def stop(self):
         """
         Stop command
@@ -187,7 +213,7 @@ class HTRSensorCtrl(QObject):
         self.loop = False
         if not self.serial.is_open:
             self.serial.close()
-    
+
     def run(self):
         """
         Runs the data gathering thread
@@ -196,7 +222,9 @@ class HTRSensorCtrl(QObject):
         self.open()
 
         # Adjust references
-        self.update_ref_resist(float(SETTINGS.get_setting("ref_resist")), REF_RESIST_UNIT())
+        self.update_ref_resist(
+            float(SETTINGS.get_setting("ref_resist")), REF_RESIST_UNIT()
+        )
         self.update_ref_volt(float(SETTINGS.get_setting("ref_volt")))
 
         # Processing Loop
@@ -235,63 +263,64 @@ class HTRSensorCtrl(QObject):
 
         # On break
         self.finished.emit()
-        
-    def send_to(self, msg : str):
-        '''
-        Sends a message to the sensor controller
-        '''
-        self.serial.write(msg.encode('utf-8'))
 
-    def update_ref_resist(self, resist : float, mult : str) -> bool:
-        '''
+    def send_to(self, msg: str):
+        """
+        Sends a message to the sensor controller
+        """
+        self.serial.write(msg.encode("utf-8"))
+
+    def update_ref_resist(self, resist: float, mult: str) -> bool:
+        """
         Updates the reference resistor on the sensor
-        '''
-        self.send_to(f'r{resist}{mult}')
+        """
+        self.send_to(f"r{resist}{mult}")
 
         # Wait for OK Message
         tick_to_timeout = 0
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag,"Reference resistor failed to update")
+                Log.e(self.tag, "Reference resistor failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)
 
-    def update_ref_volt(self, volt : float) -> bool:
-        '''
+    def update_ref_volt(self, volt: float) -> bool:
+        """
         Updates the reference voltage on the sensor
-        '''
-        self.send_to(f'v{volt}')
+        """
+        self.send_to(f"v{volt}")
 
         # Wait for OK Message
         tick_to_timeout = 0
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag,"Reference voltage failed to update")
+                Log.e(self.tag, "Reference voltage failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)
 
     def read_from(self):
-        '''
+        """
         Read from the sensor
-        '''
+        """
         return self.serial.readline().decode("utf-8")
-        
+
+
 class HTRTester(QObject):
     finished = pyqtSignal()
     results = pyqtSignal(bool)
 
-    def __init__(self, parent: QObject=None, port="") -> None:
+    def __init__(self, parent: QObject = None, port="") -> None:
         super().__init__(parent)
         self.port = port
 
     def run(self):
-        '''
+        """
         Check if the port is part of the HTR system
-        '''
+        """
         try:
             temp_serial = Serial(port=self.port, baudrate=9600, timeout=0.1)
 
@@ -319,10 +348,12 @@ class HTRTester(QObject):
         # Signal Completion
         self.finished.emit()
 
+
 class QCMSensorCtrl(QObject):
-    '''
+    """
     Class of sensor controllers for the QCM system
-    '''
+    """
+
     # Signals
     progress = pyqtSignal()
     frequency = pyqtSignal(float)
@@ -333,7 +364,7 @@ class QCMSensorCtrl(QObject):
     reference_value_frequency = 0
     reference_value_dissipation = 0
 
-    def __init__(self, parent: QObject=None, port : str="") -> None:
+    def __init__(self, parent: QObject = None, port: str = "") -> None:
         super().__init__(parent)
         # Set port
         self.port = port
@@ -343,39 +374,43 @@ class QCMSensorCtrl(QObject):
     def stop(self) -> None:
         self.worker.stop()
 
-    def calibrate(self, qc_type : str) -> None:
+    def calibrate(self, qc_type: str) -> None:
         """
         Starts the calibration process
         """
-        self.worker = Worker(QCS_on = None,
-                             port = self.port,
-                             speed = qc_type,
-                             samples = Constants.argument_default_samples,
-                             source = SourceType.calibration,
-                             export_enabled = False, 
-                             sampling_time = -1)
-        
+        self.worker = Worker(
+            QCS_on=None,
+            port=self.port,
+            speed=qc_type,
+            samples=Constants.argument_default_samples,
+            source=SourceType.calibration,
+            export_enabled=False,
+            sampling_time=-1,
+        )
+
         # Start
         self.worker.start()
 
-    def single(self, freq : float) -> None:
+    def single(self, freq: float) -> None:
         """
         Starts the calibration process
         """
-        self.worker = Worker(QCS_on = None,
-                             port = self.port,
-                             speed = freq,
-                             samples = Constants.argument_default_samples,
-                             source = SourceType.serial,
-                             export_enabled = False, 
-                             sampling_time = -1)
-        
+        self.worker = Worker(
+            QCS_on=None,
+            port=self.port,
+            speed=freq,
+            samples=Constants.argument_default_samples,
+            source=SourceType.serial,
+            export_enabled=False,
+            sampling_time=-1,
+        )
+
         # Setup Slots for Single
         self.worker.progress.connect(self.progress.emit)
         self.worker.frequency.connect(self.frequency.emit)
         self.worker.dissipation.connect(self.dissipation.emit)
         self.worker.temperature.connect(self.temperature.emit)
-        
+
         # Start
         self.worker.start()
 
@@ -383,28 +418,31 @@ class QCMSensorCtrl(QObject):
         """
         Starts the calibration process
         """
-        self.worker = Worker(QCS_on = None,
-                             port = self.port,
-                             samples = Constants.argument_default_samples,
-                             source = SourceType.multiscan,
-                             export_enabled = False, 
-                             sampling_time = -1)
-        
+        self.worker = Worker(
+            QCS_on=None,
+            port=self.port,
+            samples=Constants.argument_default_samples,
+            source=SourceType.multiscan,
+            export_enabled=False,
+            sampling_time=-1,
+        )
+
         # Start
         self.worker.start()
+
 
 class QCMTester(QObject):
     finished = pyqtSignal()
     results = pyqtSignal(bool)
 
-    def __init__(self, parent: QObject=None, port="") -> None:
+    def __init__(self, parent: QObject = None, port="") -> None:
         super().__init__(parent)
         self.port = port
 
     def run(self):
-        '''
+        """
         Check if the port is part of the HTR system
-        '''
+        """
         try:
             temp_serial = Serial(port=self.port, baudrate=9600, timeout=0.1)
 
