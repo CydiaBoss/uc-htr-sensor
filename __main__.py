@@ -1,4 +1,5 @@
 import ctypes, sys
+from misc.constants import APPID
 
 from misc.logger import Logger
 
@@ -8,9 +9,8 @@ from main import Window
 
 if __name__ == "__main__":
     # Update App ID if Windows
-    myappid = "medal.sensorfusion.h2"
     if sys.platform.startswith("win"):
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
     # Start Logger
     Logger()

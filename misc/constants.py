@@ -8,6 +8,7 @@ from misc.settings import Settings
 from enum import Enum
 
 # Settings
+APPID = "medal.sensorfusion.h2"
 SETTINGS = Settings()
 AUTO_EXPORT = True
 AUTO_FLUSH = 50
