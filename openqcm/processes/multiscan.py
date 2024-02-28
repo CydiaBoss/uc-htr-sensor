@@ -595,15 +595,14 @@ class MultiscanProcess(multiprocessing.Process):
                     # VER 0.1.4
                     # get resonance frequencies in acquisition loop. 
                     # get and set sweep start, stop and set frequencies sweep parameters, as function of the number of samples
-                    if (k < Constants.environment):
+                    # if (k < Constants.environment):
                         # Get array sweep paramaters from frequency peaks file 
-                        (startF, stopF, stepF, readF, 
-                         sg_window_size, spline_factor, spline_points) = self.get_frequencies(samples)
+                    (startF, stopF, stepF, readF, sg_window_size, spline_factor, spline_points) = self.get_frequencies(samples)
                     
-                    else:
-                        # Get array sweep paramaters from the real time frequency peaks file 
-                        (startF, stopF, stepF, readF, 
-                         sg_window_size, spline_factor, spline_points) = self.get_frequencies_RT(samples)
+                    # else:
+                    #     # Get array sweep paramaters from the real time frequency peaks file 
+                    #     (startF, stopF, stepF, readF, 
+                    #      sg_window_size, spline_factor, spline_points) = self.get_frequencies_RT(samples)
                     
                     # data reset for new sweep 
                     data_mag = np.linspace(0,0,samples)   
@@ -818,6 +817,7 @@ class MultiscanProcess(multiprocessing.Process):
                             self.set_frequencies_RT( overtone_index, self.freq_res_current_array[overtone_index])
                             
                             try:
+                                # TODO can't access data_temp or smth
                                 self.elaborate_multi(k, overtone_index,coeffs_all, readF[overtone_index], 
                                                samples, data_mag, data_ph, data_temp, sg_window_size[overtone_index], spline_points[overtone_index], 
                                                spline_factor[overtone_index], timestamp) 
