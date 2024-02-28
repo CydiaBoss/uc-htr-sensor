@@ -996,7 +996,7 @@ class Window(Ui_MainWindow):
         # Update indicators
         for i in range(5):
             self.update_indicator_freq(i, None if self.freq_list.currentIndex() != i else vector1[0])
-            self.update_indicator_dissipationn(i, None if self.freq_list.currentIndex() != i else vector2[0])
+            self.update_indicator_dissipationn(i, None if self.freq_list.currentIndex() != i else vector2[-1])
         
     def multi_processing(self):
         """

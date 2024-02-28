@@ -523,23 +523,9 @@ class MultiscanProcess(multiprocessing.Process):
         
         # TODO SOLVED
         # ---------------------------------------------------------------------
-        # GET the SELECTED FREQUENCY OVERTONE from the MAIN WINDOW  
-        try:
-           self._overtone = float(speed)
-        except:   
-           print(TAG, "Warning: wrong frequency selection, set default to {} Hz Fundamental".format(peaks_mag[0]))
-           self._overtone = peaks_mag[0]
-    
-        # get the index of the overtones 
-        self._overtone_int = None
-        for i in range(len(peaks_mag)):
-            if self._overtone == peaks_mag[i]:
-               self._overtone_int = i
-               
-        # Checks for correct frequency selection
-        if self._overtone_int == None:
-           print(TAG, "Warning: wrong frequency selection, set default to {} Hz Fundamental".format(peaks_mag[0])) 
-           self._overtone_int = 0
+        # Set to fundamental peak
+        self._overtone = peaks_mag[0]
+        self._overtone_int = 0
         # ---------------------------------------------------------------------
         
         return self._is_port_available(self._serial.port)
@@ -691,6 +677,7 @@ class MultiscanProcess(multiprocessing.Process):
                                     if 's' in buffer:
                                         # VER 0.1.4
                                         # add a little delay at the end of the sweep 
+                                        print(buffer)
                                         sleep(Constants.SLEEP_EOM_MULTISCAN)
                                         
                                         break

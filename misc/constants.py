@@ -1,9 +1,6 @@
 from pglive.kwargs import Axis
 from enum import Enum
 import numpy as np
-from pyqtgraph import AxisItem
-from time import strftime, localtime
-from datetime import datetime 
 import platform, sys
 
 from misc.settings import Settings
@@ -297,7 +294,7 @@ class Constants:
     
     # VER 0.1.4
     # change / increased serial time elasped timeout to improve the serial communication 
-    TIME_ELAPSED_TIMEOUT = 10.0
+    TIME_ELAPSED_TIMEOUT = 60.0
     
     WRITE_SERIAL_WAIT = 0.1 
     
