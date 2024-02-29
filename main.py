@@ -323,8 +323,6 @@ class Window(Ui_MainWindow):
         # Measurement
         self.measure_type.setEnabled(False)
         self.freq_list.setEnabled(False)
-        self.qcm_temp_ctrl.setChecked(False)
-        self.qcm_temp_ctrl.setEnabled(False)
 
         # Exportation
         self.auto_export.setEnabled(False)
@@ -365,6 +363,24 @@ class Window(Ui_MainWindow):
         if self.r_device is not None:
             self.action_Disconnect.setEnabled(True)
 
+    def enable_daq_indicator(self):
+        """
+        Control DAQ indicator
+        """
+        self.daq_label.setEnabled(True)
+        self.daq_status.setEnabled(True)
+        self.daq_device.setEnabled(True)
+
+    def disable_daq_indicator(self):
+        """
+        Control DAQ indicator
+        """
+        self.daq_label.setEnabled(False)
+        self.daq_status.setPixmap(QPixmap(":/main/mark.png"))
+        self.daq_status.setEnabled(False)
+        self.daq_device.setText("")
+        self.daq_device.setEnabled(False)
+
     def enable_calibrate(self):
         """
         Enable all calibration ctrls
@@ -396,7 +412,6 @@ class Window(Ui_MainWindow):
         self.fill_frequency_list()
 
         self.freq_list.setEnabled(True)
-        # self.qcm_temp_ctrl.setEnabled(True)
 
     def enable_export(self):
         """
@@ -1282,6 +1297,9 @@ class Window(Ui_MainWindow):
         # Unlock stuff if connected
         if self.r_device is not None:
             self.action_Disconnect.setEnabled(True)
+            self.enable_daq_indicator()
+            self.daq_status.setPixmap(QPixmap(":/main/check.png"))
+            self.daq_device.setText(self.r_device)
             self.enable_export()
             self.enable_start()
 
@@ -1297,6 +1315,7 @@ class Window(Ui_MainWindow):
         
         # Disable and remove
         self.action_Disconnect.setEnabled(False)
+        self.disable_daq_indicator()
         self.r_device = None
 
         # Disable stuff if needed

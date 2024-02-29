@@ -1292,7 +1292,7 @@
                   <number>2</number>
                  </property>
                  <item>
-                  <layout class="QGridLayout" name="gridLayout_4" columnstretch="7,5">
+                  <layout class="QGridLayout" name="gridLayout_4" columnstretch="7,0">
                    <property name="verticalSpacing">
                     <number>2</number>
                    </property>
@@ -1308,6 +1308,18 @@
                      </property>
                      <property name="buddy">
                       <cstring>measure_type</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QComboBox" name="freq_list">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>10</pointsize>
+                      </font>
                      </property>
                     </widget>
                    </item>
@@ -1343,33 +1355,6 @@
                        <string>Multiple Measurements</string>
                       </property>
                      </item>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QComboBox" name="freq_list">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0" colspan="2">
-                    <widget class="QCheckBox" name="qcm_temp_ctrl">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Temperature Control</string>
-                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1597,42 +1582,7 @@
            </item>
            <item row="1" column="0">
             <layout class="QGridLayout" name="gridLayout_12">
-             <item row="0" column="2">
-              <widget class="QComboBox" name="htr_serial">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="5">
-              <widget class="QComboBox" name="qcm_serial">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>HTR Serial Port</string>
-               </property>
-               <property name="buddy">
-                <cstring>htr_serial</cstring>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
+             <item row="0" column="7">
               <widget class="QLabel" name="qcm_status">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1646,9 +1596,29 @@
                <property name="pixmap">
                 <pixmap resource="resources/main.qrc">:/main/mark.png</pixmap>
                </property>
+               <property name="buddy">
+                <cstring>qcm_serial</cstring>
+               </property>
               </widget>
              </item>
-             <item row="0" column="1">
+             <item row="0" column="6">
+              <widget class="QLabel" name="label_14">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>QCM Port</string>
+               </property>
+               <property name="buddy">
+                <cstring>qcm_serial</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
               <widget class="QLabel" name="htr_status">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1662,10 +1632,16 @@
                <property name="pixmap">
                 <pixmap resource="resources/main.qrc">:/main/mark.png</pixmap>
                </property>
+               <property name="buddy">
+                <cstring>htr_serial</cstring>
+               </property>
               </widget>
              </item>
-             <item row="0" column="3">
-              <widget class="QLabel" name="label_14">
+             <item row="0" column="0">
+              <widget class="QLabel" name="daq_label">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>10</pointsize>
@@ -1674,10 +1650,71 @@
                 </font>
                </property>
                <property name="text">
-                <string>QCM Serial Port</string>
+                <string>DAQ</string>
                </property>
                <property name="buddy">
-                <cstring>qcm_serial</cstring>
+                <cstring>daq_device</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="label_13">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>HTR Port</string>
+               </property>
+               <property name="buddy">
+                <cstring>htr_serial</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="8">
+              <widget class="QComboBox" name="qcm_serial">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QComboBox" name="htr_serial">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="daq_status">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="resources/main.qrc">:/main/mark.png</pixmap>
+               </property>
+               <property name="buddy">
+                <cstring>daq_device</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="daq_device">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1900,7 +1937,6 @@
   <tabstop>calibrate_btn</tabstop>
   <tabstop>measure_type</tabstop>
   <tabstop>freq_list</tabstop>
-  <tabstop>qcm_temp_ctrl</tabstop>
   <tabstop>auto_export</tabstop>
   <tabstop>file_dest</tabstop>
   <tabstop>start_btn</tabstop>

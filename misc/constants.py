@@ -405,56 +405,12 @@ class Constants:
     ###########################
     ring_buffer_samples = 16363
 
-    PID_default_settings = ["Default #0 (Factory)", "Default #1"]
-
-    # default factory #0 and default openQCM #1 list element
-    cycling_time_setting = [50, 50]
-    P_share_setting = [1000, 500]
-    I_share_setting = [200, 50]
-    D_share_setting = [100, 300]
-
-    PID_Setting_default_index = 1
-
-    # set temperature default parameter
-    Temperature_Set_Value = 25.00
-
-    # set PID default parameter
-    cycling_time_default = cycling_time_setting[1]
-    P_share_default = P_share_setting[1]
-    I_share_default = I_share_setting[1]
-    D_share_default = D_share_setting[1]
-
-    # boolean variable temperature setting
-    PID_boolean_default = 0
-
-    # boolean control temperature setting
-    CTRL_boolean_default = 0
-
     ##############################
     # Parameters for the average #
     ##############################
     environment = 50
     SG_order_environment = 1
     SG_window_environment = 3
-
-    # VER 0.1.4 init the sampling time list
-    SAMPLING_TIME_LIST = ["Default", "10", "30", "60"]
-    SAMPLING_TIME_LIST_DEFAULT_INDEX = 0
-
-    # VER 0.1.4
-    # define and init TEC status control variable
-    # -------------------------------------------
-    # temperature control active, temperature is out of range, electric current is null
-    STATUS_CONTROL_ACTIVE_LOW_CURRENT_NULL = -1
-
-    # temperature control NOT active
-    STATUS_CONTROL_NOT_ACTIVE = 0
-
-    # temperature control active, temperature is out of range, electric current is NOT null
-    STATUS_CONTROL_ACTIVE_LOW_CURRENT_NOT_NULL = 1
-
-    # temperature control active and temperature in range
-    STATUS_CONTROL_ACTIVE_HIGH = 2
 
     # VER 0.1.5
     # init MTD415T error register list,
@@ -491,8 +447,7 @@ class Constants:
 
     # VER 0.1.3
     # change the spline factor for a better smoothing of the raw amplitude signal
-    # SPLINE_FACTOR = 0.1     # VER 0.1.3 TODO spline factor depends on the number of sample SAMPLES = int((LEFT + RIGHT)/FREQUENCY_STEP)
-
+    
     # VER 0.1.4 increase spline factor for smoothing with 1 Hz sampling frequency
     SPLINE_FACTOR = 1
     # VER 0.1.4 find the best spline factor
@@ -517,7 +472,6 @@ class Constants:
     # Savitzky-Golay order of the polynomial fit
     # Number of spline points: same as the frequency band +1 (es.5001)
     # Spline smoothing factor
-
-    # VER 0.1.4 TODO
+    
     # Savitzky-Golay window size definition
     SG_WINDOW_SIZE = 51
