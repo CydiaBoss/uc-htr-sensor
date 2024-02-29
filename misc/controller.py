@@ -22,6 +22,7 @@ from openqcm.core.worker import Worker
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from nidaqmx import Task
+from nidaqmx.constants import TerminalConfiguration
 from nidaqmx.system.system import System
 
 
@@ -42,7 +43,7 @@ class RSensorCtrl(QObject):
         self,
         parent: QObject = None,
         device: str = "",
-        voltage: float = 10.0,
+        voltage: float = 5.0,
         reference_resist: float = 10.0,
     ):
         super().__init__(parent)
@@ -107,16 +108,12 @@ class RSensorCtrl(QObject):
         self.open()
 
         # Create voltage supply task
-        self.volt_task = Task("voltage_supply")
-        self.volt_task.ao_channels.add_ao_voltage_chan(
-            self.device_object.ao_physical_chans["ao0"].name, min_val=0
-        )
-        self.volt_task.write(self.volt_supply)
+        self.set_voltage(self.volt_supply)
 
         # Create measuring task
         self.measure_task = Task("measuring_task")
         self.measure_task.ai_channels.add_ai_voltage_chan(
-            self.device_object.ai_physical_chans["ai0"].name, min_val=0, max_val=10
+            self.device_object.ai_physical_chans["ai0"].name, terminal_config=TerminalConfiguration.DIFF, min_val=0
         )
 
         # Start measuring
@@ -131,6 +128,7 @@ class RSensorCtrl(QObject):
 
             # Calculate resistance
             resist = data * self.ref_resist / (self.volt_supply - data)
+            print(data, resist)
 
             # Send signal
             self.resistance.emit(time.time() - self.start_time, resist)
@@ -143,8 +141,18 @@ class RSensorCtrl(QObject):
 
     def set_voltage(self, voltage: float):
         self.volt_supply = voltage
+
+        # Kill old task to replace
         if self.volt_task is not None:
-            self.volt_task.write(self.volt_supply)
+            self.volt_task.stop()
+            self.volt_task.close()
+
+        # New Task with updated voltage
+        self.volt_task = Task("voltage_supply")
+        self.volt_task.ao_channels.add_ao_voltage_chan(
+            self.device_object.ao_physical_chans["ao1"].name, min_val=0, max_val=5
+        )
+        print(self.volt_task.write(self.volt_supply, auto_start=True), "wrote success")
 
     def set_ref_resist(self, resist: float):
         self.ref_resist = resist
