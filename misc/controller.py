@@ -115,6 +115,9 @@ class RSensorCtrl(QObject):
         self.measure_task.ai_channels.add_ai_voltage_chan(
             self.device_object.ai_physical_chans["ai0"].name, terminal_config=TerminalConfiguration.DIFF, min_val=0
         )
+        self.measure_task.ai_channels.add_ai_voltage_chan(
+            self.device_object.ai_physical_chans["ai1"].name, terminal_config=TerminalConfiguration.DIFF, min_val=0
+        )
 
         # Start measuring
         self.volt_task.start()
@@ -127,8 +130,7 @@ class RSensorCtrl(QObject):
             self.progress.emit()
 
             # Calculate resistance
-            resist = data * self.ref_resist / (self.volt_supply - data)
-            print(data, resist)
+            resist = data[0] * self.ref_resist / (data[1] - data[0])
 
             # Send signal
             self.resistance.emit(time.time() - self.start_time, resist)
