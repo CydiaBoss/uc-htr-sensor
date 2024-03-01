@@ -6,7 +6,6 @@ from misc.logger import Logger as Log
 from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.file_storage import FileStorage
 
-import datetime
 from time import time, sleep
 import serial
 from serial.tools import list_ports
@@ -327,7 +326,7 @@ class MultiscanProcess(multiprocessing.Process):
                 window_size=Constants.SG_window_environment,
                 order=Constants.SG_order_environment,
             )
-            # TODO insert a median
+            # Insert a median
             self._diss_mean[overtone_number] = np.average(
                 self._vec_app1d[overtone_number]
             )
@@ -354,31 +353,23 @@ class MultiscanProcess(multiprocessing.Process):
                 self._freq_range_mean[overtone_number]
             )
 
-        # TIME EPOCH TODO
+        # TIME EPOCH
         # ---------------------------------------------------------------------
-        epoch = datetime.datetime(1970, 1, 1, 0, 0)  # offset-naive datetime
-        ts_mult = 1e6
+        w = time() - timestamp
 
         # TODO the Time is now and it is hard
         if overtone_number == 0:
-            self._my_time = int(
-                (datetime.datetime.now() - epoch).total_seconds() * ts_mult
-            )  # datetime.datetime.utcnow()
+            self._my_time = w
         # ---------------------------------------------------------------------
 
         # time array for each harmonic
-        self._my_time_array[overtone_number] = int(
-            (datetime.datetime.now() - epoch).total_seconds() * ts_mult
-        )
+        self._my_time_array[overtone_number] = w
 
-        # TODO ADD BUFFER MEASUREMENT DATA TO THE PARSER QUEUE
-        # ------------------------------------------------------
         # AMPLITUDE
         self._parser1.add1(filtered_mag)
         # PHASE
         self._parser2.add2(phase)
 
-        # TODO just dummy
         # Adds "fake" frequency, dissipation and temperature meaan to parser queues
         self._parser3.add3([self._my_time, 0])
         self._parser4.add4([self._my_time, 0])
@@ -387,8 +378,6 @@ class MultiscanProcess(multiprocessing.Process):
         # add multi overtone frequency - dissipation and correpsonding time array to the parser queues
         self._parser_F_multi.add_F_multi([self._my_time_array, self._freq_range_mean])
         self._parser_D_multi.add_D_multi([self._my_time_array, self._diss_mean])
-
-        # TODO single sweeep data log
 
     def elaborate_ampli_phase_multi(
         self, overtone_index, poly_coeff, freq_sweep, amp_sweep, phase_sweep
@@ -692,7 +681,6 @@ class MultiscanProcess(multiprocessing.Process):
                     # VER 0.1.4
                     # get resonance frequencies in acquisition loop.
                     # get and set sweep start, stop and set frequencies sweep parameters, as function of the number of samples
-                    # if (k < Constants.environment):
                     # Get array sweep paramaters from frequency peaks file
                     (
                         startF,
@@ -761,6 +749,9 @@ class MultiscanProcess(multiprocessing.Process):
                             Log.e(TAG, "Info: exception serial write fail")
                             self._flag_error_usb = 1
 
+                        # Declare all variables
+                        data_temp = 0.0
+
                         if self._flag_error_usb == 0:
                             try:
 
@@ -791,7 +782,6 @@ class MultiscanProcess(multiprocessing.Process):
                                     # insert a timeout in while acquisition loop to prevent freezing
                                     if _time_elapsed > Constants.TIME_ELAPSED_TIMEOUT:
                                         # DEBUG_0.1.1a
-                                        # TODO figure out why this is bad
                                         print(
                                             TAG,
                                             "Info: timeout at overtone index = ",
@@ -959,6 +949,7 @@ class MultiscanProcess(multiprocessing.Process):
                                 # reset buffer
                                 data_mag = np.linspace(0, 0, samples)
                                 data_ph = np.linspace(0, 0, samples)
+                                data_temp = 0.0
 
                                 # reset data raw
                                 data_raw = ""

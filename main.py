@@ -162,23 +162,31 @@ class Window(Ui_MainWindow):
         """
         # Reset current data if any
         # Plots
-        for curve in self.multi_amp_curves:
+        while self.multi_amp_curves:
+            curve = self.multi_amp_curves.pop()
             self.amp_plot.removeItem(curve)
             curve.deleteLater()
-        for curve in self.multi_freq_curves:
+        while self.multi_freq_curves:
+            curve = self.multi_freq_curves.pop()
             self.freq_plot.removeItem(curve)
             curve.deleteLater()
-        for curve in self.multi_dissipate_curves:
+        while self.multi_dissipate_curves:
+            curve = self.multi_dissipate_curves.pop()
             self.dissipate_plot.removeItem(curve)
             curve.deleteLater()
 
         # Data Connectors
-        for data in self.multi_amp_datas:
-            data.deleteLater()
-        for data in self.multi_freq_datas:
-            data.deleteLater()
-        for data in self.multi_dissipate_datas:
-            data.deleteLater()
+        while self.multi_amp_datas:
+            self.multi_amp_datas.pop().deleteLater()
+        while self.multi_freq_datas:
+            self.multi_freq_datas.pop().deleteLater()
+        while self.multi_dissipate_datas:
+            self.multi_dissipate_datas.pop().deleteLater()
+
+        # Empty list of objects
+        self.multi_amp_curves.clear()
+        self.multi_amp_curves.clear()
+        self.multi_amp_curves.clear()
 
         # Add new multi plots
         for i in range(self.peaks.size):
@@ -222,6 +230,11 @@ class Window(Ui_MainWindow):
         self.htr_ctrl : HTRSensorCtrl = None
         self.qcm_ctrl : QCMSensorCtrl = None
         self.r_ctrl : RSensorCtrl = None
+
+        # Setup Thread
+        self.htr_thread : QtCore.QThread = None
+        self.qcm_thread : QtCore.QThread = None
+        self.r_thread : QtCore.QThread = None
 
         # Make Calibration Stuff
         self.qcm_calibrated = False
@@ -1177,6 +1190,12 @@ class Window(Ui_MainWindow):
         self.freq_data.cb_set_data([0,], [0,])
         self.dissipate_data.cb_set_data([0,], [0,])
 
+        # If Multi, also clear
+        for i in range(len(self.multi_amp_datas)):
+            self.multi_amp_datas[i].cb_set_data([0,], [0,])
+            self.multi_freq_datas[i].cb_set_data([0,], [0,])
+            self.multi_dissipate_datas[i].cb_set_data([0,], [0,])
+
     def clear_data(self):
         """
         Clear the graphs
@@ -1272,18 +1291,30 @@ class Window(Ui_MainWindow):
         # Close HTR stuff
         if self.htr_ctrl is not None:
             self.htr_ctrl.stop()
+            self.htr_ctrl = None
+        if self.htr_thread is not None:
+            self.htr_thread.quit()
+            self.htr_thread = None
 
         # Close QCM stuff
         if self.qcm_ctrl is not None:
             self.qcm_ctrl.stop()
+            self.qcm_ctrl = None
             if self.qcm_timer is not None:
                 self.qcm_timer.stop()
                 self.qcm_timer.deleteLater()
                 self.qcm_timer = None
+        if self.qcm_thread is not None:
+            self.qcm_thread.quit()
+            self.qcm_thread = None
 
         # Close R stuff
         if self.r_ctrl is not None:
             self.r_ctrl.stop()
+            self.r_ctrl = None
+        if self.r_thread is not None:
+            self.r_thread.quit()
+            self.r_thread = None
     
     # Slots
     @QtCore.pyqtSlot()
