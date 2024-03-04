@@ -142,7 +142,7 @@ class MultiscanProcess(multiprocessing.Process):
             # VER 0.1.4 find the index for the bandwidth
             while signal[index_m] > (f_max - threshold):
                 if index_m < 1:
-                    print(TAG, "WARNING: Left value not found")
+                    print(TAG, "WARNING: Left value not found at fundamental")
                     self._err1 = 1
                     break
                 index_m = index_m - 1
@@ -161,7 +161,7 @@ class MultiscanProcess(multiprocessing.Process):
             # VER 0.1.4 find the index for the badwidth
             while signal[index_M] > (f_max - threshold):
                 if index_M >= len(signal) - 1:
-                    print(TAG, "WARNING: Right value not found")
+                    print(TAG, "WARNING: Right value not found at fundamental")
                     self._err2 = 1
                     break
                 index_M = index_M + 1
@@ -215,20 +215,10 @@ class MultiscanProcess(multiprocessing.Process):
 
             bandwidth = abs(i_trailing - i_leading)
 
-        # VER 0.1.3
-        # frequency and dissipation at fundamental
-        if overtone_number == 0:
+        # frequency and dissipation
 
-            freq_resonance = freq[i_max]
-            Qfac = bandwidth
-
-        # VER 0.1.3
-        # frequency and dissipation at overtones
-        else:
-            # VER 0.1.4 resonance frequency as the peak
-            freq_resonance = freq[i_max]
-            # VER 0.1.4
-            Qfac = bandwidth
+        freq_resonance = freq[i_max]
+        Qfac = bandwidth
 
         # VER 0.1.4 changed the return of the method introducing resonance frequency
         return i_max, f_max, bandwidth, index_m, index_M, Qfac, freq_resonance
@@ -299,7 +289,6 @@ class MultiscanProcess(multiprocessing.Process):
             )
         )
 
-        # self._my_list_f[overtone_number].append( freq_range[int(index_peak_fit)] )
         # VER 0.1.4
         # change the dissipation calculation as the inverse of the bandwidth defined above in parameter finder
         self._my_list_f[overtone_number].append(frequency_resonance)

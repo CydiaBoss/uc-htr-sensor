@@ -424,7 +424,8 @@ class Window(Ui_MainWindow):
         # Reread
         self.fill_frequency_list()
 
-        self.freq_list.setEnabled(True)
+        if self.measure_type.currentIndex() == 0:
+            self.freq_list.setEnabled(True)
 
     def enable_export(self):
         """
@@ -901,7 +902,6 @@ class Window(Ui_MainWindow):
 
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
-        # self.qcm_timer.moveToThread(self.qcm_thread)
 
         # Setup Signals
         # Single

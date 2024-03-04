@@ -458,7 +458,7 @@ class Constants:
     SAMPLES = int((LEFT + RIGHT) / FREQUENCY_STEP)
 
     # VER 0.1.4 define the threshold in dB for the bandwidth calculation
-    THRESHOLD_DB = 0.3
+    THRESHOLD_DB = 0.707
 
     # TODO MAXIMUM NUMBER OF OVERTONES
     overtone_maximum_number = 4
