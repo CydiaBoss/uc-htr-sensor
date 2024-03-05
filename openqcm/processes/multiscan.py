@@ -620,9 +620,9 @@ class MultiscanProcess(multiprocessing.Process):
 
         # set initial values of sweep buffer
         for nn in Constants.overtone_dummy:
-            self._my_list_amp[nn] = self._zerolistmaker(Constants.SAMPLES)
-            self._my_list_phase[nn] = self._zerolistmaker(Constants.SAMPLES)
-            self._my_list_freq[nn] = self._zerolistmaker(Constants.SAMPLES)
+            self._my_list_amp[nn] = self._zerolistmaker(Constants.argument_default_samples)
+            self._my_list_phase[nn] = self._zerolistmaker(Constants.argument_default_samples)
+            self._my_list_freq[nn] = self._zerolistmaker(Constants.argument_default_samples)
 
         # Checks if the serial port is currently connected
         if self._is_port_available(self._serial.port):
@@ -680,11 +680,6 @@ class MultiscanProcess(multiprocessing.Process):
                         spline_factor,
                         spline_points,
                     ) = self.get_frequencies(samples)
-
-                    # else:
-                    #     # Get array sweep paramaters from the real time frequency peaks file
-                    #     (startF, stopF, stepF, readF,
-                    #      sg_window_size, spline_factor, spline_points) = self.get_frequencies_RT(samples)
 
                     # data reset for new sweep
                     data_mag = np.linspace(0, 0, samples)
@@ -960,7 +955,7 @@ class MultiscanProcess(multiprocessing.Process):
                             )
 
                             try:
-                                # TODO can't access data_temp or smth
+                                # elaborate on dataset
                                 self.elaborate_multi(
                                     k,
                                     overtone_index,
@@ -1402,6 +1397,9 @@ class MultiscanProcess(multiprocessing.Process):
             filename = Constants.csv_calibration_path
         elif peaks_mag[0] > 9e06 and peaks_mag[0] < 11e06:
             filename = Constants.csv_calibration_path10
+        else:
+            print(TAG, "QC Chip type could not be determined")
+            return None, None, None
 
         data = loadtxt(filename)
         freq_all = data[:, 0]

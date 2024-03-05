@@ -440,10 +440,10 @@ class Constants:
     # VER 0.1.4
     # change the sweep parameters to 12 KHz left range and 6 KHz right range
     # for a total range fo frequency sweep = 18 KHz
-    LEFT = 12000
+    LEFT = 5500
 
     # VER 0.1.4 increase sweep right range, because the sweep box is now center on the peak of the resonance curve
-    RIGHT = 6000
+    RIGHT = 2500
 
     # VER 0.1.3
     # change the spline factor for a better smoothing of the raw amplitude signal
@@ -459,9 +459,6 @@ class Constants:
 
     # VER 0.1.4 define the threshold in dB for the bandwidth calculation
     THRESHOLD_DB = 0.707
-
-    # TODO MAXIMUM NUMBER OF OVERTONES
-    overtone_maximum_number = 4
 
     ####################################
     # FILTERING and FITTING parameters #

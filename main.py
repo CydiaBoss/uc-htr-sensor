@@ -509,11 +509,16 @@ class Window(Ui_MainWindow):
         """
         Ensures valid port selection
         """
+        # Cannot have matching ports
         if self.htr_serial.currentText() == self.qcm_serial.currentText():
-            self.connect_btn.setEnabled(False)
             self.statusBar().showMessage("HTR and QCM cannot be on same port", 2500)
-        else:
+        # Does anything seem new?
+        elif self.htr_serial.currentText() != self.htr_port or self.qcm_serial.currentText() != self.qcm_port:
             self.connect_btn.setEnabled(True)
+            return
+        
+        # Keep disabled otherwise
+        self.connect_btn.setEnabled(False)
 
     def test_htr_port(self):
         '''
@@ -559,8 +564,8 @@ class Window(Ui_MainWindow):
             self.enable_start()
 
         # Unlock
-        if self.qcm_serial.isEnabled():
-            self.connect_btn.setEnabled(True)
+        if self.qcm_serial.isEnabled() or self.qcm_serial.currentIndex() == 0:
+            self.enable_ports()
         self.htr_serial.setEnabled(True)
 
         # Casually Look for DAQ also
@@ -608,8 +613,8 @@ class Window(Ui_MainWindow):
             self.enable_calibrate()
 
         # Unlock
-        if self.htr_serial.isEnabled():
-            self.connect_btn.setEnabled(True)
+        if self.htr_serial.isEnabled() or self.htr_serial.currentIndex() == 0:
+            self.enable_ports()
         self.qcm_serial.setEnabled(True)
 
     def start_r(self):
@@ -790,104 +795,108 @@ class Window(Ui_MainWindow):
         """
         Process calibration data
         """
-        # Consume
-        self.qcm_ctrl.worker.consume_queue1()
-        self.qcm_ctrl.worker.consume_queue2()
-        self.qcm_ctrl.worker.consume_queue3()
-        self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
-        self.qcm_ctrl.worker.consume_queue5()
-        # general error queue
-        self.qcm_ctrl.worker.consume_queue6()
+        try:
+            # Consume
+            self.qcm_ctrl.worker.consume_queue1()
+            self.qcm_ctrl.worker.consume_queue2()
+            self.qcm_ctrl.worker.consume_queue3()
+            self.qcm_ctrl.worker.consume_queue4()
+            # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
+            self.qcm_ctrl.worker.consume_queue5()
+            # general error queue
+            self.qcm_ctrl.worker.consume_queue6()
 
-        self.qcm_ctrl.worker.consume_queue_F_multi()
-        self.qcm_ctrl.worker.consume_queue_D_multi()
-        self.qcm_ctrl.worker.consume_queue_A_multi()
+            self.qcm_ctrl.worker.consume_queue_F_multi()
+            self.qcm_ctrl.worker.consume_queue_D_multi()
+            self.qcm_ctrl.worker.consume_queue_A_multi()
 
-        # flag for terminating calibration
-        stop_flag = 0
-        success = False
+            # flag for terminating calibration
+            stop_flag = 0
+            success = False
 
-        # vector2[0] and vector3[0] flag error
-        vector2 = self.qcm_ctrl.worker.get_t3_buffer()
-        vector3 = self.qcm_ctrl.worker.get_d3_buffer()
+            # vector2[0] and vector3[0] flag error
+            vector2 = self.qcm_ctrl.worker.get_t3_buffer()
+            vector3 = self.qcm_ctrl.worker.get_d3_buffer()
 
-        labelbar = 'The operation might take just over a minute to complete... please wait...'
-        
-        # progressbar
-        error1, _, _, _ser_control, _ = self.qcm_ctrl.worker.get_ser_error()
-        
-        if _ser_control < (Constants.calib_sections):
-            _completed = (_ser_control/(Constants.calib_sections))*100
-
-        # calibration buffer empty
-        if error1== 1 and vector3[0]==1:
-            labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
-
-        # calibration buffer empty and ValueError from the serial port
-        elif error1== 1 and vector2[0]==1:
-            labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-            stop_flag=1
-
-        # calibration buffer not empty
-        elif error1==0:
             labelbar = 'The operation might take just over a minute to complete... please wait...'
-
-            # Success!
-            if vector2[0]== 0 and vector3[0]== 0:
-                labelbar = 'Calibration Success for baseline correction!'
-                stop_flag=1
-                success = True
             
-            # Error Message
-            elif vector2[0]== 1 or vector3[0]== 1:
-                if vector2[0]== 1:
-                    labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
-                    stop_flag=1 ##
-                elif vector3[0]== 1:
-                    labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
-                    stop_flag=1 ##
-                    
-        # progressbar -------------
-        self.calibration_bar.setValue(int(_completed + 10))
-        self.statusBar().showMessage(f"{labelbar}", 5000)
+            # progressbar
+            error1, _, _, _ser_control, _ = self.qcm_ctrl.worker.get_ser_error()
+            
+            if _ser_control < (Constants.calib_sections):
+                _completed = (_ser_control/(Constants.calib_sections))*100
 
-        # terminate the  calibration (simulate clicked stop)
-        if stop_flag == 1:
-            self.qcm_timer.stop()
-            self.qcm_ctrl.stop()
-            self.enable_calibrate()
+            # calibration buffer empty
+            if error1== 1 and vector3[0]==1:
+                labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+                stop_flag=1
 
-            # Enable measurement if successful
-            if success:
-                self.calibration_bar.setStyleSheet(QPB_COMPLETED_STYLE)
-                self.update_perm_status(_translate("MainWindow", "QCM Ready"))
-                self.enable_measurement()
-                self.qcm_calibrated = True
-            else:
-                self.calibration_bar.setStyleSheet(QPB_ERROR_STYLE)
-                self.statusBar().showMessage(_translate("MainWindow", "Calibration failed as the expected fundamental frequency could not be found."))
+            # calibration buffer empty and ValueError from the serial port
+            elif error1== 1 and vector2[0]==1:
+                labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+                stop_flag=1
 
-            # Enable this if success or htr is already on
-            if success or self.htr_port is not None:
-                self.enable_export()
-                self.enable_start()
+            # calibration buffer not empty
+            elif error1==0:
+                labelbar = 'The operation might take just over a minute to complete... please wait...'
 
-            # Open ports
-            self.enable_ports()
+                # Success!
+                if vector2[0]== 0 and vector3[0]== 0:
+                    labelbar = 'Calibration Success for baseline correction!'
+                    stop_flag=1
+                    success = True
+                
+                # Error Message
+                elif vector2[0]== 1 or vector3[0]== 1:
+                    if vector2[0]== 1:
+                        labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
+                        stop_flag=1 ##
+                    elif vector3[0]== 1:
+                        labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
+                        stop_flag=1 ##
+                        
+            # progressbar -------------
+            self.calibration_bar.setValue(int(_completed + 10))
+            self.statusBar().showMessage(f"{labelbar}", 5000)
 
-            # Stop Thread
-            self.stop_sensors()
+            # terminate the  calibration (simulate clicked stop)
+            if stop_flag == 1:
+                self.qcm_timer.stop()
+                self.qcm_ctrl.stop()
+                self.enable_calibrate()
 
-        # Update Plot
-        vector1 = self.qcm_ctrl.worker.get_value1_buffer()
-        vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+                # Enable measurement if successful
+                if success:
+                    self.calibration_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+                    self.update_perm_status(_translate("MainWindow", "QCM Ready"))
+                    self.enable_measurement()
+                    self.qcm_calibrated = True
+                else:
+                    self.calibration_bar.setStyleSheet(QPB_ERROR_STYLE)
+                    self.statusBar().showMessage(_translate("MainWindow", "Calibration failed as the expected fundamental frequency could not be found."))
 
-        calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+                # Enable this if success or htr is already on
+                if success or self.htr_port is not None:
+                    self.enable_export()
+                    self.enable_start()
 
-        self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
-        self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+                # Open ports
+                self.enable_ports()
+
+                # Stop Thread
+                self.stop_sensors()
+
+            # Update Plot
+            vector1 = self.qcm_ctrl.worker.get_value1_buffer()
+            vector2 = self.qcm_ctrl.worker.get_value2_buffer()
+
+            calibration_readFREQ  = np.arange(len(vector1)) * (Constants.calib_fStep) + Constants.calibration_frequency_start
+
+            self.amp_data.cb_set_data(x=calibration_readFREQ, y=vector1, pen=Constants.plot_colors[0])
+            self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
+        except AttributeError:
+            # Error catch when qcm_ctrl destoryed
+            pass
 
     def start_qcm(self):
         """
@@ -1443,11 +1452,41 @@ class Window(Ui_MainWindow):
         # Startup Memory Stuff
         self.setup_memory()
 
+    @QtCore.pyqtSlot(int)
+    def on_htr_serial_currentIndexChanged(self, _ : int):
+        if self.htr_serial.currentText() != self.htr_port:
+            self.htr_status.setPixmap(QPixmap(":/main/mark.png"))
+        else:
+            self.htr_status.setPixmap(QPixmap(":/main/check.png"))
+
+    @QtCore.pyqtSlot(int)
+    def on_qcm_serial_currentIndexChanged(self, _ : int):
+        if self.qcm_serial.currentText() != self.qcm_port:
+            self.qcm_status.setPixmap(QPixmap(":/main/mark.png"))
+        else:
+            self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
+
     @QtCore.pyqtSlot()
     def on_connect_btn_clicked(self):
         # Ensure something is selected
         if self.htr_serial.currentIndex() == -1 or self.qcm_serial.currentIndex() == -1:
             self.statusBar().showMessage("Nothing to connect to...", 5000)
+            return
+        
+        running = False
+        
+        # Test HTR (Ignore if ---)
+        if self.htr_serial.currentIndex() != 0 and self.htr_port != self.htr_serial.currentText():
+            running = True
+            self.test_htr_port()
+                
+        # Test QCM (Ignore if ---)
+        if self.qcm_serial.currentIndex() != 0 and self.qcm_port != self.qcm_serial.currentText():
+            running = True
+            self.test_qcm_port()
+
+        # If nothing is running, do nothing
+        if not running:
             return
         
         # Signal Launch
@@ -1457,14 +1496,6 @@ class Window(Ui_MainWindow):
         self.disable_all_ctrls()
         self.reset_calibration_bar()
         self.reset_progress_bar()
-        
-        # Test HTR (Ignore if ---)
-        if self.htr_serial.currentIndex() != 0:
-            self.test_htr_port()
-                
-        # Test QCM (Ignore if ---)
-        if self.qcm_serial.currentIndex() != 0:
-            self.test_qcm_port()
 
     @QtCore.pyqtSlot()
     def on_calibrate_btn_clicked(self):
