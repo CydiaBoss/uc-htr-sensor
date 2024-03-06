@@ -15,14 +15,14 @@ from scipy.interpolate import UnivariateSpline
 from math import factorial
 
 
-TAG = "Serial"
+TAG = "Serial_Multi"
 
 
 ###############################################################################
 # Process for the serial package and the communication with the serial port
 # Processes incoming data and calculates outgoing data by the algorithms
 ###############################################################################
-class SerialProcess(multiprocessing.Process):
+class SerialMultiProcess(multiprocessing.Process):
 
     ###########################################################################
     # BASELINE CORRECTION
@@ -138,7 +138,7 @@ class SerialProcess(multiprocessing.Process):
     ###########################################################################
     # Resonance Frequency, Resonance Peak, Bandwidth and Q-factor/Dissipation
     ###########################################################################
-    def parameters_finder(self, freq, signal, percent):
+    def parameters_finder(self, freq, signal, percent, overtone=0):
 
         f_max = np.max(signal)  # Find maximum
         i_max = np.argmax(signal, axis=0)  # Find index of maximum
@@ -149,7 +149,7 @@ class SerialProcess(multiprocessing.Process):
         # loop until the index at FWHM/others is found
         while signal[index_m] > percent * f_max:
             if index_m < 1:
-                print(TAG, 'WARNING: Left value not found')
+                print(TAG, 'WARNING: Left value not found at overtone', overtone)
                 self._err1 = 1
                 break
             index_m = index_m - 1
@@ -167,7 +167,7 @@ class SerialProcess(multiprocessing.Process):
         # loop until the index at FWHM/others is found
         while signal[index_M] > percent * f_max:
             if index_M >= len(signal) - 1:
-                print(TAG, "WARNING: Right value not found")
+                print(TAG, "WARNING: Right value not found at overtone", overtone)
                 self._err2 = 1
                 break
             index_M = index_M + 1
@@ -183,7 +183,7 @@ class SerialProcess(multiprocessing.Process):
         bandwidth = abs(i_trailing - i_leading)
 
         Qfac = freq[i_max] / bandwidth
-        return i_max, f_max, bandwidth, index_m, index_M, Qfac
+        return i_max, f_max, bandwidth, index_m, index_M, Qfac, freq[i_max]
 
     ###########################################################################
     # Processes incoming data and calculates outcoming data
@@ -201,6 +201,7 @@ class SerialProcess(multiprocessing.Process):
         Spline_points,
         Spline_factor,
         timestamp,
+        overtone=0
     ):
 
         # Number of spline points
@@ -244,7 +245,7 @@ class SerialProcess(multiprocessing.Process):
 
         # PARAMETERS FINDER
         (index_peak_fit, _, _, _, _, Qfac_fit) = self.parameters_finder(
-            freq_range, mag_result_fit, percent=0.707
+            freq_range, mag_result_fit, percent=0.707, overtone=overtone
         )
 
         self._frequency_buffer.append(freq_range[int(index_peak_fit)])
@@ -314,7 +315,29 @@ class SerialProcess(multiprocessing.Process):
         self._parser4 = parser_process
         self._parser5 = parser_process
         self._parser6 = parser_process
+
+        # Frequency
+        self._parser_F_multi = parser_process
+        # Dissipation
+        self._parser_D_multi = parser_process
+        # Amplitude
+        self._parser_A_multi = parser_process
+        # Phase
+        self._parser_P_multi = parser_process
+
         self._serial = serial.Serial()
+
+        # Environment Variable
+        self._environment = Constants.environment
+
+        # Make buffers
+        self._freq_list : list[RingBuffer] = []
+        self._diss_list : list[RingBuffer] = []
+        self._temp_list : list[RingBuffer] = []
+        for _ in range(5):
+            self._freq_list.append(RingBuffer(self._environment))
+            self._diss_list.append(RingBuffer(self._environment))
+            self._temp_list.append(RingBuffer(self._environment))
 
     ###########################################################################
     # Opens a specified serial port
@@ -328,7 +351,6 @@ class SerialProcess(multiprocessing.Process):
     ):
         """
         :param port: Serial port name :type port: str.
-        :param speed: Overtone selected for the analysis :type speed: str.
         :param timeout: Sets current read timeout :type timeout: float (seconds).
         :param writetTimeout: Sets current write timeout :type writeTimeout: float (seconds).
         :return: True if the port is available :rtype: bool.
@@ -340,36 +362,15 @@ class SerialProcess(multiprocessing.Process):
         self._serial.bytesize = serial.EIGHTBITS
         self._serial.timeout = timeout
         self._serial.writetimeout = writeTimeout
-
-        # self._overtone = float(speed)
+        
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
 
-        # handles the exceptions
-        try:
-            self._overtone = float(speed)
-        except:
-            print(
-                TAG,
-                "Warning: wrong frequency selection, set default to {} Hz Fundamental".format(
-                    peaks_mag[0]
-                ),
-            )
-            self._overtone = peaks_mag[0]
-
-        self._overtone_int = None
-        for i in range(len(peaks_mag)):
-            if self._overtone == peaks_mag[i]:
-                self._overtone_int = i
-        # Checks for correct frequency selection
-        if self._overtone_int == None:
-            print(
-                TAG,
-                "Warning: wrong frequency selection, set default to {} Hz Fundamental".format(
-                    peaks_mag[0]
-                ),
-            )
-            self._overtone_int = 0
+        # ---------------------------------------------------------------------
+        # Set to fundamental peak
+        self._overtone = peaks_mag[0]
+        self._overtone_int = 0
+        # ---------------------------------------------------------------------
 
         return self._is_port_available(self._serial.port)
 
@@ -395,6 +396,7 @@ class SerialProcess(multiprocessing.Process):
         if self._is_port_available(self._serial.port):
 
             samples = Constants.argument_default_samples
+
             # Calls get_frequencies method:
             # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
             (_, _, fStep, readFREQ, SG_window_size, Spline_points, Spline_factor) = (
@@ -412,10 +414,12 @@ class SerialProcess(multiprocessing.Process):
                 # creates a timestamp
                 timestamp = time()
 
-                self._environment = Constants.environment
                 self._frequency_buffer = RingBuffer(self._environment)
                 self._dissipation_buffer = RingBuffer(self._environment)
                 self._temperature_buffer = RingBuffer(self._environment)
+
+                for i in range(5):
+                    self._freq_list.append()
 
                 #### SWEEPS LOOP ####
                 while not self._exit.is_set():
@@ -595,6 +599,15 @@ class SerialProcess(multiprocessing.Process):
         :return: fStep, frequency step  :rtype: float.
         :return: readFREQ, frequency range :rtype: float list.
         """
+        # Prep variables
+        startF = []
+        stopF = []
+        SG_window_size = []
+        spline_factor = []
+        fStep = []
+        spline_points = []
+        readFREQ = []
+
         # Loads frequencies from file
         peaks_mag = self.load_frequencies_file()
 
@@ -606,12 +619,13 @@ class SerialProcess(multiprocessing.Process):
             (
                 overtone_name,
                 overtone_value,
-                self._startFreq,
-                self._stopFreq,
+                startFreq,
+                stopFreq,
                 SG_window_size,
                 spline_factor,
             ) = switch.overtone_to_freq_range(self._overtone_int)
             print(TAG, "openQCM Device setup: 5 MHz")
+
         elif peaks_mag[0] > 9e06 and peaks_mag[0] < 11e06:
             switch = Overtone_Switcher_10MHz(peak_frequencies=peaks_mag)
             (

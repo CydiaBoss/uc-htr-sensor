@@ -13,7 +13,7 @@ class Overtone_Switcher_10MHz:
         self.peak_frequencies = peak_frequencies
 
     # from fundamental frequency to the 5th overtone
-    def overtone10MHz_to_freq_range(self, argument):
+    def overtone_to_freq_range(self, argument):
         method_name = "overtone_" + str(argument)
         # Get the method from 'self'. Default to a lambda.
         method = getattr(self, method_name, lambda: None)
@@ -72,7 +72,7 @@ class Overtone_Switcher_5MHz:
         self.peak_frequencies = peak_frequencies
 
     # from fundamental frequency to the 9th overtone
-    def overtone5MHz_to_freq_range(self, argument):
+    def overtone_to_freq_range(self, argument):
         method_name = "overtone_" + str(argument)
         # Get the method from 'self'. Default to a lambda.
         method = getattr(self, method_name, lambda: None)

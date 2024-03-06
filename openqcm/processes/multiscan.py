@@ -367,18 +367,6 @@ class MultiscanProcess(multiprocessing.Process):
         # parser process for sweep info nd utility error
         self._parser6 = parser_process
 
-        self._dummy = True
-
-        self.temperature_set_old = 0
-        self.cycling_time_set_old = 0
-        self.P_share_set_old = 0
-        self.I_share_set_old = 0
-        self.D_share_set_old = 0
-
-        # DEV
-        # control temperature switch default value
-        self.ctrl_bool_pre = 0
-
         # Frequency
         self._parser_F_multi = parser_process
         # Dissipation
@@ -390,9 +378,7 @@ class MultiscanProcess(multiprocessing.Process):
 
         # serial process
         self._serial = serial.Serial()
-
-        # self.temperature_set_old = loadtxt(Constants.manual_frequencies_path)
-
+        
         # init ring buffer for each harmonic
         self._environment = Constants.environment
         self._frequency_buffer_0 = RingBuffer(self._environment)
@@ -968,7 +954,6 @@ class MultiscanProcess(multiprocessing.Process):
                 )
 
                 # assign multiscan sweep param
-                # TODO I do not like manage the list in this way try numpy array here
                 startF.append(startF_temp)
                 stopF.append(stopF_temp)
                 SG_window_size.append(SG_window_size_temp)
@@ -1257,6 +1242,6 @@ class MultiscanProcess(multiprocessing.Process):
                 return True
         return False
 
-    def _zerolistmaker(self, n):
+    def _zerolistmaker(self, n) -> list[int]:
         listofzeros = [0] * n
         return listofzeros

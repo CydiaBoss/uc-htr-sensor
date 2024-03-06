@@ -185,6 +185,9 @@ class Window(Ui_MainWindow):
 
         self.multi_mode = False
 
+        # Reset Everything
+        self.setup_plots()
+
     def setup_qcm_plots_multi(self):
         """
         Convert the single plots to support multi
@@ -1040,7 +1043,7 @@ class Window(Ui_MainWindow):
         # Update indicators
         for i in range(5):
             self.update_indicator_freq(i, None if self.freq_list.currentIndex() != i else vector1[0])
-            self.update_indicator_dissipationn(i, None if self.freq_list.currentIndex() != i else vector2[-1])
+            self.update_indicator_dissipation(i, None if self.freq_list.currentIndex() != i else vector2[0] * 1e6)
         
     def multi_processing(self):
         """
@@ -1103,7 +1106,7 @@ class Window(Ui_MainWindow):
         # Continue to wait until process is done
         if prep_process:
             return
-
+        
         # Update Plot
         for idx in range(self.peaks.size):
             # AMPLITUDE
@@ -1127,11 +1130,22 @@ class Window(Ui_MainWindow):
             self.multi_freq_datas[idx].cb_set_data(x = time_axis_new, y = y_freq, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
             self.multi_dissipate_datas[idx].cb_set_data(x = time_axis_new, y = y_diss, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
 
+            # Update Indicators
+            self.update_indicator_freq(idx, y_freq[0])
+            self.update_indicator_dissipation(idx, y_diss[0] * 1e6)
+
+        # Hide additional indicators if needed
+        for i in range(self.peaks.size, 5):
+            self.update_indicator_freq(i, "")
+            self.update_indicator_dissipation(i, "")
+
     def update_indicator_freq(self, index : int, value : Union[float, None]):
         """
         Update the indicator fields for frequencies
         """
-        if value is not None:
+        if type(value) == str:
+            label = value
+        elif value is not None:
             label = round(value, 2)
         else:
             label = "N/A"
@@ -1147,11 +1161,13 @@ class Window(Ui_MainWindow):
         elif (index == 4):
             self.freq_f9.setText(str(label))
 
-    def update_indicator_dissipationn(self, index : int, value : Union[float, None]):
+    def update_indicator_dissipation(self, index : int, value : Union[float, None]):
         """
         Update the indicator fields for dissipation
         """
-        if value is not None:
+        if type(value) == str:
+            label = value
+        elif value is not None:
             label = round(value, 2)
         else:
             label = "N/A"
@@ -1229,6 +1245,22 @@ class Window(Ui_MainWindow):
 
         # Clear Progress
         self.progress_bar.setValue(0)
+
+        # Clear Data Values
+        self.resist_avg.clear()
+        self.avg_resist_15.clear()
+        self.avg_resist_50.clear()
+        self.humd_avg.clear()
+        self.humd_avg_15.clear()
+        self.humd_avg_50.clear()
+        self.temp_avg.clear()
+        self.temp_avg_15.clear()
+        self.temp_avg_50.clear()
+
+        # Clear Indicators
+        for i in range(5):
+            self.update_indicator_freq(i, "")
+            self.update_indicator_dissipation(i, "")
 
     def save_data(self):
         """
