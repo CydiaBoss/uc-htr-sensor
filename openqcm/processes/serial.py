@@ -139,14 +139,17 @@ class SerialProcess(multiprocessing.Process):
     # Resonance Frequency, Resonance Peak, Bandwidth and Q-factor/Dissipation
     ###########################################################################
     def parameters_finder(self, freq, signal, percent):
+
         f_max = np.max(signal)  # Find maximum
         i_max = np.argmax(signal, axis=0)  # Find index of maximum
+
         # setup the index for finding the leading edge
         index_m = i_max
+
         # loop until the index at FWHM/others is found
         while signal[index_m] > percent * f_max:
             if index_m < 1:
-                # print(TAG, 'WARNING: Left value not found')
+                print(TAG, 'WARNING: Left value not found')
                 self._err1 = 1
                 break
             index_m = index_m - 1
@@ -155,23 +158,30 @@ class SerialProcess(multiprocessing.Process):
             freq[index_m + 1] - freq[index_m]
         )
         c = signal[index_m] - freq[index_m] * m
+
         i_leading = (percent * f_max - c) / m
+
         # setup index for finding the trailing edge
         index_M = i_max
+
         # loop until the index at FWHM/others is found
         while signal[index_M] > percent * f_max:
             if index_M >= len(signal) - 1:
+                print(TAG, "WARNING: Right value not found")
                 self._err2 = 1
                 break
             index_M = index_M + 1
+
         # linearly interpolate between the previous values to find the value of freq at the trailing edge
         m = (signal[index_M - 1] - signal[index_M]) / (
             freq[index_M - 1] - freq[index_M]
         )
         c = signal[index_M] - freq[index_M] * m
         i_trailing = (percent * f_max - c) / m
+
         # compute the FWHM/others
         bandwidth = abs(i_trailing - i_leading)
+
         Qfac = freq[i_max] / bandwidth
         return i_max, f_max, bandwidth, index_m, index_M, Qfac
 
@@ -208,7 +218,8 @@ class SerialProcess(multiprocessing.Process):
         self._filtered_mag = np.zeros(samples)
         # save current data
         mag = self._Xm
-        phase = self._Xp  ############################
+        phase = self._Xp
+
         # Initializations of support vectors for later storage
         self._Xm = np.linspace(0, 0, self._samples)
         self._Xp = np.linspace(0, 0, self._samples)
@@ -247,14 +258,18 @@ class SerialProcess(multiprocessing.Process):
                 window_size=Constants.SG_window_environment,
                 order=Constants.SG_order_environment,
             )
+
             freq_range_mean = np.average(vec_app1)
+
             # DISSIPATION
             vec_app1d = self.savitzky_golay(
                 self._dissipation_buffer.get_all(),
                 window_size=Constants.SG_window_environment,
                 order=Constants.SG_order_environment,
             )
+
             diss_mean = np.average(vec_app1d)
+
             # TEMPERATURE
             vec_app1t = self.savitzky_golay(
                 self._temperature_buffer.get_all(),
@@ -275,11 +290,11 @@ class SerialProcess(multiprocessing.Process):
             # Adds new calculated data (resonance frequency and dissipation) to internal queues
             self._parser3.add3(
                 [w, freq_range_mean]
-            )  # time()-timestamp - time in seconds
-            self._parser4.add4([w, diss_mean])  # time()-timestamp - time in seconds
+            ) 
+            self._parser4.add4([w, diss_mean])
             self._parser5.add5(
                 [w, temperature_mean]
-            )  # time()-timestamp - time in seconds
+            ) 
 
     ###########################################################################
     # Initializing values for process
@@ -438,6 +453,8 @@ class SerialProcess(multiprocessing.Process):
                             # if '\n' in buffer:
                             if "s" in buffer:
                                 break
+
+                        # Process Data
                         data_raw = buffer.split("\n")
                         length = len(data_raw)
 

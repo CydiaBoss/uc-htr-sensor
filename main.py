@@ -156,9 +156,9 @@ class Window(Ui_MainWindow):
                 colour_frame : QFrame = getattr(self, f"{c}{odd_num[i]}_colour")
                 colour_frame.setStyleSheet(f"background-color:{Constants.plot_color_multi[i]};")
 
-    def setup_qcm_plots_multi(self):
+    def clear_qcm_plots_multi(self):
         """
-        Convert the single plots to support multi
+        Resets the plots for single measurements
         """
         # Reset current data if any
         # Plots
@@ -183,10 +183,14 @@ class Window(Ui_MainWindow):
         while self.multi_dissipate_datas:
             self.multi_dissipate_datas.pop().deleteLater()
 
-        # Empty list of objects
-        self.multi_amp_curves.clear()
-        self.multi_amp_curves.clear()
-        self.multi_amp_curves.clear()
+        self.multi_mode = False
+
+    def setup_qcm_plots_multi(self):
+        """
+        Convert the single plots to support multi
+        """
+        # Reset old
+        self.clear_qcm_plots_multi()
 
         # Add new multi plots
         for i in range(self.peaks.size):
@@ -915,6 +919,9 @@ class Window(Ui_MainWindow):
         # Setup Signals
         # Single
         if self.measure_type.currentIndex() == 0:
+            # Clear Plots if needed
+            if self.multi_mode:
+                self.clear_qcm_plots_multi()
             self.qcm_timer.timeout.connect(self.single_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
         # Multi
