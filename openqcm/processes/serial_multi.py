@@ -399,7 +399,15 @@ class SerialMultiProcess(multiprocessing.Process):
 
             # Calls get_frequencies method:
             # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
-            (_, _, fStep, readFREQ, SG_window_size, Spline_points, Spline_factor) = (
+            (
+                startF,
+                stopF,
+                fStep,
+                readFREQ,
+                SG_window_size,
+                spline_factor,
+                spline_points,
+            ) = (
                 self.get_frequencies(samples)
             )
 
@@ -615,48 +623,54 @@ class SerialMultiProcess(multiprocessing.Process):
         # Sets start and stop frequencies for the corresponding overtone
         if peaks_mag[0] > 4e06 and peaks_mag[0] < 6e06:
             switch = Overtone_Switcher_5MHz(peak_frequencies=peaks_mag)
-            # 0=fundamental, 1=3th overtone and so on
-            (
-                overtone_name,
-                overtone_value,
-                startFreq,
-                stopFreq,
-                SG_window_size,
-                spline_factor,
-            ) = switch.overtone_to_freq_range(self._overtone_int)
             print(TAG, "openQCM Device setup: 5 MHz")
 
         elif peaks_mag[0] > 9e06 and peaks_mag[0] < 11e06:
             switch = Overtone_Switcher_10MHz(peak_frequencies=peaks_mag)
-            (
-                overtone_name,
-                overtone_value,
-                self._startFreq,
-                self._stopFreq,
-                SG_window_size,
-                spline_factor,
-            ) = switch.overtone_to_freq_range(self._overtone_int)
             print(TAG, "openQCM Device setup: 10 MHz")
         else:
             print(TAG, "QC Chip type could not be determined")
             return None, None, None, None, None, None
+    
+        # Generate whole list
+        for i in range(len(peaks_mag)):
+            (
+                _,
+                _,
+                startFreq,
+                stopFreq,
+                SG_window,
+                spline_f,
+            ) = switch.overtone_to_freq_range(i)
+        
+            startF.append(startFreq)
+            stopF.append(stopFreq)
+            SG_window_size.append(SG_window)
+            spline_factor.append(spline_f)
 
-        # Sets the frequency step
-        fStep = (self._stopFreq - self._startFreq) / (samples - 1)
+            # Sets the frequency step
+            fSt = (stopFreq - startFreq) / (samples - 1)
+            # assing value
+            fStep.append(fSt)
 
-        # Sets spline points for fitting
-        spline_points = int((self._stopFreq - self._startFreq)) + 1
+            # Sets spline points for fitting
+            spline_pts = int((stopFreq - startFreq)) + 1
+            # assing value
+            spline_points.append(spline_pts)
 
-        # Sets the frequency range for the corresponding overtone
-        readFREQ = np.arange(samples) * (fStep) + self._startFreq
+            # Sets the frequency range for the corresponding overtone
+            readF = np.arange(samples) * (fSt) + startFreq
+            # assign value
+            readFREQ.append(readF)
+
         return (
-            overtone_name,
-            overtone_value,
+            startF,
+            stopF,
             fStep,
             readFREQ,
             SG_window_size,
-            spline_points,
             spline_factor,
+            spline_points,
         )
 
     ###########################################################################
