@@ -1654,6 +1654,9 @@ class Window(Ui_MainWindow):
         # Enable button
         self.start_btn.setEnabled(True)
 
+        # Update Status
+        self.update_perm_status("Monitoring Stopped; Ready")
+
     @QtCore.pyqtSlot()
     def on_reset_btn_clicked(self):
         # Disable button
@@ -1672,6 +1675,9 @@ class Window(Ui_MainWindow):
         self.enable_measurement()
         self.enable_export()
         self.enable_start()
+
+        # Update Status
+        self.update_perm_status("Reset Configuration; Ready")
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:

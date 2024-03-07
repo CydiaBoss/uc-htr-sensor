@@ -485,7 +485,7 @@ class SerialMultiProcess(multiprocessing.Process):
                     )
 
                     # Loop thru all overtones
-                    for idx in range(len(self.peaks_mag)):
+                    for overtone_index in range(len(self.peaks_mag)):
                     
                         # data reset for new sweep
                         data_mag = np.linspace(0, 0, samples)
@@ -509,11 +509,11 @@ class SerialMultiProcess(multiprocessing.Process):
 
                             # WRITES encoded command to the serial port
                             cmd = (
-                                str(startF[idx])
+                                str(startF[overtone_index])
                                 + ";"
-                                + str(stopF[idx])
+                                + str(stopF[overtone_index])
                                 + ";"
-                                + str(int(fStep[idx]))
+                                + str(int(fStep[overtone_index]))
                                 + "\n"
                             )
                             self._serial.write(cmd.encode())
@@ -538,7 +538,7 @@ class SerialMultiProcess(multiprocessing.Process):
                                     print(
                                         TAG,
                                         "Info: timeout at overtone index = ",
-                                        idx,
+                                        overtone_index,
                                         end="\n",
                                     )
                                     self._flag_error_usb = 1
@@ -581,7 +581,7 @@ class SerialMultiProcess(multiprocessing.Process):
                                 print(
                                     TAG,
                                     "Info: current overtone index = ",
-                                    idx,
+                                    overtone_index,
                                     end="\n",
                                 )
                                 break
@@ -618,16 +618,16 @@ class SerialMultiProcess(multiprocessing.Process):
                         try:
                             self.elaborate_multi(
                                 k,
-                                idx,
+                                overtone_index,
                                 coeffs_all,
-                                readFREQ[idx],
+                                readFREQ[overtone_index],
                                 samples,
                                 data_mag,
                                 data_ph,
                                 data_temp,
-                                SG_window_size[idx],
-                                spline_points[idx],
-                                spline_factor[idx],
+                                SG_window_size[overtone_index],
+                                spline_points[overtone_index],
+                                spline_factor[overtone_index],
                                 timestamp,
                             )
                         except Exception as e:
@@ -635,7 +635,7 @@ class SerialMultiProcess(multiprocessing.Process):
                             print(e)
 
                         self._parser6.add6(
-                            [self._err1, self._err2, k, self._flag_error_usb, idx, 0]
+                            [self._err1, self._err2, k, self._flag_error_usb, overtone_index, 0]
                         )
 
                         # refreshes error variables at each sweep
