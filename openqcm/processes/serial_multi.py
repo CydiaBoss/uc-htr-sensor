@@ -6,7 +6,7 @@ from openqcm.core.ring_buffer import RingBuffer
 from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
 from openqcm.processes.parser import ParserProcess
 
-from time import time
+from time import time, sleep
 import serial
 from serial.tools import list_ports
 import numpy as np
@@ -14,6 +14,7 @@ from numpy import loadtxt
 from scipy.interpolate import UnivariateSpline
 from math import factorial
 
+from numpy.typing import NDArray
 
 TAG = "Serial_Multi"
 
@@ -138,7 +139,7 @@ class SerialMultiProcess(multiprocessing.Process):
     ###########################################################################
     # Resonance Frequency, Resonance Peak, Bandwidth and Q-factor/Dissipation
     ###########################################################################
-    def parameters_finder(self, freq, signal, percent, overtone=0):
+    def parameters_finder(self, freq, signal, overtone, percent):
 
         f_max = np.max(signal)  # Find maximum
         i_max = np.argmax(signal, axis=0)  # Find index of maximum
@@ -188,20 +189,20 @@ class SerialMultiProcess(multiprocessing.Process):
     ###########################################################################
     # Processes incoming data and calculates outcoming data
     ###########################################################################
-    def elaborate(
+    def elaborate_multi(
         self,
         k,
+        overtone : int,
         coeffs_all,
         readFREQ,
         samples,
-        Xm,
-        Xp,
+        Xm : NDArray[np.floating],
+        Xp : NDArray[np.floating],
         temperature,
         SG_window_size,
         Spline_points,
         Spline_factor,
-        timestamp,
-        overtone=0
+        timestamp
     ):
 
         # Number of spline points
@@ -244,59 +245,82 @@ class SerialMultiProcess(multiprocessing.Process):
         mag_result_fit = s(xs)
 
         # PARAMETERS FINDER
-        (index_peak_fit, _, _, _, _, Qfac_fit) = self.parameters_finder(
-            freq_range, mag_result_fit, percent=0.707, overtone=overtone
+        (index_peak_fit, _, _, _, _, Qfac_fit, freq_res) = self.parameters_finder(
+            freq_range, mag_result_fit, overtone=overtone, percent=0.707
         )
 
-        self._frequency_buffer.append(freq_range[int(index_peak_fit)])
-        self._dissipation_buffer.append(1 / Qfac_fit)
-        self._temperature_buffer.append(temperature)
+        # Append to buffer
+        self._freq_list[overtone].append(freq_res)
+        self._diss_list[overtone].append(1 / Qfac_fit)
+        self._temp_list[overtone].append(temperature)
 
+        # If not early
         if self._k >= self._environment:
             # FREQUENCY
-            vec_app1 = self.savitzky_golay(
-                self._frequency_buffer.get_all(),
+            self._vec_app1[overtone] = self.savitzky_golay(
+                self._freq_list[overtone].get_all(),
                 window_size=Constants.SG_window_environment,
                 order=Constants.SG_order_environment,
             )
 
-            freq_range_mean = np.average(vec_app1)
+            self._freq_range_mean[overtone] = np.average(self._vec_app1[overtone])
 
             # DISSIPATION
-            vec_app1d = self.savitzky_golay(
-                self._dissipation_buffer.get_all(),
+            self._vec_app1d[overtone] = self.savitzky_golay(
+                self._diss_list[overtone].get_all(),
                 window_size=Constants.SG_window_environment,
                 order=Constants.SG_order_environment,
             )
 
-            diss_mean = np.average(vec_app1d)
+            self._diss_mean[overtone] = np.average(self._vec_app1d[overtone])
 
             # TEMPERATURE
-            vec_app1t = self.savitzky_golay(
-                self._temperature_buffer.get_all(),
-                window_size=Constants.SG_window_environment,
-                order=Constants.SG_order_environment,
-            )
-            temperature_mean = np.average(vec_app1t)
+            if overtone == 0:
+                vec_app1t = self.savitzky_golay(
+                    self._temp_list[overtone].get_all(),
+                    window_size=Constants.SG_window_environment,
+                    order=Constants.SG_order_environment,
+                )
 
+                self._temperature_mean = np.average(vec_app1t)
+
+        # Current Time
         w = time() - timestamp
+        self._my_time_array[overtone] = w
 
         ##############
         ## ADDS new serial data to internal queue
-        self._parser1.add1(filtered_mag)  ##############
-        self._parser2.add2(phase)  ##############
+        self._parser1.add1(filtered_mag)
+        self._parser2.add2(phase)
+
+        # Fake Data to satisfy parsers
+        self._parser3.add3(
+            [self._my_time_array[0], 0]
+        ) 
+        self._parser4.add4([self._my_time_array[0], 0])
+        self._parser5.add5(
+            [self._my_time_array[0], self._temperature_mean]
+        ) 
 
         # Report after environment scan
-        if self._k >= self._environment:
-            # Adds new calculated data (resonance frequency and dissipation) to internal queues
-            self._parser3.add3(
-                [w, freq_range_mean]
-            ) 
-            self._parser4.add4([w, diss_mean])
-            self._parser5.add5(
-                [w, temperature_mean]
-            ) 
+        if self._k < self._environment:
+            return
 
+        # add multi overtone frequency - dissipation and correpsonding time array to the parser queues
+        self._parser_F_multi.add_F_multi([self._my_time_array, self._freq_range_mean])
+        self._parser_D_multi.add_D_multi([self._my_time_array, self._diss_mean])
+
+        # calculate polynomial at frequency sweep points
+        # amp_baseline : NDArray[np.floating] = np.polyval(coeffs_all, readFREQ)
+
+        self._my_list_freq[overtone] = readFREQ # Xm.tolist()
+        self._my_list_amp[overtone] = filtered_mag # (Xm - amp_baseline).tolist()
+        self._my_list_phase[overtone] = phase # Xp.tolist()
+
+        # add to new parser
+        self._parser_A_multi.add_A_multi([self._my_list_freq, self._my_list_amp])
+        self._parser_P_multi.add_P_multi([self._my_list_freq, self._my_list_phase])
+    
     ###########################################################################
     # Initializing values for process
     ###########################################################################
@@ -330,14 +354,46 @@ class SerialMultiProcess(multiprocessing.Process):
         # Environment Variable
         self._environment = Constants.environment
 
+        # Time array
+        self._my_time_array = [0, 0, 0, 0, 0]
+        self._freq_range_mean = [0, 0, 0, 0, 0]
+        self._diss_mean = [0, 0, 0, 0, 0]
+        self._vec_app1 = [0, 0, 0, 0, 0]
+        self._vec_app1d = [0, 0, 0, 0, 0]
+        self._temperature_mean = 0
+
         # Make buffers
         self._freq_list : list[RingBuffer] = []
         self._diss_list : list[RingBuffer] = []
         self._temp_list : list[RingBuffer] = []
-        for _ in range(5):
+        for _ in Constants.overtone_dummy:
             self._freq_list.append(RingBuffer(self._environment))
             self._diss_list.append(RingBuffer(self._environment))
             self._temp_list.append(RingBuffer(self._environment))
+
+    def reset_buffers(self):
+        # init amplitude, phase and frequency list of buffer
+        self._my_list_amp : list[list[float]] = [
+            [],
+            [],
+            [],
+            [],
+            [],
+        ]
+        self._my_list_phase : list[list[float]] = [
+            [],
+            [],
+            [],
+            [],
+            [],
+        ]
+        self._my_list_freq : list[list[float]] = [
+            [],
+            [],
+            [],
+            [],
+            [],
+        ]
 
     ###########################################################################
     # Opens a specified serial port
@@ -364,11 +420,11 @@ class SerialMultiProcess(multiprocessing.Process):
         self._serial.writetimeout = writeTimeout
         
         # Loads frequencies from file
-        peaks_mag = self.load_frequencies_file()
+        self.peaks_mag = self.load_frequencies_file()
 
         # ---------------------------------------------------------------------
         # Set to fundamental peak
-        self._overtone = peaks_mag[0]
+        self._overtone = self.peaks_mag[0]
         self._overtone_int = 0
         # ---------------------------------------------------------------------
 
@@ -397,20 +453,6 @@ class SerialMultiProcess(multiprocessing.Process):
 
             samples = Constants.argument_default_samples
 
-            # Calls get_frequencies method:
-            # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
-            (
-                startF,
-                stopF,
-                fStep,
-                readFREQ,
-                SG_window_size,
-                spline_factor,
-                spline_points,
-            ) = (
-                self.get_frequencies(samples)
-            )
-
             # Gets the state of the serial port
             if not self._serial.isOpen():
                 # OPENS the serial port
@@ -422,114 +464,187 @@ class SerialMultiProcess(multiprocessing.Process):
                 # creates a timestamp
                 timestamp = time()
 
-                self._frequency_buffer = RingBuffer(self._environment)
-                self._dissipation_buffer = RingBuffer(self._environment)
-                self._temperature_buffer = RingBuffer(self._environment)
-
-                for i in range(5):
-                    self._freq_list.append()
+                # set initial values of sweep buffer
+                self.reset_buffers()
 
                 #### SWEEPS LOOP ####
                 while not self._exit.is_set():
-                    # data reset for new sweep
-                    data_mag = np.linspace(0, 0, samples)
-                    data_ph = np.linspace(0, 0, samples)
 
-                    try:
-                        # amplitude/phase convert bit to dB/Deg parameters
-                        vmax = 3.3
-                        bitmax = 8192
-                        ADCtoVolt = vmax / bitmax
-                        VCP = 0.9
-
-                        # WRITES encoded command to the serial port
-                        cmd = (
-                            str(self._startFreq)
-                            + ";"
-                            + str(self._stopFreq)
-                            + ";"
-                            + str(int(fStep))
-                            + "\n"
-                        )
-                        self._serial.write(cmd.encode())
-
-                        # Initializes buffer and strs record
-                        buffer = ""
-                        strs = ["" for _ in range(samples + 2)]
-
-                        # READS and decodes sweep from the serial port
-                        while 1:
-                            buffer += self._serial.read(
-                                self._serial.inWaiting()
-                            ).decode(Constants.app_encoding)
-                            # if '\n' in buffer:
-                            if "s" in buffer:
-                                break
-
-                        # Process Data
-                        data_raw = buffer.split("\n")
-                        length = len(data_raw)
-
-                        # PERFORMS split with the semicolon delimiter
-                        for i in range(length):
-                            strs[i] = data_raw[i].split(";")
-
-                        # CONVERTS the sweep samples before adding to queue
-                        for i in range(length - 2):
-                            data_mag[i] = float(strs[i][0]) * ADCtoVolt / 2
-                            data_mag[i] = (data_mag[i] - VCP) / 0.03
-                            data_ph[i] = float(strs[i][1]) * ADCtoVolt / 1.5
-                            data_ph[i] = (data_ph[i] - VCP) / 0.01
-
-                        # ACQUIRES the temperature value from the buffer
-                        data_temp = float((strs[length - 2][0]))
-
-                    # specify handlers for different exceptions
-                    except ValueError:
-                        print(
-                            TAG,
-                            "WARNING (ValueError): convert raw to float failed",
-                            end="\r",
-                        )
-                    except:
-                        print(
-                            TAG,
-                            "WARNING (ValueError): convert raw to float failed",
-                            end="\r",
-                        )
-                        self._flag_error_usb += 1
-
-                    # Calls elaborate method to performs results
-                    try:
-                        self.elaborate(
-                            k,
-                            coeffs_all,
-                            readFREQ,
-                            samples,
-                            data_mag,
-                            data_ph,
-                            data_temp,
-                            SG_window_size,
-                            Spline_points,
-                            Spline_factor,
-                            timestamp,
-                        )
-                    except ValueError as r:
-                        self._flag_error = 1
-                        print(r)
-                    except TypeError as r:
-                        self._flag_error = 1
-                        print(r)
-
-                    self._parser6.add6(
-                        [self._err1, self._err2, k, self._flag_error_usb]
+                    # Calls get_frequencies method:
+                    # ACQUIRES overtone, sets start and stop frequencies, the step and range frequency according to the number of samples
+                    (
+                        startF,
+                        stopF,
+                        fStep,
+                        readFREQ,
+                        SG_window_size,
+                        spline_factor,
+                        spline_points,
+                    ) = (
+                        self.get_frequencies(samples)
                     )
 
-                    print(TAG, "sweep #{}".format(k), end="\r")
+                    # Loop thru all overtones
+                    for idx in range(len(self.peaks_mag)):
+                    
+                        # data reset for new sweep
+                        data_mag = np.linspace(0, 0, samples)
+                        data_ph = np.linspace(0, 0, samples)
+                        data_temp = 0.0
+                        # reset data raw
+                        data_raw = ""
+                        # reset buffer
+                        buffer = ""
 
-                    # refreshes error variables at each sweep
-                    self._err1 = 0
-                    self._err2 = 0
+                        try:
+                            # amplitude/phase convert bit to dB/Deg parameters
+                            vmax = 3.3
+                            bitmax = 8192
+                            ADCtoVolt = vmax / bitmax
+                            VCP = 0.9
+
+                            # get swepp time start
+                            timeStart = time()
+                            timeout = False
+
+                            # WRITES encoded command to the serial port
+                            cmd = (
+                                str(startF[idx])
+                                + ";"
+                                + str(stopF[idx])
+                                + ";"
+                                + str(int(fStep[idx]))
+                                + "\n"
+                            )
+                            self._serial.write(cmd.encode())
+
+                            # Initializes buffer and strs record
+                            buffer = ""
+                            strs = ["" for _ in range(samples + 2)]
+
+                            # READS and decodes sweep from the serial port
+                            while 1:
+                                buffer += self._serial.read(
+                                    self._serial.inWaiting()
+                                ).decode(Constants.app_encoding)
+
+                                # Escape Character Detect
+                                if "s" in buffer:
+                                    break
+
+                                # Timeout Detection
+                                if time() - timeStart > Constants.TIME_ELAPSED_TIMEOUT:
+                                    # DEBUG_0.1.1a
+                                    print(
+                                        TAG,
+                                        "Info: timeout at overtone index = ",
+                                        idx,
+                                        end="\n",
+                                    )
+                                    self._flag_error_usb = 1
+                                    timeout = True
+                                    # exit the while loop
+                                    break
+
+                            # Timeout failure
+                            if timeout:
+                                # Reset
+                                timeout = False
+                                sleep(0.5)
+                                # reset serial input/output buffer
+                                self._serial.reset_input_buffer()
+                                self._serial.reset_output_buffer()
+                                sleep(0.5)
+                                # Reset Buffer
+                                break
+
+                            # Process Data
+                            data_raw = buffer.split("\n")
+                            length = len(data_raw)
+
+                            # Check the length of the serial read buffer if exceed the number of samples = 500
+                            if length > Constants.argument_default_samples + 2:
+                                print(
+                                    TAG,
+                                    "Info: exceed read buffer length = ",
+                                    length,
+                                    end="\n",
+                                )
+                                self._flag_error_usb = 1
+
+                                # reset serial input/output buffer
+                                sleep(0.5)
+                                self._serial.reset_input_buffer()
+                                self._serial.reset_output_buffer()
+                                sleep(0.5)
+                                
+                                print(
+                                    TAG,
+                                    "Info: current overtone index = ",
+                                    idx,
+                                    end="\n",
+                                )
+                                break
+
+                            # PERFORMS split with the semicolon delimiter
+                            for i in range(length):
+                                strs[i] = data_raw[i].split(";")
+
+                            # CONVERTS the sweep samples before adding to queue
+                            for i in range(length - 2):
+                                data_mag[i] = float(strs[i][0]) * ADCtoVolt / 2
+                                data_mag[i] = (data_mag[i] - VCP) / 0.03
+                                data_ph[i] = float(strs[i][1]) * ADCtoVolt / 1.5
+                                data_ph[i] = (data_ph[i] - VCP) / 0.01
+
+                            # ACQUIRES the temperature value from the buffer
+                            data_temp = float((strs[length - 2][0]))
+
+                        # specify handlers for different exceptions
+                        except Exception as e:
+                            print(
+                                TAG,
+                                f"WARNING ({type(e).__name__}): {e}",
+                                end="\r",
+                            )
+                            self._flag_error_usb = 1
+
+                        # Any Error Catch
+                        if self._flag_error_usb == 1:
+                            # End this turn, next overtone to try
+                            continue
+
+                        # Calls elaborate method to performs results
+                        try:
+                            self.elaborate_multi(
+                                k,
+                                idx,
+                                coeffs_all,
+                                readFREQ[idx],
+                                samples,
+                                data_mag,
+                                data_ph,
+                                data_temp,
+                                SG_window_size[idx],
+                                spline_points[idx],
+                                spline_factor[idx],
+                                timestamp,
+                            )
+                        except Exception as e:
+                            self._flag_error = 1
+                            print(e)
+
+                        self._parser6.add6(
+                            [self._err1, self._err2, k, self._flag_error_usb, idx, 0]
+                        )
+
+                        # refreshes error variables at each sweep
+                        self._err1 = 0
+                        self._err2 = 0
+                        self._flag_error_usb = 0
+
+                    # Update Sweep Log
+                    print(TAG, "sweep #{}".format(k), end="\r")
 
                     # Increases sweep counter
                     k += 1
@@ -543,6 +658,7 @@ class SerialMultiProcess(multiprocessing.Process):
     ###########################################################################
     def stop(self):
         # Signals the process to stop acquiring data.
+        self._serial.close()
         self._exit.set()
 
     ###########################################################################
@@ -623,13 +739,12 @@ class SerialMultiProcess(multiprocessing.Process):
         # Sets start and stop frequencies for the corresponding overtone
         if peaks_mag[0] > 4e06 and peaks_mag[0] < 6e06:
             switch = Overtone_Switcher_5MHz(peak_frequencies=peaks_mag)
-            print(TAG, "openQCM Device setup: 5 MHz")
 
         elif peaks_mag[0] > 9e06 and peaks_mag[0] < 11e06:
             switch = Overtone_Switcher_10MHz(peak_frequencies=peaks_mag)
-            print(TAG, "openQCM Device setup: 10 MHz")
+
+        # Cannot find
         else:
-            print(TAG, "QC Chip type could not be determined")
             return None, None, None, None, None, None
     
         # Generate whole list
@@ -672,6 +787,39 @@ class SerialMultiProcess(multiprocessing.Process):
             spline_factor,
             spline_points,
         )
+
+    def get_readFREQ(self, samples, overtone):
+        # Loads frequencies from calibration file
+        peaks_mag = self.load_frequencies_file()
+
+        # Checks QCS type 5Mhz or 10MHz
+        # Sets start and stop frequencies for the corresponding overtone
+        if peaks_mag[0] > 4e06 and peaks_mag[0] < 6e06:
+            switch = Overtone_Switcher_5MHz(peak_frequencies=peaks_mag)
+
+        elif peaks_mag[0] > 9e06 and peaks_mag[0] < 11e06:
+            switch = Overtone_Switcher_10MHz(peak_frequencies=peaks_mag)
+            
+        # Could not find
+        else:
+            return None, None, None, None, None, None
+        
+        (
+            _,
+            _,
+            startFreq,
+            stopFreq,
+            _,
+            _,
+        ) = switch.overtone_to_freq_range(i)
+
+        # Sets the frequency step
+        fStep_temp = (stopFreq - startFreq) / (samples - 1)
+
+        # set frequencies array
+        frequencies_array_temp = np.arange(samples) * (fStep_temp) + fStep_temp
+
+        return frequencies_array_temp
 
     ###########################################################################
     # Loads Fundamental frequency and Overtones from file

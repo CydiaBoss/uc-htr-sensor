@@ -5,8 +5,8 @@ from misc.logger import Logger as Log
 
 from openqcm.processes.parser import ParserProcess
 from openqcm.processes.serial import SerialProcess
+from openqcm.processes.serial_multi import SerialMultiProcess
 from openqcm.processes.calibration import CalibrationProcess
-from openqcm.processes.multiscan import MultiscanProcess
 from openqcm.core.ring_buffer import RingBuffer
 
 import numpy as np
@@ -199,7 +199,8 @@ class Worker(QObject):
 
         # multi frequency measurement 
         elif self._source == SourceType.multiscan:
-            self._acquisition_process = MultiscanProcess(self._parser_process)
+            # self._acquisition_process = MultiscanProcess(self._parser_process)
+            self._acquisition_process = SerialMultiProcess(self._parser_process)
             
         # OPEN PROCESS 
         # ---------------------------------------------------------------------    
@@ -287,6 +288,7 @@ class Worker(QObject):
         self.consume_queue_F_multi()
         self.consume_queue_D_multi()
         self.consume_queue_A_multi()
+        self.consume_queue_P_multi()
         
         # worker processes are still running when you press stop button on main gui 
         # when stop is called, terminate the processes alive in the worker 
@@ -454,7 +456,6 @@ class Worker(QObject):
     def get_P_values_buffer(self, idx=0): 
         return self._P_multi_buffer[idx]
         
-    
     def get_F_Sweep_values_buffer(self, idx = 0):
         
         return self._F_Sweep_multi_buffer[idx]
@@ -625,10 +626,10 @@ class Worker(QObject):
             return CalibrationProcess.get_ports()
         # MULTI 
         elif source == SourceType.multiscan:
-            # TODO check get multiscan process serial port connected  
-            # print (" WORKER get type of meas ")
-            print(TAG,'Port connected:',MultiscanProcess.get_ports())
-            return MultiscanProcess.get_ports()
+            # print(TAG,'Port connected:',MultiscanProcess.get_ports())
+            # return MultiscanProcess.get_ports()
+            print(TAG,'Port connected:',SerialMultiProcess.get_ports())
+            return SerialMultiProcess.get_ports()
         else:
             print(TAG,'Warning: unknown source selected')
             Log.w(TAG,"Unknown source selected")
@@ -652,7 +653,8 @@ class Worker(QObject):
         
         # multi 
         elif source == SourceType.multiscan:
-            return MultiscanProcess.get_speeds()
+            # return MultiscanProcess.get_speeds()
+            return SerialMultiProcess.get_speeds()
         else:
             print(TAG,'Unknown source selected')
             Log.w(TAG, "Unknown source selected")
@@ -694,6 +696,7 @@ class Worker(QObject):
         self._time_buffer = []
         
         self._A_multi_buffer = []
+        self._P_multi_buffer = []
         self._F_Sweep_multi_buffer = []
         
         # append ring buffer
@@ -703,10 +706,10 @@ class Worker(QObject):
             self._time_buffer.append(RingBuffer(Constants.ring_buffer_samples))
 
         self._A_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
+        self._P_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
         self._F_Sweep_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
         
         # INIT self._F_store and self._D_store list 
-        # TODO IMPORTANT self._F_store and self._D_store same legth of self._F_multi_buffer and self._D_multi_buffer
         self._F_store = self._zerolistmaker(len(Constants.overtone_dummy))
         self._D_store = self._zerolistmaker(len(Constants.overtone_dummy))
         self._time_store = self._zerolistmaker(len(Constants.overtone_dummy))

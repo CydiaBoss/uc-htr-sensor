@@ -156,7 +156,7 @@ class Window(Ui_MainWindow):
                 colour_frame : QFrame = getattr(self, f"{c}{odd_num[i]}_colour")
                 colour_frame.setStyleSheet(f"background-color:{Constants.plot_color_multi[i]};")
 
-    def clear_qcm_plots_multi(self):
+    def clear_qcm_plots_multi(self, rebuild=True):
         """
         Resets the plots for single measurements
         """
@@ -165,6 +165,10 @@ class Window(Ui_MainWindow):
         while self.multi_amp_curves:
             curve = self.multi_amp_curves.pop()
             self.amp_plot.removeItem(curve)
+            curve.deleteLater()
+        while self.multi_phase_curves:
+            curve = self.multi_phase_curves.pop()
+            self.phase_plot.removeItem(curve)
             curve.deleteLater()
         while self.multi_freq_curves:
             curve = self.multi_freq_curves.pop()
@@ -178,6 +182,8 @@ class Window(Ui_MainWindow):
         # Data Connectors
         while self.multi_amp_datas:
             self.multi_amp_datas.pop().deleteLater()
+        while self.multi_phase_datas:
+            self.multi_phase_datas.pop().deleteLater()
         while self.multi_freq_datas:
             self.multi_freq_datas.pop().deleteLater()
         while self.multi_dissipate_datas:
@@ -185,15 +191,16 @@ class Window(Ui_MainWindow):
 
         self.multi_mode = False
 
-        # Reset Everything
-        self.setup_plots()
+        # Reset Everything if wanted
+        if rebuild:
+            self.setup_plots()
 
     def setup_qcm_plots_multi(self):
         """
         Convert the single plots to support multi
         """
         # Reset old
-        self.clear_qcm_plots_multi()
+        self.clear_qcm_plots_multi(rebuild=False)
 
         # Add new multi plots
         for i in range(self.peaks.size):
@@ -203,6 +210,13 @@ class Window(Ui_MainWindow):
             temp_amp_data = DataConnector(temp_amp_curve, update_rate=1.0)
             self.multi_amp_curves.append(temp_amp_curve)
             self.multi_amp_datas.append(temp_amp_data)
+
+            # Update Phase
+            temp_phase_curve = LiveLinePlot(brush=Constants.plot_color_multi[i], pen=Constants.plot_color_multi[i])
+            self.phase_plot.addItem(temp_phase_curve)
+            temp_phase_data = DataConnector(temp_phase_curve, update_rate=1.0)
+            self.multi_phase_curves.append(temp_phase_curve)
+            self.multi_phase_datas.append(temp_phase_data)
             
             # Update Frequency
             temp_freq_curve = LiveLinePlot(brush=Constants.plot_color_multi[i], pen=Constants.plot_color_multi[i])
@@ -253,9 +267,11 @@ class Window(Ui_MainWindow):
         # Setup Multi Plot
         self.multi_mode = False
         self.multi_amp_curves : list[LiveLinePlot] = []
+        self.multi_phase_curves : list[LiveLinePlot] = []
         self.multi_freq_curves : list[LiveLinePlot] = []
         self.multi_dissipate_curves : list[LiveLinePlot] = []
         self.multi_amp_datas : list[DataConnector] = []
+        self.multi_phase_datas : list[DataConnector] = []
         self.multi_freq_datas : list[DataConnector] = []
         self.multi_dissipate_datas : list[DataConnector] = []
 
@@ -816,6 +832,7 @@ class Window(Ui_MainWindow):
             self.qcm_ctrl.worker.consume_queue_F_multi()
             self.qcm_ctrl.worker.consume_queue_D_multi()
             self.qcm_ctrl.worker.consume_queue_A_multi()
+            self.qcm_ctrl.worker.consume_queue_P_multi()
 
             # flag for terminating calibration
             stop_flag = 0
@@ -1062,6 +1079,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue_F_multi()
         self.qcm_ctrl.worker.consume_queue_D_multi()
         self.qcm_ctrl.worker.consume_queue_A_multi()
+        self.qcm_ctrl.worker.consume_queue_P_multi()
 
         # Early Process
         prep_process = False
@@ -1098,7 +1116,7 @@ class Window(Ui_MainWindow):
                 self.update_perm_status(_translate("MainWindow", labelbar))
                     
         # progressbar -------------
-        self.progress_bar.setValue(int(self._completed + 10))
+        self.progress_bar.setValue(int(self._completed + 2))
 
         # Message
         self.statusBar().showMessage(labelbar, 5000)
@@ -1113,10 +1131,12 @@ class Window(Ui_MainWindow):
             # get and scale frequency axis
             x_sweep_axis = self.qcm_ctrl.worker.get_F_Sweep_values_buffer(idx) - self.peaks[idx]
             # get amplitude axis
-            y_sweep_axis = self.qcm_ctrl.worker.get_A_values_buffer(idx)
+            y_sweep_axis_amp = self.qcm_ctrl.worker.get_A_values_buffer(idx)
+            y_sweep_axis_phase = self.qcm_ctrl.worker.get_P_values_buffer(idx)
             # plot sweep
             if isinstance(x_sweep_axis, np.ndarray):
-                self.multi_amp_datas[idx].cb_set_data( x = x_sweep_axis, y = y_sweep_axis, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
+                self.multi_amp_datas[idx].cb_set_data( x = x_sweep_axis, y = y_sweep_axis_amp, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
+                self.multi_phase_datas[idx].cb_set_data( x = x_sweep_axis, y = y_sweep_axis_phase, pen = Constants.plot_color_multi[idx], name = Constants.name_legend[idx] )
 
             # FREQ & DISSIPATE
             # get time axis
