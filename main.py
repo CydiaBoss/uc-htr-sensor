@@ -338,8 +338,29 @@ class Window(Ui_MainWindow):
 
         # Restore QC Chip Type selection
         qc_type = SETTINGS.get_setting("last_qc_chip")
+
         if qc_type is not None:
             self.qc_type.setCurrentText(qc_type)
+
+        # Restore Measurement Selections
+        measurement_type = SETTINGS.get_setting("measurement_mode")
+        freq_select = SETTINGS.get_setting("freq_select")
+
+        if measurement_type is not None:
+            self.measure_type.setCurrentIndex(int(measurement_type))
+        if freq_select is not None and len(self.freq_list) > int(freq_select):
+            self.freq_list.setCurrentIndex(int(freq_select))
+
+        # Restore File Management Selections
+        auto_export_opt = SETTINGS.get_setting("auto_export")
+        last_file_dest = SETTINGS.get_setting("last_file_dest")
+
+        if auto_export_opt is not None:
+            self.auto_export.setChecked(bool(auto_export_opt))
+            self.file_dest.setEnabled(False)
+            self.file_select.setEnabled(False)
+        if last_file_dest is not None:
+            self.file_dest.setText(last_file_dest)
 
     def disable_all_ctrls(self):
         """
@@ -1292,7 +1313,9 @@ class Window(Ui_MainWindow):
             return
 
         # Make directory if needed
-        os.makedirs(os.path.dirname(self.file_dest.text().strip()), exist_ok=True)
+        dir_name = os.path.dirname(self.file_dest.text().strip())
+        if dir_name.strip() != "":
+            os.makedirs(dir_name, exist_ok=True)
         
         # Open file
         f = open(self.file_dest.text().strip(), 'w')
@@ -1580,7 +1603,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_file_select_clicked(self):
         # Get File
-        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), "data/", _translate("MainWindow", "CSV (*.csv)"))
+        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{DATA_FOLDER}/", _translate("MainWindow", "CSV (*.csv)"))
 
         # Save
         self.file_dest.setText(self.file_dialog[0])
@@ -1614,6 +1637,13 @@ class Window(Ui_MainWindow):
         # Disable
         self.disable_all_ctrls()
         self.reset_progress_bar()
+
+        # Save selection
+        SETTINGS.update_setting("measurement_mode", f"{self.measure_type.currentIndex()}")
+        SETTINGS.update_setting("freq_select", f"{self.freq_list.currentIndex()}")
+        SETTINGS.update_setting("auto_export", f"{self.auto_export.isChecked()}")
+        if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
+            SETTINGS.update_setting("last_file_dest", self.file_dest.text())
         
         # Clear
         self.clear_plots()

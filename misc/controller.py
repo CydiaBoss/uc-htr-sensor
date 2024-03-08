@@ -437,6 +437,10 @@ class QCMSensorCtrl(QObject):
             sampling_time=-1,
         )
 
+        # Setup Slots for Single
+        self.worker.progress.connect(self.progress.emit)
+        self.worker.temperature.connect(self.temperature.emit)
+
         # Start
         self.worker.start()
 

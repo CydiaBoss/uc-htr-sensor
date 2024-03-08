@@ -31,6 +31,8 @@ class Worker(QObject):
     frequency = pyqtSignal(float)
     dissipation = pyqtSignal(float)
     temperature = pyqtSignal(float)
+    frequency_multi = pyqtSignal(int, float)
+    dissipation_multi = pyqtSignal(int,float)
 
     ###########################################################################
     # Creates all processes involved in data acquisition and processing
@@ -506,7 +508,6 @@ class Worker(QObject):
         # Ping progress signal
         self.progress.emit()
         
-        # TODO datalog the time is now 
         # for storing relative time 
         if  self._flag and ~np.isnan(self._d3_store):
             # SINGLE 
@@ -524,7 +525,6 @@ class Worker(QObject):
             
             self._flag = False
     
-        #####
     def _queue_data6(self,data):
         #:param data: values to add for serial error :type data: float.
         self._ser_error1 = data[0]
