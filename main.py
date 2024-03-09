@@ -1320,6 +1320,10 @@ class Window(Ui_MainWindow):
         # Open file
         f = open(self.file_dest.text().strip(), 'w')
 
+        # Print HT(R) data
+        if self.htr_port is not None:
+            
+
         # Is R sensor override?
         if self.r_device is None:
             f.write(f'"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)","Humidity (%RH)","Temperature (degC)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
@@ -1341,6 +1345,7 @@ class Window(Ui_MainWindow):
                 # Flush in parts
                 if i % AUTO_FLUSH == 0:
                     f.flush()
+        elif self.r_device is not None and self
         else:
             f.write(f'"Time","Humidity (%RH)","Temperature (degC)",,"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
 
