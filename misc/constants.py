@@ -322,8 +322,8 @@ class Constants:
     # Process parameters #
     ######################
     process_join_timeout_ms = 2000
-    simulator_default_speed = 0.1  # not used
     parser_timeout_ms = 0.005
+    data_timeout_ms = 1.0
 
     ######################################
     # File parameters for exporting data #

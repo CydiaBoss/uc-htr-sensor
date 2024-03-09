@@ -4,6 +4,7 @@ from typing import Union
 
 from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester, RSensorCtrl
 from misc.constants import *
+from misc.data import DataSaving
 from misc.tools import active_ports, identical_list, noise_filtering
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame
@@ -235,6 +236,12 @@ class Window(Ui_MainWindow):
         # Signal multi mode
         self.multi_mode = True
 
+    def setup_queue(self):
+        """
+        Setup Queues for data saving
+        """
+        pass
+
     def setup_variable(self):
         """
         Setup all the local variables
@@ -256,13 +263,11 @@ class Window(Ui_MainWindow):
         self.htr_thread : QtCore.QThread = None
         self.qcm_thread : QtCore.QThread = None
         self.r_thread : QtCore.QThread = None
+        self.qcm_timer : QtCore.QTimer = None
 
         # Make Calibration Stuff
         self.qcm_calibrated = False
         self.peaks = np.array([])
-
-        # File Save Related
-        self.saved = False
 
         # Setup Multi Plot
         self.multi_mode = False
@@ -297,6 +302,11 @@ class Window(Ui_MainWindow):
         if self.noise_reduce is None:
             self.noise_reduce = 5
             SETTINGS.update_setting("noise_reduce", str(self.noise_reduce))
+
+        # Data Saving Module
+        self.data_saver : DataSaving = None
+        self.data_saving_thread : QtCore.QThread = None
+        self.data_saving_timer : QtCore.QTimer = None
 
         # Fill Frequency List
         self.fill_frequency_list()
@@ -965,11 +975,17 @@ class Window(Ui_MainWindow):
                 self.clear_qcm_plots_multi()
             self.qcm_timer.timeout.connect(self.single_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
+
+            # Set the Data Saver
+            self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
         # Multi
         elif self.measure_type.currentIndex() == 1:
             self.setup_qcm_plots_multi()
             self.qcm_timer.timeout.connect(self.multi_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
+
+            # Set the Data Saver
+            self.data_saver.set_freqs(self.peaks)
 
         # Start Timer
         self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))
@@ -1303,82 +1319,20 @@ class Window(Ui_MainWindow):
             self.update_indicator_freq(i, "")
             self.update_indicator_dissipation(i, "")
 
-    def save_data(self):
+    def start_data_saving(self):
         """
-        Writes data to file
+        Starts the data saving process
         """
-        # Validates file destination
-        if self.file_dest.text().strip() == "":
-            self.statusBar().showMessage("Could not save file, no destination specified")
-            return
+        # Setup
+        self.data_saving_thread = QtCore.QThread(self)
+        self.data_saving_timer = QtCore.QTimer(self)
 
-        # Make directory if needed
-        dir_name = os.path.dirname(self.file_dest.text().strip())
-        if dir_name.strip() != "":
-            os.makedirs(dir_name, exist_ok=True)
-        
-        # Open file
-        f = open(self.file_dest.text().strip(), 'w')
+        # Connect Signals
+        self.data_saving_timer.timeout.connect(self.data_saver.write)
+        self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
 
-        # Print HT(R) data
-        if self.htr_port is not None:
-            
-
-        # Is R sensor override?
-        if self.r_device is None:
-            f.write(f'"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)","Humidity (%RH)","Temperature (degC)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
-        
-            # Write
-            for i in range(max(self.htr_time.size, self.qcm_time.size)):
-                # Write HTR portion first if exist
-                if self.htr_time.size > i:
-                    f.write(f'"{self.htr_time[i]}","{self.raw_resistance[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
-                else:
-                    f.write(",,,,,")
-
-                # Write QCM portion now if exist
-                if self.qcm_time.size > i:
-                    f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
-                else:
-                    f.write(",,,\n")
-
-                # Flush in parts
-                if i % AUTO_FLUSH == 0:
-                    f.flush()
-        elif self.r_device is not None and self
-        else:
-            f.write(f'"Time","Humidity (%RH)","Temperature (degC)",,"Time","Resistance ({REF_RESIST_UNIT().strip()}Ohm)",,"Time","Frequency (Hz)","Dissipation","Temperature (degC)"\n')
-
-            # Write
-            for i in range(max(self.htr_time.size, self.qcm_time.size, self.r_time.size)):
-                # Write HTR portion first if exist
-                if self.htr_time.size > i:
-                    f.write(f'"{self.htr_time[i]}","{self.humidity[i]}","{self.htr_temperature[i]}",,')
-                else:
-                    f.write(",,,,")
-
-                # Write R portion now if exist
-                if self.r_time.size > i:
-                    f.write(f'"{self.r_time[i]}","{self.raw_resistance[i]}",,')
-                else:
-                    f.write(",,,")
-
-                # Write QCM portion now if exist
-                if self.qcm_time.size > i:
-                    f.write(f'"{self.qcm_time[i]}","{self.frequency[i]}","{self.dissipation[i]}","{self.qcm_temperature[i]}"\n')
-                else:
-                    f.write(",,,\n")
-
-                # Flush in parts
-                if i % AUTO_FLUSH == 0:
-                    f.flush()
-
-        # Final flush
-        f.flush()
-        f.close()
-
-        # Success
-        self.statusBar().showMessage(f"File saved at {self.file_dest.text()}")
+        # Start
+        self.data_saving_thread.start()
 
     def stop_sensors(self):
         """
@@ -1411,6 +1365,16 @@ class Window(Ui_MainWindow):
         if self.r_thread is not None:
             self.r_thread.quit()
             self.r_thread = None
+
+        # Stop Data Saving
+        if self.data_saving_thread is not None:
+            self.data_saving_timer.stop()
+            self.data_saving_thread.quit()
+            self.data_saving_timer.deleteLater()
+            self.data_saving_timer = None
+            self.data_saving_thread = None
+            self.data_saver.close()
+            self.data_saver = None
     
     # Slots
     @QtCore.pyqtSlot()
@@ -1659,19 +1623,30 @@ class Window(Ui_MainWindow):
         self.reset_btn.setEnabled(True)
 
         # Update save status
-        self.saved = False
+        if self.auto_export.isChecked():
+            self.data_saver = DataSaving(file_name=self.file_dest.text())
 
         # Start HTR
         if self.htr_port is not None:
             self.start_htr()
-
-        # Start QCM
-        if self.qcm_port is not None and self.qcm_calibrated:
-            self.start_qcm()
+        elif self.auto_export.isChecked():
+            self.data_saver.set_htr(False)
 
         # Start R
         if self.r_device is not None:
             self.start_r()
+        elif self.auto_export.isChecked():
+            self.data_saver.set_r(False)
+
+        # Start QCM
+        if self.qcm_port is not None and self.qcm_calibrated:
+            self.start_qcm()
+        elif self.auto_export.isChecked():
+            self.data_saver.set_qcm(False)
+
+        # Data Saving Thread
+        if self.auto_export.isChecked():
+            self.start_data_saving()
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):
@@ -1680,11 +1655,6 @@ class Window(Ui_MainWindow):
 
         # Stop Sensors
         self.stop_sensors()
-
-        # Save if wanted
-        if self.auto_export.isChecked():
-            self.save_data()
-            self.saved = True
 
         # Enable button
         self.start_btn.setEnabled(True)
@@ -1700,11 +1670,6 @@ class Window(Ui_MainWindow):
         self.clear_plots()
         self.clear_data()
         self.stop_sensors()
-
-        # Check Saved & Do if not
-        if self.auto_export.isChecked() and not self.saved:
-            self.save_data()
-            self.saved = True
 
         # Enable stuff
         self.enable_measurement()
