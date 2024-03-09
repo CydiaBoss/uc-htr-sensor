@@ -236,12 +236,6 @@ class Window(Ui_MainWindow):
         # Signal multi mode
         self.multi_mode = True
 
-    def setup_queue(self):
-        """
-        Setup Queues for data saving
-        """
-        pass
-
     def setup_variable(self):
         """
         Setup all the local variables
@@ -697,7 +691,12 @@ class Window(Ui_MainWindow):
         """
         Update the time array for r
         """
-        self.r_time = np.append(self.r_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
+        temp_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        self.r_time = np.append(self.r_time, temp_time)
+
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.r_time.put(temp_time)
 
     def start_htr(self):
         '''
@@ -731,12 +730,24 @@ class Window(Ui_MainWindow):
         """
         Update the time array for htr
         """
-        self.htr_time = np.append(self.htr_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
+        temp_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        self.htr_time = np.append(self.htr_time, temp_time)
+
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.htr_time.put(temp_time)
 
     def resistance_processing(self, time_at : float, r_data : float):
         """
         Processes the resistance data
         """
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            if self.r_device is not None:
+                self.data_saver.r_resist.put(r_data)
+            else:
+                self.data_saver.htr_resist.put(r_data)
+
         # Don't do anything for inf
         if r_data == np.inf:
             self.raw_resistance = np.append(self.raw_resistance, r_data)
@@ -769,6 +780,10 @@ class Window(Ui_MainWindow):
         """
         Processes the humidity data
         """
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.htr_humid.put(h_data)
+
         # Add to list
         self.humidity = np.append(self.humidity, h_data)
         self.humidity_time = np.append(self.humidity_time, time_at)
@@ -795,6 +810,10 @@ class Window(Ui_MainWindow):
         """
         Processes the temperature data
         """
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.htr_temp.put(t_data)
+
         # Add to list
         self.htr_temperature = np.append(self.htr_temperature, t_data)
         self.htr_temperature_time = np.append(self.htr_temperature_time, time_at)
@@ -855,8 +874,8 @@ class Window(Ui_MainWindow):
             self.qcm_ctrl.worker.consume_queue2()
             self.qcm_ctrl.worker.consume_queue3()
             self.qcm_ctrl.worker.consume_queue4()
-            # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
             self.qcm_ctrl.worker.consume_queue5()
+            
             # general error queue
             self.qcm_ctrl.worker.consume_queue6()
 
@@ -1244,25 +1263,43 @@ class Window(Ui_MainWindow):
         """
         Update the time array for qcm
         """
-        self.qcm_time = np.append(self.qcm_time, datetime.now().strftime("%H:%M:%S.%f")[:-3])
+        temp_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        self.qcm_time = np.append(self.qcm_time, temp_time)
 
-    def frequency_processing(self, data : float):
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.qcm_time.put(temp_time)
+
+
+    def frequency_processing(self, data : float, idx : int=0):
         """
         Processes the frequency values from qcm
         """
         self.frequency = np.append(self.frequency, data)
 
-    def dissipation_processing(self, data : float):
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.qcm_freq[idx].put(data)
+
+    def dissipation_processing(self, data : float, idx : int=0):
         """
         Processes the dissipation values from qcm
         """
         self.dissipation = np.append(self.dissipation, data)
+
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.qcm_diss[idx].put(data)
 
     def qcm_temperature_processing(self, data : float):
         """
         Processes the temperature values from qcm
         """
         self.qcm_temperature = np.append(self.qcm_temperature, data)
+
+        # Queue for data saving if needed
+        if self.data_saver is not None:
+            self.data_saver.qcm_temp.put(data)
 
     def clear_plots(self):
         """

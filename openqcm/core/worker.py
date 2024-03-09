@@ -28,11 +28,9 @@ class Worker(QObject):
 
     # Signals
     progress = pyqtSignal()
-    frequency = pyqtSignal(float)
-    dissipation = pyqtSignal(float)
+    frequency = pyqtSignal(float, int)
+    dissipation = pyqtSignal(float, int)
     temperature = pyqtSignal(float)
-    frequency_multi = pyqtSignal(int, float)
-    dissipation_multi = pyqtSignal(int,float)
 
     ###########################################################################
     # Creates all processes involved in data acquisition and processing
@@ -366,6 +364,8 @@ class Worker(QObject):
         # store the data in respective buffers
         for idx in range(size):
             self._F_multi_buffer[idx].append(values[idx])
+            # Signal Data
+            self.frequency.emit(values[idx], idx)
             # store the current array of frequency data 
             self._F_store[idx] = values[idx]
        
@@ -400,6 +400,8 @@ class Worker(QObject):
         # store the data in respective buffers
         for idx in range(size):
             self._D_multi_buffer[idx].append(values[idx])
+            # Signal Data
+            self.dissipation.emit(values[idx], idx)
             # store the current array of dissipation  data 
             self._D_store[idx] = values[idx]
     
@@ -461,7 +463,6 @@ class Worker(QObject):
     def get_F_Sweep_values_buffer(self, idx = 0):
         
         return self._F_Sweep_multi_buffer[idx]
-        # print (self._F_Sweep_multi_buffer[idx])
        
     ###########################################################################
     # Adds data to internal buffers.
@@ -482,7 +483,8 @@ class Worker(QObject):
         self._d1_store = data[1] # data
         self._t1_buffer.append(data[0])
         self._d1_buffer.append(data[1])
-        self.frequency.emit(data[1])
+        if self._source == SourceType.serial:
+            self.frequency.emit(data[1], 0)
         
     # DISSIPATION 
     def _queue_data4(self,data):
@@ -492,7 +494,8 @@ class Worker(QObject):
         self._d2_store = data[1] # data
         self._t2_buffer.append(data[0])
         self._d2_buffer.append(data[1])
-        self.dissipation.emit(data[1])
+        if self._source == SourceType.serial:
+            self.dissipation.emit(data[1], 0)
     
     # TEMPERATURE
     def _queue_data5(self,data):

@@ -366,8 +366,8 @@ class QCMSensorCtrl(QObject):
 
     # Signals
     progress = pyqtSignal()
-    frequency = pyqtSignal(float)
-    dissipation = pyqtSignal(float)
+    frequency = pyqtSignal(float, int)
+    dissipation = pyqtSignal(float, int)
     temperature = pyqtSignal(float)
 
     # References
@@ -437,8 +437,10 @@ class QCMSensorCtrl(QObject):
             sampling_time=-1,
         )
 
-        # Setup Slots for Single
+        # Setup Slots for Multi
         self.worker.progress.connect(self.progress.emit)
+        self.worker.frequency.connect(self.frequency.emit)
+        self.worker.dissipation.connect(self.dissipation.emit)
         self.worker.temperature.connect(self.temperature.emit)
 
         # Start
