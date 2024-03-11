@@ -68,7 +68,7 @@ class Window(Ui_MainWindow):
         self.resist_plot.setParent(None)
         self.resist_plot.deleteLater()
         self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ω", unitPrefix=SETTINGS.get_setting("ref_resist_unit").strip())
-        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({SETTINGS.get_setting('ref_resist_unit').strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
         self.resist_plot.setBackground(background="w")
@@ -767,15 +767,15 @@ class Window(Ui_MainWindow):
         # Calculate Resist AVGs
         resist_size = self.resistance.size
 
-        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
+        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {SETTINGS.get_setting('ref_resist_unit')}Ω")
 
         if resist_size > 15:
-            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
+            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {SETTINGS.get_setting('ref_resist_unit')}Ω")
         else:
             self.avg_resist_15.setText("N/A")
 
         if resist_size > 50:
-            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
+            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {SETTINGS.get_setting('ref_resist_unit')}Ω")
         else:
             self.avg_resist_50.setText("N/A")
 
@@ -1467,7 +1467,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Resistor_triggered(self):
         # Prompt user for new voltage
-        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting('ref_resist'))}{SETTINGS.get_setting("ref_resist_unit")}")
+        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting('ref_resist'))}{SETTINGS.get_setting('ref_resist_unit')}")
 
         # Update
         if raw_resist[1]:

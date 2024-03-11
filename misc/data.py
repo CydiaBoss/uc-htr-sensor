@@ -5,7 +5,7 @@ from typing import Union
 
 from PyQt5.QtCore import QObject
 
-from misc.constants import AUTO_FLUSH
+from misc.constants import AUTO_FLUSH, SETTINGS
 
 class DataSaving(QObject):
 	"""
@@ -90,14 +90,14 @@ class DataSaving(QObject):
 
 			# Ignore R if included
 			if not self.r:
-				self.header += f'"Resistance ({SETTINGS.get_setting("ref_resist_unit").strip()}Ohm)",'
+				self.header += f'"Resistance ({SETTINGS.get_setting('ref_resist_unit').strip()}Ohm)",'
 
 			# Column of Division
 			self.header += ","
 
 		# R?
 		if self.r:
-			self.header += f'"Time (R)","Resistance ({SETTINGS.get_setting("ref_resist_unit").strip()}Ohm)",,'
+			self.header += f'"Time (R)","Resistance ({SETTINGS.get_setting('ref_resist_unit').strip()}Ohm)",,'
 
 		# QCM?
 		if self.qcm:

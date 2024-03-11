@@ -10,7 +10,6 @@ from enum import Enum
 # Settings
 APPID = "medal.sensorfusion.h2"
 SETTINGS = Settings()
-AUTO_EXPORT = True
 AUTO_FLUSH = 50
 BAUD = 9600
 SENSOR_TIMEOUT = 0.1
