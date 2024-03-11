@@ -6,3 +6,5 @@ dist
 build
 logs
 *.csv
+core
+settings.ini

@@ -17,6 +17,7 @@ class Settings:
         # Create file if none
         if len(self.config.read(self.SETTINGS_FILE)) <= 0:
             self.setup()
+            # Reload
             self.config.read(self.SETTINGS_FILE)
 
     def setup(self):
