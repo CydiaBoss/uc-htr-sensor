@@ -312,7 +312,6 @@ class CalibrationProcess(multiprocessing.Process):
                 #### END SWEEPS LOOP ####
                 #### STORING DATA TO FILE ###
                 path = Constants.cvs_peakfrequencies_path
-                pathrt = Constants.cvs_peakfrequencies_RT_path
                 # CHECKS QCM Sensor type for saving calibration
                 if self._QCStype_int == 0:
                     distance = Constants.dist5
@@ -430,15 +429,6 @@ class CalibrationProcess(multiprocessing.Process):
                             TAG,
                             "Peak frequencies for {} saved in: {}".format(
                                 self._QCStype, path
-                            ),
-                        )
-                        np.savetxt(
-                            pathrt, np.column_stack([max_freq_mag, max_freq_phase])
-                        )
-                        print(
-                            TAG,
-                            "Peak frequencies RT for {} saved in: {}".format(
-                                self._QCStype, pathrt
                             ),
                         )
                         FileStorage.TXT_sweeps_save(

@@ -179,7 +179,6 @@ class Constants:
     ##########################
     app_title = "Real-Time QCM GUI"
     app_version = "2.1"
-    app_sources = ["Multi-Measurement", "Single Measurement", "Calibration"]
     app_encoding = "utf-8"
 
     ###################
@@ -196,16 +195,12 @@ class Constants:
         "#4dbeee",
         "#a2142f",
     ]
-    plot_max_lines = len(plot_colors)
-    plot_title_color = "default"
 
     plot_color_multi = ["#DF0101", "#3C3C3C", "#01DF01", "#01A9DB", "#7401DF"]
 
     name_legend = ["0th", "3rd", "5th", "7th", "9th"]
 
     overtone_dummy = [0, 1, 2, 3, 4]
-
-    plot_background_color = "w"
 
     ####################
     #  SAMPLES NUMBER  #
@@ -307,18 +302,9 @@ class Constants:
     # change / increased serial time elasped timeout to improve the serial communication
     TIME_ELAPSED_TIMEOUT = 60.0
 
-    WRITE_SERIAL_WAIT = 0.1
-
-    # VER 0.1.4
-    # TIME WAITING CONSTANTS
-    SLEEP_EOM_MULTISCAN = 0.05
-    SLEEP_EOM_SINGLE = 0.2
-
     ######################
     # Process parameters #
     ######################
-    process_join_timeout_ms = 2000
-    parser_timeout_ms = 0.005
     data_timeout_ms = 1000
 
     ######################################
@@ -354,26 +340,6 @@ class Constants:
     )
     #########################
 
-    # VER 0.1.4
-    # add a new peak freqencies file storing the current value of resonance frequencies
-    csv_peakfrequencies_RT_filename = "peak_freq_rt"
-    cvs_peakfrequencies_RT_path = "{}{}{}.{}".format(
-        csv_calibration_export_path,
-        slash,
-        csv_peakfrequencies_RT_filename,
-        txt_extension,
-    )
-
-    manual_frequencies_filename = "config"
-    manual_frequencies_path = "{}{}{}.{}".format(
-        csv_calibration_export_path, slash, manual_frequencies_filename, txt_extension
-    )
-
-    sweep_file = "sweep"
-    sweep_file_path = "{}{}{}.{}".format(
-        csv_calibration_export_path, slash, sweep_file, txt_extension
-    )
-
     ##########################
     # CALIBRATION PARAMETERS #
     ##########################
@@ -392,7 +358,7 @@ class Constants:
     )
     # -------------------
     calib_fStep = 1000
-    calib_fRange = 5000000  #
+    calib_fRange = 5000000
     calib_samples = 5001
     calib_sections = 10
 
@@ -407,64 +373,3 @@ class Constants:
     environment = 50
     SG_order_environment = 1
     SG_window_environment = 3
-
-    # VER 0.1.5
-    # init MTD415T error register list,
-    # as in paragraph 6.3 Error Register and Safety Bitmask, MTD415T Data Sheet Rev. 1.2
-    ERROR_REG_EVENT = [
-        "Enable pin not set",
-        "Internal temperature too high",
-        "Thermal Latch-Up",
-        "Cycling time too small",
-        "No Sensor detected",
-        "No TEC detected",
-        "TEC mispoled",
-        "Not used",
-        "Not used",
-        "Not used",
-        "Not used",
-        "Not used",
-        "Not used" "Value out of range",
-        "Invalid command",
-        "Not used",
-    ]
-
-    ####################
-    #  SAMPLES NUMBER  #
-    ####################
-
-    # VER 0.1.4
-    # change the sweep parameters to 12 KHz left range and 6 KHz right range
-    # for a total range fo frequency sweep = 18 KHz
-    LEFT = 5500
-
-    # VER 0.1.4 increase sweep right range, because the sweep box is now center on the peak of the resonance curve
-    RIGHT = 2500
-
-    # VER 0.1.3
-    # change the spline factor for a better smoothing of the raw amplitude signal
-    
-    # VER 0.1.4 increase spline factor for smoothing with 1 Hz sampling frequency
-    SPLINE_FACTOR = 1
-    # VER 0.1.4 find the best spline factor
-
-    # VER 0.1.4 decrease the frequency sampling rate to 1 Hz
-    # change frequency step to change the frequency sampling rate and the sweep data points accordingly
-    FREQUENCY_STEP = 1
-    SAMPLES = int((LEFT + RIGHT) / FREQUENCY_STEP)
-
-    # VER 0.1.4 define the threshold in dB for the bandwidth calculation
-    THRESHOLD_DB = 0.707
-
-    ####################################
-    # FILTERING and FITTING parameters #
-    ####################################
-    # Notes:
-    # left and right frequencies in the area of the resonance frequency
-    # Savitzky-Golay size of the data window
-    # Savitzky-Golay order of the polynomial fit
-    # Number of spline points: same as the frequency band +1 (es.5001)
-    # Spline smoothing factor
-    
-    # Savitzky-Golay window size definition
-    SG_WINDOW_SIZE = 51
