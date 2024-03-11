@@ -24,9 +24,6 @@ UNCERTAINTIES = 0.10
 DATA_FOLDER = "data"
 LOG_FOLDER = "logs"
 
-# References
-REF_RESIST_UNIT = lambda: SETTINGS.get_setting("ref_resist_unit") or " "
-
 # QC Types
 QC_5MHZ = "5 MHz"
 QC_10MHZ = "10 MHz"

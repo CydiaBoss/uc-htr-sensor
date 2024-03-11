@@ -15,6 +15,8 @@ if __name__ == "__main__":
     # Start Logger
     Logger()
 
+    # Create all needed files
+
     # Prep App Launch
     app = QApplication(sys.argv)
     win = Window()

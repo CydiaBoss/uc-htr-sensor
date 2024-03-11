@@ -67,8 +67,8 @@ class Window(Ui_MainWindow):
         self.htr_layout.removeWidget(self.resist_plot)
         self.resist_plot.setParent(None)
         self.resist_plot.deleteLater()
-        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ω", unitPrefix=REF_RESIST_UNIT().strip())
-        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({REF_RESIST_UNIT().strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+        self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ω", unitPrefix=SETTINGS.get_setting("ref_resist_unit").strip())
+        self.resist_plot = LivePlotWidget(self.layoutWidget1, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
         self.resist_curve = LiveLinePlot(brush="red", pen="red")
         self.resist_plot.addItem(self.resist_curve)
         self.resist_plot.setBackground(background="w")
@@ -313,7 +313,7 @@ class Window(Ui_MainWindow):
         self.setStyleSheet(QPB_DEFAULT_STYLE)
 
         # Update Ohm SI Mult
-        self.resist_label.setText(_translate("MainWindow", f'<html><head/><body><p><span style=" font-weight:600;">Resistance ({REF_RESIST_UNIT().strip()}Ω)</span></p></body></html>'))
+        self.resist_label.setText(_translate("MainWindow", f'<html><head/><body><p><span style=" font-weight:600;">Resistance ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)</span></p></body></html>'))
 
     def setup_signals(self):
         """
@@ -457,11 +457,14 @@ class Window(Ui_MainWindow):
         self.freq_list.clear()
 
         # Read list
-        data  = loadtxt(Constants.cvs_peakfrequencies_path)
-        self.peaks = data[:,0]
+        try:
+            data  = loadtxt(Constants.cvs_peakfrequencies_path)
+            self.peaks = data[:,0]
 
-        for peak in self.peaks:
-            self.freq_list.addItem(f"{peak} Hz")
+            for peak in self.peaks:
+                self.freq_list.addItem(f"{peak} Hz")
+        except FileNotFoundError:
+            pass
 
     def enable_measurement(self):
         """
@@ -764,15 +767,15 @@ class Window(Ui_MainWindow):
         # Calculate Resist AVGs
         resist_size = self.resistance.size
 
-        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
+        self.resist_avg.setText(str(round(self.resistance.mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
 
         if resist_size > 15:
-            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
+            self.avg_resist_15.setText(str(round(self.resistance[-15:].mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
         else:
             self.avg_resist_15.setText("N/A")
 
         if resist_size > 50:
-            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {REF_RESIST_UNIT()}Ω")
+            self.avg_resist_50.setText(str(round(self.resistance[-50:].mean(), 2)) + f" {SETTINGS.get_setting("ref_resist_unit")}Ω")
         else:
             self.avg_resist_50.setText("N/A")
 
@@ -1464,7 +1467,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Resistor_triggered(self):
         # Prompt user for new voltage
-        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting('ref_resist'))}{REF_RESIST_UNIT()}")
+        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting('ref_resist'))}{SETTINGS.get_setting("ref_resist_unit")}")
 
         # Update
         if raw_resist[1]:
@@ -1653,6 +1656,8 @@ class Window(Ui_MainWindow):
         SETTINGS.update_setting("auto_export", f"{self.auto_export.isChecked()}")
         if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
             SETTINGS.update_setting("last_file_dest", self.file_dest.text())
+        else:
+            SETTINGS.update_setting("last_file_dest", " ")
         
         # Clear
         self.clear_plots()

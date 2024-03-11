@@ -33,7 +33,7 @@ class Settings:
         Read settings
         """
         if key in self.config["DEFAULT"]:
-            return self.config["DEFAULT"][key]
+            return self.config["DEFAULT"][key] or " "
         else:
             return None
 

@@ -8,7 +8,6 @@ from misc.constants import (
     DATA_PARSE,
     READ_DELAY,
     READ_TIMEOUT,
-    REF_RESIST_UNIT,
     SETTINGS,
     Constants,
     SourceType,
@@ -233,7 +232,7 @@ class HTRSensorCtrl(QObject):
 
         # Adjust references
         self.update_ref_resist(
-            float(SETTINGS.get_setting("ref_resist")), REF_RESIST_UNIT()
+            float(SETTINGS.get_setting("ref_resist")), SETTINGS.get_setting("ref_resist_unit")
         )
         self.update_ref_volt(float(SETTINGS.get_setting("ref_volt")))
 
