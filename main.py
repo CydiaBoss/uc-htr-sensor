@@ -292,7 +292,7 @@ class Window(Ui_MainWindow):
         self.qcm_time = np.array([])
 
         # Read Noise Reduction value
-        self.noise_reduce = int(SETTINGS.get_setting("noise_reduce"))
+        self.noise_reduce = int(SETTINGS.get_setting("noise_reduce", "1"))
         if self.noise_reduce is None:
             self.noise_reduce = 5
             SETTINGS.update_setting("noise_reduce", str(self.noise_reduce))
