@@ -1368,6 +1368,9 @@ class Window(Ui_MainWindow):
         self.data_saving_timer.timeout.connect(self.data_saver.write)
         self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
 
+        # Start File Writing
+        self.data_saver.open()
+
         # Start
         self.data_saving_thread.start()
 
@@ -1461,7 +1464,7 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_action_Resistor_triggered(self):
         # Prompt user for new voltage
-        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting("ref_resist"))}{REF_RESIST_UNIT()}")
+        raw_resist = QInputDialog.getText(self, _translate("MainWindow", "Reference Resistor"), _translate("MainWindow", "Enter the new reference resistance from the controller with SI multipler."), text=f"{float(SETTINGS.get_setting('ref_resist'))}{REF_RESIST_UNIT()}")
 
         # Update
         if raw_resist[1]:

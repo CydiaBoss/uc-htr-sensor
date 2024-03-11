@@ -323,7 +323,7 @@ class Constants:
     ######################
     process_join_timeout_ms = 2000
     parser_timeout_ms = 0.005
-    data_timeout_ms = 1.0
+    data_timeout_ms = 1000
 
     ######################################
     # File parameters for exporting data #
