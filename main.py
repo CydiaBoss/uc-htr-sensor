@@ -1285,6 +1285,10 @@ class Window(Ui_MainWindow):
         """
         Processes the frequency values from qcm
         """
+        # Check if inactive index 
+        if idx >= len(self.peaks):
+            return
+
         self.frequency = np.append(self.frequency, data)
 
         # Queue for data saving if needed
@@ -1295,6 +1299,10 @@ class Window(Ui_MainWindow):
         """
         Processes the dissipation values from qcm
         """
+        # Check if inactive index 
+        if idx >= len(self.peaks):
+            return
+        
         self.dissipation = np.append(self.dissipation, data)
 
         # Queue for data saving if needed
