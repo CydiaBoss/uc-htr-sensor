@@ -481,6 +481,14 @@ class Window(Ui_MainWindow):
         """
         self.auto_export.setEnabled(True)
 
+        # Enable other stuff if also true
+        if self.auto_export.isChecked():
+            self.file_dest.setEnabled(True)
+            self.file_select.setEnabled(True)
+
+            # Trigger slot
+            self.on_auto_export_clicked()
+
     def enable_start(self):
         """
         Enable all start ctrls
@@ -996,7 +1004,8 @@ class Window(Ui_MainWindow):
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
 
             # Set the Data Saver
-            self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
+            if self.data_saver is not None:
+                self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
         # Multi
         elif self.measure_type.currentIndex() == 1:
             self.setup_qcm_plots_multi()
@@ -1004,7 +1013,8 @@ class Window(Ui_MainWindow):
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
 
             # Set the Data Saver
-            self.data_saver.set_freqs(self.peaks)
+            if self.data_saver is not None:
+                self.data_saver.set_freqs(self.peaks)
 
         # Start Timer
         self.qcm_thread.started.connect(lambda : self.qcm_timer.start(Constants.plot_update_ms))

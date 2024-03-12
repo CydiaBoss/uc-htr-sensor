@@ -432,11 +432,12 @@ class CalibrationProcess(multiprocessing.Process):
                         )
 
                         # Creates a directory if the specified path doesn't exist
-                        if not os.path.isdir(path):
-                            os.makedirs(path)
+                        dir_name = os.path.dirname(path).strip()
+                        if not os.path.isdir(dir_name):
+                            os.makedirs(dir_name, exist_ok=True)
 
                         # creates TXT file
-                        np.savetxt(str("{}{}{}.{}".format(path, Constants.slash, filename_calib, Constants.txt_extension)), np.column_stack([readFREQ, temp1, temp2]))
+                        np.savetxt(str("{}{}{}.{}".format(dir_name, Constants.slash, filename_calib, Constants.txt_extension)), np.column_stack([readFREQ, temp1, temp2]))
 
                         print(
                             TAG,

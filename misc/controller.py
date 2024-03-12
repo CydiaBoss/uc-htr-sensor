@@ -153,7 +153,6 @@ class RSensorCtrl(QObject):
         self.volt_task.ao_channels.add_ao_voltage_chan(
             self.device_object.ao_physical_chans["ao1"].name, min_val=0, max_val=5
         )
-        print(self.volt_task.write(self.volt_supply, auto_start=True), "wrote success")
 
     def set_ref_resist(self, resist: float):
         self.ref_resist = resist
