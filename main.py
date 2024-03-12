@@ -1337,6 +1337,7 @@ class Window(Ui_MainWindow):
         # If Multi, also clear
         for i in range(len(self.multi_amp_datas)):
             self.multi_amp_datas[i].cb_set_data([0,], [0,])
+            self.multi_phase_datas[i].cb_set_data([0,], [0,])
             self.multi_freq_datas[i].cb_set_data([0,], [0,])
             self.multi_dissipate_datas[i].cb_set_data([0,], [0,])
 
