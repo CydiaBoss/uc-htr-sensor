@@ -1,6 +1,8 @@
 import multiprocessing
+import os
 
 from misc.constants import UNCERTAINTIES, Constants, Architecture, OSType
+from openqcm.common.file_manager import FileManager
 
 from openqcm.common.file_storage import FileStorage
 
@@ -431,19 +433,21 @@ class CalibrationProcess(multiprocessing.Process):
                                 self._QCStype, path
                             ),
                         )
-                        FileStorage.TXT_sweeps_save(
-                            filename_calib,
-                            Constants.csv_calibration_export_path,
-                            readFREQ,
-                            temp1,
-                            temp2,
-                        )
+
+                        # Creates a directory if the specified path doesn't exist
+                        if not os.path.isdir(path):
+                            os.makedirs(path)
+
+                        # creates TXT file
+                        np.savetxt(str("{}{}{}.{}".format(path, Constants.slash, filename_calib, Constants.txt_extension)), np.column_stack([readFREQ, temp1, temp2]))
+
                         print(
                             TAG,
                             "Calibration for {} saved in: {}".format(
                                 self._QCStype, path_calib
                             ),
                         )
+
                     except:
                         print(
                             TAG,

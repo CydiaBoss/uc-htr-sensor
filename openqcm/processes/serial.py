@@ -3,7 +3,7 @@ import multiprocessing
 from misc.constants import Constants, Architecture, OSType
 
 from openqcm.core.ring_buffer import RingBuffer
-from openqcm.common.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
+from openqcm.processes.switcher import Overtone_Switcher_5MHz, Overtone_Switcher_10MHz
 from openqcm.processes.parser import ParserProcess
 
 from time import time
