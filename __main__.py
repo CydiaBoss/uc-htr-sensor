@@ -1,6 +1,8 @@
 import ctypes, sys
-from misc.constants import APPID
 
+from multiprocessing import freeze_support 
+
+from misc.constants import APPID
 from misc.logger import Logger
 
 from PyQt5.QtWidgets import QApplication
@@ -8,14 +10,15 @@ from PyQt5.QtWidgets import QApplication
 from main import Window
 
 if __name__ == "__main__":
+    # Freeze Support
+    freeze_support()
+    
     # Update App ID if Windows
     if sys.platform.startswith("win"):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
     # Start Logger
     Logger()
-
-    # Create all needed files
 
     # Prep App Launch
     app = QApplication(sys.argv)

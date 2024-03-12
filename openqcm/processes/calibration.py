@@ -421,6 +421,13 @@ class CalibrationProcess(multiprocessing.Process):
 
                         # SAVES independently of the state of the export box
                         print(TAG, "Saving data in file...")
+
+                        # Creates a directory if the specified path doesn't exist
+                        dir_name = os.path.dirname(path).strip()
+                        if not os.path.isdir(dir_name):
+                            os.makedirs(dir_name, exist_ok=True)
+
+                        # Peak Freq
                         np.savetxt(
                             path, np.column_stack([max_freq_mag, max_freq_phase])
                         )
@@ -430,11 +437,6 @@ class CalibrationProcess(multiprocessing.Process):
                                 self._QCStype, path
                             ),
                         )
-
-                        # Creates a directory if the specified path doesn't exist
-                        dir_name = os.path.dirname(path).strip()
-                        if not os.path.isdir(dir_name):
-                            os.makedirs(dir_name, exist_ok=True)
 
                         # creates TXT file
                         np.savetxt(str("{}{}{}.{}".format(dir_name, Constants.slash, filename_calib, Constants.txt_extension)), np.column_stack([readFREQ, temp1, temp2]))
