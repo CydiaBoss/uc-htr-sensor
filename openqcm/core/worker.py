@@ -1,37 +1,43 @@
 from multiprocessing import Queue
 
-from openqcm.core.constants import Constants, SourceType
+from misc.constants import Constants, SourceType
+from misc.logger import Logger as Log
+
 from openqcm.processes.parser import ParserProcess
 from openqcm.processes.serial import SerialProcess
+from openqcm.processes.serial_multi import SerialMultiProcess
 from openqcm.processes.calibration import CalibrationProcess
-from openqcm.processes.multiscan import MultiscanProcess
-from openqcm.common.fileStorage import FileStorage
-from openqcm.common.logger import Logger as Log
-from openqcm.core.ringBuffer import RingBuffer
+from openqcm.core.ring_buffer import RingBuffer
+
 import numpy as np
-from time import time
 from numpy import loadtxt
 import datetime
 
 # VER 0.1.2
-from time import strftime, localtime
+from time import time, strftime, localtime, sleep
 
-# VER 0.1.2
-from time import sleep
-
-#import pywt
+# NEW Signals
+from PyQt5.QtCore import pyqtSignal, QObject
 
 TAG = ""#"[Worker]"
 
 ###############################################################################
 # Service that creates and concentrates all processes to run the application
 ###############################################################################
-class Worker:
+class Worker(QObject):
+
+    # Signals
+    progress = pyqtSignal()
+    frequency = pyqtSignal(float, int)
+    dissipation = pyqtSignal(float, int)
+    temperature = pyqtSignal(float)
 
     ###########################################################################
     # Creates all processes involved in data acquisition and processing
     ###########################################################################
-    def __init__(self,QCS_on = None,
+    def __init__(self, 
+                      parent = None,
+                      QCS_on = None,
                       port = None,
                       speed = Constants.serial_default_overtone,
                       samples = Constants.argument_default_samples,
@@ -46,6 +52,8 @@ class Worker:
         :param export_enabled: If true, data will be stored or exported in a file :type export_enabled: bool.
         :param export_path: If specified, defines where the data will be exported :type export_path: str.
         """
+        super().__init__(parent)
+
         # data queues 
         self._queue1 = Queue()
         self._queue2 = Queue()
@@ -66,14 +74,8 @@ class Worker:
         self._A_multi = None 
         self._P_multi = None 
         
-# =============================================================================
-#         array_zero = self._zerolistmaker(Constants.SAMPLES)
-#         self._A_multi_buffer = [ array_zero, array_zero, array_zero, array_zero, array_zero ]
-
-#        self._F_Sweep_multi_buffer = [ array_zero, array_zero, array_zero, array_zero, array_zero]
-# =============================================================================
-        
         self._A_multi_buffer = None
+        self._P_multi_buffer = None
         self._F_Sweep_multi_buffer = None
         
         # data buffers
@@ -146,8 +148,6 @@ class Worker:
         self._sampling_time = sampling_time
         self.time_elapsed = 0
         # init a ring buffer of corresponding size 
-        # VER 0.1.4 TODO checkthe default smapling time 
-        SAMPLING_TIME_DEFAULT = 7
         self.ring_buffer_len =  1
         
         # init a list of ring buffer 
@@ -164,20 +164,17 @@ class Worker:
     ###########################################################################
     def start(self):
         
-        
-# =============================================================================
-#         print ("WORKER SAMPLING TIME = ", self._sampling_time)
-# =============================================================================
-        
         # GET SAMPLES
         # ---------------------------------------------------------------------
         # single frequency measurement 
         if self._source == SourceType.serial:
            self._samples = Constants.argument_default_samples
+
         # calibration 
         elif self._source == SourceType.calibration:
            self._samples = Constants.calibration_default_samples
            self._readFREQ = Constants.calibration_readFREQ  
+
         # multi frequency measurement 
         elif self._source == SourceType.multiscan: 
             self._samples = Constants.argument_default_samples   
@@ -195,12 +192,15 @@ class Worker:
         # single frequency measurement 
         if self._source == SourceType.serial:
             self._acquisition_process = SerialProcess(self._parser_process)
+
         # calibration
         elif self._source == SourceType.calibration:
             self._acquisition_process = CalibrationProcess(self._parser_process)
+
         # multi frequency measurement 
         elif self._source == SourceType.multiscan:
-            self._acquisition_process = MultiscanProcess(self._parser_process)
+            # self._acquisition_process = MultiscanProcess(self._parser_process)
+            self._acquisition_process = SerialMultiProcess(self._parser_process)
             
         # OPEN PROCESS 
         # ---------------------------------------------------------------------    
@@ -209,28 +209,47 @@ class Worker:
             # SINGLE 
             # -----------------------------------------------------------------
             if self._source == SourceType.serial:
-               (self._overtone_name,
-                self._overtone_value, 
-                self._fStep, 
-                self._readFREQ, 
-                SG_window_size, 
-                spline_points, 
-                spline_factor) = self._acquisition_process.get_frequencies(self._samples)
+                (self._overtone_name,
+                    self._overtone_value, 
+                    self._fStep, 
+                    self._readFREQ, 
+                    SG_window_size, 
+                    spline_points, 
+                    _) = self._acquisition_process.get_frequencies(self._samples)
+                
+                print("")
+                print(TAG, "DATA MAIN INFORMATION")
+                print(TAG, "Selected frequency: {} - {}Hz".format(self._overtone_name,self._overtone_value))
+                print(TAG, "Frequency start: {}Hz".format(self._readFREQ[0]))
+                print(TAG, "Frequency stop:  {}Hz".format(self._readFREQ[-1]))
+                print(TAG, "Frequency range: {}Hz".format(self._readFREQ[-1]-self._readFREQ[0]))
+                print(TAG, "Number of samples: {}".format(self._samples-1))
+                print(TAG, "Sample rate: {}Hz".format(self._fStep))
+                print(TAG, "History buffer size: 180 min\n")
+                print(TAG, "MAIN PROCESSING INFORMATION")
+                print(TAG, "Method for baseline estimation and correction:")
+                print(TAG, "Least Squares Polynomial Fit (LSP)")
+                
+                print(TAG, "Savitzky-Golay Filtering")
+                print(TAG, "Order of the polynomial fit: {}".format(Constants.SG_order))
+                print(TAG, "Size of data window (in samples): {}".format(SG_window_size))
+                print(TAG, "Oversampling using spline interpolation")
+                print(TAG, "Spline points (in samples): {}".format(spline_points-1))
+                print(TAG, "Resolution after oversampling: {}Hz".format((self._readFREQ[-1]-self._readFREQ[0])/(spline_points-1)))
                
             # CALIBRATION
             elif self._source == SourceType.calibration:
-               print("")
-               print(TAG, "MAIN CALIBRATION INFORMATION")
-               print(TAG, "Calibration frequency start:  {}Hz".format(Constants.calibration_frequency_start))
-               print(TAG, "Calibration frequency stop:  {}Hz".format(Constants.calibration_frequency_stop))
-               print(TAG, "Frequency range: {}Hz".format(Constants.calibration_frequency_stop-Constants.calibration_frequency_start))
-               print(TAG, "Number of samples: {}".format(Constants.calibration_default_samples-1))
-               print(TAG, "Sample rate: {}Hz".format(Constants.calibration_fStep))
+                print("")
+                print(TAG, "MAIN CALIBRATION INFORMATION")
+                print(TAG, "Calibration frequency start:  {}Hz".format(Constants.calibration_frequency_start))
+                print(TAG, "Calibration frequency stop:  {}Hz".format(Constants.calibration_frequency_stop))
+                print(TAG, "Frequency range: {}Hz".format(Constants.calibration_frequency_stop-Constants.calibration_frequency_start))
+                print(TAG, "Number of samples: {}".format(Constants.calibration_default_samples-1))
+                print(TAG, "Sample rate: {}Hz".format(Constants.calibration_fStep))
                
                
             # START MULTI SCAN FREQUENCY PROCESS 
             elif self._source == SourceType.multiscan: 
-                # self._readFREQ = self._acquisition_process.get_readFREQ(self._samples)
                 # get the number of total peaks in PeakFrequencies.txt
                 data  = loadtxt(Constants.cvs_peakfrequencies_path)
                 peaks_mag = data[:,0]
@@ -253,7 +272,6 @@ class Worker:
             Log.i(TAG, "Warning: Port is not available")
             return False
 
-
     ###########################################################################
     # Stops all running processes
     ###########################################################################    
@@ -270,21 +288,14 @@ class Worker:
         self.consume_queue_F_multi()
         self.consume_queue_D_multi()
         self.consume_queue_A_multi()
+        self.consume_queue_P_multi()
         
-        # VER 0.1.2
-# =============================================================================
-#         self._acquisition_process.stop()
-#         self._parser_process.stop()
-# =============================================================================
-
-        # VER 0.1.2
         # worker processes are still running when you press stop button on main gui 
         # when stop is called, terminate the processes alive in the worker 
 
         if self._acquisition_process is not None and self._acquisition_process.is_alive():
             # stop the process 
             self._acquisition_process.stop()
-            # self._acquisition_process.join(Constants.process_join_timeout_ms)
             
             # terminate the process 
             # https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.terminate
@@ -292,29 +303,11 @@ class Worker:
             
             # wait for a while 
             sleep(1)
+            
+        self._parser_process.stop()
 
-        # TODO check if it is necessary to terminate parser
-        self._parser_process.stop()            
-
-        print(TAG, 'Running processes stopped...')
-        print(TAG, 'Processes finished')
         Log.i(TAG, "Running processes stopped...")
         Log.i(TAG, "Processes finished")
-        
-    
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def get_Temperature_set_Worker(self, value):
-         print ("SET TEMPERATURE WORKER")
-         self._acquisition_process.get_Temperature_set_Serial(value)
-        
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def my_stop(self):
-        self._acquisition_process.serial_close()
-    
-    # TODO DELETE TEMPERATURE FUNCTION 
-    def serial_write(self, port, message):
-        # self._acquisition_process.open(port)
-        self._acquisition_process.write(port, message.encode())
                     
     ###########################################################################
     # Empties the internal queues, updating data to consumers
@@ -371,6 +364,8 @@ class Worker:
         # store the data in respective buffers
         for idx in range(size):
             self._F_multi_buffer[idx].append(values[idx])
+            # Signal Data
+            self.frequency.emit(values[idx], idx)
             # store the current array of frequency data 
             self._F_store[idx] = values[idx]
        
@@ -390,15 +385,6 @@ class Worker:
             self._time_buffer[idx].append(values[idx])
             # store the current array of time data
             self._time_store[idx] = values[idx]
-# =============================================================================
-#             print("TIME ....")
-#             print (self._time_buffer[0])
-#             print (self._time_buffer[1])
-#             print (self._time_buffer[2])
-#             print (self._time_buffer[3])
-#             print (self._time_buffer[4])
-#             print("---------------------------")
-# =============================================================================
             
     def get_time_values_buffer(self, idx = 0):
         # get all time buffer 
@@ -414,6 +400,8 @@ class Worker:
         # store the data in respective buffers
         for idx in range(size):
             self._D_multi_buffer[idx].append(values[idx])
+            # Signal Data
+            self.dissipation.emit(values[idx], idx)
             # store the current array of dissipation  data 
             self._D_store[idx] = values[idx]
     
@@ -425,7 +413,6 @@ class Worker:
         :return: float list.
         """
         return self._D_multi_buffer[idx].get_all()
-    
     
     def consume_queue_A_multi(self):
         while not self._queue_A_multi.empty():
@@ -453,13 +440,29 @@ class Worker:
             
     def get_A_values_buffer(self, idx=0): 
         return self._A_multi_buffer[idx]
-        
     
+    def consume_queue_P_multi(self):
+        while not self._queue_P_multi.empty():
+            self._queue_data_P_multi(self._queue_P_multi.get(False))
+    
+    def _queue_data_P_multi(self, data):
+        # Add values
+        self._store_signal_values_P (data[1])
+        self._store_signal_values_F_sweep (data[0])
+    
+    def _store_signal_values_P (self, values):
+        # detect how many data are present 
+        size = len(values)
+        # store the data in respective buffers
+        for idx in range(size):
+            self._P_multi_buffer[idx] = values[idx]
+            
+    def get_P_values_buffer(self, idx=0): 
+        return self._P_multi_buffer[idx]
+        
     def get_F_Sweep_values_buffer(self, idx = 0):
         
         return self._F_Sweep_multi_buffer[idx]
-        # print (self._F_Sweep_multi_buffer[idx])
-       
        
     ###########################################################################
     # Adds data to internal buffers.
@@ -472,10 +475,6 @@ class Worker:
     def _queue_data2(self,data):
         #:param data: values to add for serial data phase :type data: float.
         self._data2_buffer = data
-        # Additional function: exports calibration data in a file if export box is checked.
-        '''
-        self.store_data_calibration()
-        '''
     
     # FREQUENCY 
     def _queue_data3(self,data):
@@ -484,6 +483,8 @@ class Worker:
         self._d1_store = data[1] # data
         self._t1_buffer.append(data[0])
         self._d1_buffer.append(data[1])
+        if self._source == SourceType.serial:
+            self.frequency.emit(data[1], 0)
         
     # DISSIPATION 
     def _queue_data4(self,data):
@@ -493,6 +494,8 @@ class Worker:
         self._d2_store = data[1] # data
         self._t2_buffer.append(data[0])
         self._d2_buffer.append(data[1])
+        if self._source == SourceType.serial:
+            self.dissipation.emit(data[1], 0)
     
     # TEMPERATURE
     def _queue_data5(self,data):
@@ -501,12 +504,13 @@ class Worker:
         self._t3_store = data[0] # time (unused)
         self._d3_store = data[1] # data 
         
-        
-        
         self._t3_buffer.append(data[0])
         self._d3_buffer.append(data[1])
+        self.temperature.emit(data[1])
+
+        # Ping progress signal
+        self.progress.emit()
         
-        # TODO datalog the time is now 
         # for storing relative time 
         if  self._flag and ~np.isnan(self._d3_store):
             # SINGLE 
@@ -523,25 +527,21 @@ class Worker:
                 self.time_pre =  self._timestart
             
             self._flag = False
-            
-            # print("DATALOG TIME START = ")
-            # print (self._timestart )
-        
-        # Data Storage in csv and/or txt file 
-        self.store_data()
     
-        #####
     def _queue_data6(self,data):
         #:param data: values to add for serial error :type data: float.
         self._ser_error1 = data[0]
         self._ser_error2 = data[1]
         self._control_k = data[2]
         self._ser_err_usb = data[3]
-        self._overtone_number = data[4]
-        
-        # VER 0.2 
-        # get TEC status 
-        self._TEC_status = data[5]
+        try:
+            self._overtone_number = data[4]
+
+            # VER 0.2 
+            # get TEC status 
+            self._TEC_status = data[5]
+        except IndexError:
+            pass
         
     ###########################################################################
     # Gets data buffers for plot (Amplitude,Phase,Frequency and Dissipation) 
@@ -587,6 +587,9 @@ class Worker:
     
     ##### Gets serial error
     def get_ser_error(self):
+        """
+        Returns: Error #1, Error #2, Control K, USB Error, Overtone Number Error
+        """
         #:return: float list.
         return self._ser_error1,self._ser_error2, self._control_k, self._ser_err_usb, self._overtone_number
     
@@ -595,160 +598,10 @@ class Worker:
     def get_TEC_status(self): 
         return self._TEC_status
     
-
-    ###########################################################################
-    # Exports data in csv and/or txt file if export box is checked
-    ###########################################################################
-    def store_data(self): 
-        # Checks the type of source
-        
-        # SINGLE
-        # ---------------------------------------------------------------------
-        if self._source == SourceType.serial:
-          # Checks the state of the export box
-          #if self._export:
-          
-          # Storing calculated data with the format: timestamp,resonance frequency,dissipation
-          # filenameCSV = "{}_{}".format(Constants.csv_filename, self._overtone_name)
-          
-          # VER 0.1.2 
-          # init the new datalog file in single mode
-          filenameCSV = "{}_{}".format(self._csv_filename, self._overtone_name)
-          
-          # VER 0.1.4 TODO time controlled sampling time in sigle mode 
-          
-          FileStorage.CSVsave(filenameCSV, Constants.csv_export_path, time() - self._timestart, self._d3_store, self._d1_store, self._d2_store)
-
-          if self._export:   
-              # Storing acquired sweeps
-              filename = "{}_{}_{}".format(Constants.csv_sweeps_filename, self._overtone_name,self._count)
-              #filename = "{}_{}".format(Constants.csv_sweeps_filename,self._count)
-              path = "{}_{}".format(Constants.csv_sweeps_export_path, self._overtone_name) 
-              #FileStorage.CSV_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
-              FileStorage.TXT_sweeps_save(filename, path, self._readFREQ, self._data1_buffer, self._data2_buffer)
-          self._count+=1
-           
-        # MULTI
-        # ---------------------------------------------------------------------
-        elif  self._source == SourceType.multiscan:
-           
-            # LOG MULTI DATA FILE 
-            # filenameCSV = "{}_{}".format(Constants.csv_filename, "multi_")
-            
-            # VER 0.1.2
-            # init the new datalog file in single mode
-            filenameCSV = "{}_{}".format(self._csv_filename, "multi_")
-
-            # TODO change the way the file is logged , there are duplicate in the data file 
-            # FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, time() - self._timestart, self._d3_store, self._F_store, self._D_store)
-            
-            # LOG data file only if current overtone number is equal to total numer of peaks
-            #  TODO 
-            # if (self._overtone_number == self._number_of_peaks):
-            index_store = 0
-            _millisec = 1e6
-            
-            # VER 0.1.4
-            SAMPLING_TIME_INTERVAL = self._sampling_time
-            
-            # VER 0.1.2
-            # [SOLVED] Bug: first line in datalog file missing frequency and dissipation data array
-            
-            # VER 0.1.4
-# =============================================================================
-#             if (self._overtone_number == index_store) and ((self._time_store[index_store] - self._timestart)/_millisec > 0): 
-# =============================================================================
-            # VER 0.1.4 check if time elapsed is greater than zero 
-            if  ( (self._time_store[index_store] - self._timestart)/_millisec > 0 ):
-                
-                # get current time 
-                epoch= datetime.datetime(1970, 1, 1, 0, 0) #offset-naive datetime
-                ts_mult=1e6
-                time_current = (int((datetime.datetime.now() - epoch).total_seconds()*ts_mult))
-                
-                self.time_elapsed = int((time_current - self.time_pre)/_millisec)
-                
-                # VER 0.1.4
-                # default / maximum sampling rate 
-                if (SAMPLING_TIME_INTERVAL == -1): 
-                    if (self._overtone_number == index_store):
-                        FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-                                                  int((time_current - self._timestart))/_millisec, 
-                                                  self._d3_store, self._F_store, self._D_store)
-                        # VER 0.1.4 store the current time for the next loop 
-                        self.time_pre = time_current
-                
-                # VER 0.1.4
-                # time controlled sampling time 
-                else: 
-# =============================================================================
-#                     print ((time_current - self.time_pre)/_millisec)
-# =============================================================================
-                    
-# =============================================================================
-#                     print ("CURRENT VALUE OVERTONE NUMBER = ", self._overtone_number)    
-# =============================================================================
-
-
-                    # VER 0.1.4 create a circular buffer of size corresponding to the length of the datalog sampling time
-                    # init the new data in circular buffer 
-                    self._F_store_buffer[self._overtone_number].append(self._F_store[self._overtone_number])
-                    self._D_store_buffer[self._overtone_number].append(self._D_store[self._overtone_number])
-                    self._T_store_buffer[self._overtone_number].append(self._d3_store)
-                    
-                    # averaging 
-                    for idx in range(len(Constants.overtone_dummy)):
-                        self._F_store_buffer_averaging[idx] = np.average( self._F_store_buffer[idx].get_all())
-                        self._D_store_buffer_averaging[idx] = np.average( self._D_store_buffer[idx].get_all() )
-                        self._T_store_buffer_averaging[idx] = np.average( self._T_store_buffer[idx].get_all() )
-                    
-                    
-# =============================================================================
-#                     print (self._F_store_buffer[0].get_all())
-# =============================================================================
-                    
-                    # VER 0.1.4
-                    # check the sampling time 
-                    if ( ((time_current - self.time_pre)/_millisec) >  SAMPLING_TIME_INTERVAL ):
-                        FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-                                                  int((time_current - self._timestart)/_millisec), 
-                                                  self._d3_store, self._F_store_buffer_averaging, self._D_store_buffer_averaging)
-                    
-                        # VER 0.1.4 store the current time for the next loop 
-                        self.time_pre = time_current
-
-# =============================================================================
-#                 FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-#                                           (self._time_store[index_store] - self._timestart)/_millisec, 
-#                                           self._d3_store, self._F_store, self._D_store)
-# =============================================================================
-                    # this lines code works, but introduced random relative time error 
-# =============================================================================
-#                 FileStorage.CSVsave_Multi(filenameCSV, Constants.csv_export_path, 
-#                                           time() - self._timestart, 
-#                                           self._d3_store, self._F_store, self._D_store)
-# =============================================================================
-
-                # ---------------------------------------------------------------------  
-                # TODO SAVE SINGLE SWEEP FILE   
-                # elif self._source == SourceType.multiscan: 
-                    # print("__TODO__ multiscan save file")
-                # ---------------------------------------------------------------------
-                
-                # DEV RAWDATA save single raw date here should work also here 
-                RAWDATA = False
-                if (RAWDATA):
-                    print (" save single sweep raw data here: TODO" )
-                    # the code line blow works 
-                    print (self.get_A_values_buffer(0))
-    
-    
-    
     # VER 0.1.4
     def get_time_elapsed (self):
         # print ("HELLO WORLD")
         return (self.time_elapsed)
-    
     
     ###########################################################################
     # Checks if processes are running
@@ -756,19 +609,15 @@ class Worker:
     def is_running(self):  
         return self._acquisition_process is not None and self._acquisition_process.is_alive()
 
-
     ###########################################################################
     # Gets the available ports for specified source
     ###########################################################################
     @staticmethod
     def get_source_ports(source):
-        
         """
         :param source: Source to get available ports :type source: SourceType.
         :return: List of available ports :rtype: str list.
         """
-        
-        # TODO what port ??? type of measurement 
         
         # SINGLE
         if source == SourceType.serial:
@@ -780,10 +629,10 @@ class Worker:
             return CalibrationProcess.get_ports()
         # MULTI 
         elif source == SourceType.multiscan:
-            # TODO check get multiscan process serial port connected  
-            # print (" WORKER get type of meas ")
-            print(TAG,'Port connected:',MultiscanProcess.get_ports())
-            return MultiscanProcess.get_ports()
+            # print(TAG,'Port connected:',MultiscanProcess.get_ports())
+            # return MultiscanProcess.get_ports()
+            print(TAG,'Port connected:',SerialMultiProcess.get_ports())
+            return SerialMultiProcess.get_ports()
         else:
             print(TAG,'Warning: unknown source selected')
             Log.w(TAG,"Unknown source selected")
@@ -795,7 +644,6 @@ class Worker:
     ###########################################################################
     @staticmethod
     def get_source_speeds(source):
-        
         """
         :param source: Source to get available speeds :type source: SourceType.
         :return: List of available speeds :rtype: str list.
@@ -808,7 +656,8 @@ class Worker:
         
         # multi 
         elif source == SourceType.multiscan:
-            return MultiscanProcess.get_speeds()
+            # return MultiscanProcess.get_speeds()
+            return SerialMultiProcess.get_speeds()
         else:
             print(TAG,'Unknown source selected')
             Log.w(TAG, "Unknown source selected")
@@ -824,12 +673,6 @@ class Worker:
         # Initialises data buffers
         self._data1_buffer = np.zeros(samples) # amplitude
         self._data2_buffer = np.zeros(samples) # phase
-        #self._d1_buffer = []  # Resonance frequency 
-        #self._d2_buffer = []  # Dissipation
-        #self._d3_buffer = []  # temperature
-        #self._t1_buffer = []  # time (Resonance frequency)
-        #self._t2_buffer = []  # time (Dissipation)
-        #self._t3_buffer = []  # time (temperature)
 
         # Initialises supporting variables
         self._d1_store = 0
@@ -849,8 +692,6 @@ class Worker:
         self._t1_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (Resonance frequency)
         self._t2_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (Dissipation)
         self._t3_buffer = RingBuffer(Constants.ring_buffer_samples)  # time (temperature)
-        #print(TAG,'Buffers cleared')
-        #Log.i(TAG, "Buffers cleared") 
         
         # init frequency and dissipation array of ring buffer 
         self._F_multi_buffer = []
@@ -858,29 +699,20 @@ class Worker:
         self._time_buffer = []
         
         self._A_multi_buffer = []
+        self._P_multi_buffer = []
         self._F_Sweep_multi_buffer = []
         
-        peaks = self._load_frequencies_file()
-        peaks_number = len(peaks)
-        
-        # TODO IMPORTANT chenge the ninitialization of list of ring buffer 
         # append ring buffer
-        for tmp in Constants.overtone_dummy:
+        for _ in Constants.overtone_dummy:
             self._F_multi_buffer.append(RingBuffer(Constants.ring_buffer_samples))
             self._D_multi_buffer.append(RingBuffer(Constants.ring_buffer_samples))
             self._time_buffer.append(RingBuffer(Constants.ring_buffer_samples))
-             
-# =============================================================================
-#         for nn in Constants.overtone_dummy:
-#             self._A_multi_buffer[nn] = self._zerolistmaker(Constants.SAMPLES)
-#             self._F_Sweep_multi_buffer[nn] = self._zerolistmaker(Constants.SAMPLES)
-# =============================================================================
 
         self._A_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
+        self._P_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
         self._F_Sweep_multi_buffer = self._zerolistmaker(len(Constants.overtone_dummy))
         
         # INIT self._F_store and self._D_store list 
-        # TODO IMPORTANT self._F_store and self._D_store same legth of self._F_multi_buffer and self._D_multi_buffer
         self._F_store = self._zerolistmaker(len(Constants.overtone_dummy))
         self._D_store = self._zerolistmaker(len(Constants.overtone_dummy))
         self._time_store = self._zerolistmaker(len(Constants.overtone_dummy))
@@ -900,7 +732,8 @@ class Worker:
         self._F_store_buffer = [] 
         self._D_store_buffer = [] 
         self._T_store_buffer = []
-        for tmp in Constants.overtone_dummy:
+
+        for _ in Constants.overtone_dummy:
             self._F_store_buffer.append(RingBuffer(self.ring_buffer_len))
             self._D_store_buffer.append(RingBuffer(self.ring_buffer_len))
             self._T_store_buffer.append(RingBuffer(self.ring_buffer_len))
@@ -910,7 +743,6 @@ class Worker:
     ############################################################################
     
     def get_frequency_range(self):
-        
         """
         :param samples: Number of samples for the buffers :type samples: int.
         :return: overtone :type overtone: float.
@@ -932,7 +764,6 @@ class Worker:
     ############################################################################
     
     def get_overtone(self):
-        
         """
         :param samples: Number of samples for the buffers :type samples: int.
         :return: overtone :type overtone: float.
@@ -943,7 +774,6 @@ class Worker:
     def _load_frequencies_file(self):
             data  = loadtxt(Constants.cvs_peakfrequencies_path)
             peaks_mag = data[:,0]
-            #peaks_phase = data[:,1] #unused at the moment
             return peaks_mag
         
     def _zerolistmaker(self, n):

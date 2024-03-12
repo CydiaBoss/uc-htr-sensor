@@ -1,9 +1,12 @@
 <RCC>
   <qresource prefix="main">
+    <file>calibrate.png</file>
+    <file>connect.png</file>
+    <file>reset.png</file>
+    <file>uclogo.png</file>
     <file>mark.png</file>
     <file>check.png</file>
     <file>cross.png</file>
-    <file>medal.png</file>
     <file>folder.png</file>
     <file>logo.png</file>
     <file>start.png</file>

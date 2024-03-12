@@ -20,7 +20,7 @@ float temp = -9999;
 
 void setup(){
     // Setup I2C connection
-	  Wire.begin();
+    Wire.begin();
     // Begin Serial connection to computer at 9600 baud
     Serial.begin(9600);
     Serial.setTimeout(1);
@@ -61,7 +61,7 @@ void loop(){
     Serial.print(",");
     Serial.print("°C:");
     Serial.println(temp);
-    delay(read_delay); // Wait 10 seconds before the next reading, inefficiently
+    delay(read_delay); 
 }
 
 void updateMeasurements(){
@@ -70,7 +70,7 @@ void updateMeasurements(){
     resistor = resistor * ref_resistor / (ref_volt - resistor);
 
     // Temp Data 
-	  uint8_t data[4] = {0};
+    uint8_t data[4] = {0};
 
     // Read Raw Data
     Wire.requestFrom(ht_adr, 4);
