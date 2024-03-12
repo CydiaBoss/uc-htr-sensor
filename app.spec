@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import copy_metadata
 
-datas = []
+datas = [('ui\\logo.ico', '.'),]
 datas += copy_metadata('nidaqmx')
 
 
@@ -24,7 +24,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='QCM H2 Sensor',
+    name='qcmh2sensor',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,6 +35,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    uac_admin=True,
     icon=['ui\\logo.ico'],
 )
 coll = COLLECT(
