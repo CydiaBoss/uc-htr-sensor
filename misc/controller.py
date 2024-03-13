@@ -42,7 +42,6 @@ class RSensorCtrl(QObject):
         self,
         parent: QObject = None,
         device: str = "",
-        voltage: float = 5.0,
         reference_resist: float = 10.0,
     ):
         super().__init__(parent)
@@ -53,14 +52,10 @@ class RSensorCtrl(QObject):
         # Looper
         self.loop = True
 
-        # Set the voltage supply
-        self.volt_supply = voltage
-
         # Set the resistance reference
         self.ref_resist = reference_resist
 
         # Task
-        self.volt_task = None
         self.measure_task = None
 
     def open(self) -> bool:
@@ -89,13 +84,6 @@ class RSensorCtrl(QObject):
         # Disable Loop
         self.loop = False
 
-        # Disable voltage channel
-        if self.volt_task is not None:
-            self.volt_task.write(0.0)
-            self.volt_task.stop()
-            self.volt_task.close()
-            self.volt_task = None
-
         # Disable measure channel
         if self.measure_task is not None:
             self.measure_task.stop()
@@ -105,9 +93,6 @@ class RSensorCtrl(QObject):
     def run(self):
         # Open connection and test
         self.open()
-
-        # Create voltage supply task
-        self.set_voltage(self.volt_supply)
 
         # Create measuring task
         self.measure_task = Task("measuring_task")
@@ -119,7 +104,6 @@ class RSensorCtrl(QObject):
         )
 
         # Start measuring
-        self.volt_task.start()
         self.start_time = time.time()
         while self.loop:
             # Read value
@@ -139,20 +123,6 @@ class RSensorCtrl(QObject):
 
         # Finish signal
         self.finished.emit()
-
-    def set_voltage(self, voltage: float):
-        self.volt_supply = voltage
-
-        # Kill old task to replace
-        if self.volt_task is not None:
-            self.volt_task.stop()
-            self.volt_task.close()
-
-        # New Task with updated voltage
-        self.volt_task = Task("voltage_supply")
-        self.volt_task.ao_channels.add_ao_voltage_chan(
-            self.device_object.ao_physical_chans["ao1"].name, min_val=0, max_val=5
-        )
 
     def set_ref_resist(self, resist: float):
         self.ref_resist = resist

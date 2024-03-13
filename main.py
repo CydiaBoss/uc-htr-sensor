@@ -681,7 +681,7 @@ class Window(Ui_MainWindow):
         self.r_thread = QtCore.QThread(self)
         
         # Create controller
-        self.r_ctrl = RSensorCtrl(device=self.r_device, voltage=float(SETTINGS.get_setting("ref_volt")), reference_resist=float(SETTINGS.get_setting("ref_resist")))
+        self.r_ctrl = RSensorCtrl(device=self.r_device, reference_resist=float(SETTINGS.get_setting("ref_resist")))
         self.r_ctrl.moveToThread(self.r_thread)
 
         # Signal/Slots
@@ -1517,9 +1517,7 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
 
             # Update R Sensor if needed
-            if self.r_ctrl is not None:
-                self.r_ctrl.set_voltage(volt[0])
-            elif self.htr_ctrl is not None:
+            if self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_volt(volt[0])
 
     @QtCore.pyqtSlot()
