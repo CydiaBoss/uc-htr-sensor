@@ -517,9 +517,113 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_18" columnminimumwidth="0,25,0">
-              <item row="3" column="2">
-               <widget class="QLineEdit" name="freq_f7">
+             <layout class="QGridLayout" name="gridLayout_18" columnminimumwidth="0,25,0,0">
+              <property name="rightMargin">
+               <number>10</number>
+              </property>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>F3</string>
+                </property>
+                <property name="buddy">
+                 <cstring>freq_f3</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_24">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>F1</string>
+                </property>
+                <property name="buddy">
+                 <cstring>freq_f1</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLineEdit" name="freq_f5">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLineEdit" name="freq_f3">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QFrame" name="f7_colour">
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>15</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QFrame" name="f3_colour">
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>15</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>F7</string>
+                </property>
+                <property name="buddy">
+                 <cstring>freq_f7</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLineEdit" name="freq_f9">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -561,23 +665,8 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_25">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>F3</string>
-                </property>
-                <property name="buddy">
-                 <cstring>freq_f3</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLineEdit" name="freq_f3">
+              <item row="3" column="2">
+               <widget class="QLineEdit" name="freq_f7">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -585,95 +674,6 @@
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QFrame" name="f3_colour">
-                <property name="maximumSize">
-                 <size>
-                  <width>25</width>
-                  <height>15</height>
-                 </size>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_24">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>F1</string>
-                </property>
-                <property name="buddy">
-                 <cstring>freq_f1</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_26">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>F5</string>
-                </property>
-                <property name="buddy">
-                 <cstring>freq_f5</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_27">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>F7</string>
-                </property>
-                <property name="buddy">
-                 <cstring>freq_f7</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="QLineEdit" name="freq_f9">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QFrame" name="f7_colour">
-                <property name="maximumSize">
-                 <size>
-                  <width>25</width>
-                  <height>15</height>
-                 </size>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
                 </property>
                </widget>
               </item>
@@ -686,34 +686,6 @@
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QLineEdit" name="freq_f5">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QFrame" name="f9_colour">
-                <property name="maximumSize">
-                 <size>
-                  <width>25</width>
-                  <height>15</height>
-                 </size>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
                 </property>
                </widget>
               </item>
@@ -733,6 +705,72 @@
                 </property>
                </widget>
               </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_26">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>F5</string>
+                </property>
+                <property name="buddy">
+                 <cstring>freq_f5</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QFrame" name="f9_colour">
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>15</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QCheckBox" name="f1_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QCheckBox" name="f3_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QCheckBox" name="f5_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QCheckBox" name="f7_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QCheckBox" name="f9_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -740,24 +778,12 @@
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_21">
             <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_19" columnminimumwidth="0,25,0">
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_32">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>D7</string>
-                </property>
-                <property name="buddy">
-                 <cstring>diss_d7</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="diss_d1">
+             <layout class="QGridLayout" name="gridLayout_19" columnminimumwidth="0,25,0,0">
+              <property name="rightMargin">
+               <number>10</number>
+              </property>
+              <item row="4" column="2">
+               <widget class="QLineEdit" name="diss_d9">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -765,21 +791,6 @@
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_33">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>D9</string>
-                </property>
-                <property name="buddy">
-                 <cstring>diss_d9</cstring>
                 </property>
                </widget>
               </item>
@@ -795,48 +806,6 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_30">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>D3</string>
-                </property>
-                <property name="buddy">
-                 <cstring>diss_d3</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QLineEdit" name="diss_d7">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_31">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>D5</string>
-                </property>
-                <property name="buddy">
-                 <cstring>diss_d5</cstring>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_29">
                 <property name="font">
@@ -849,6 +818,18 @@
                 </property>
                 <property name="buddy">
                  <cstring>diss_d1</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLineEdit" name="diss_d7">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -880,8 +861,39 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="2">
-               <widget class="QLineEdit" name="diss_d9">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_30">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>D3</string>
+                </property>
+                <property name="buddy">
+                 <cstring>diss_d3</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QFrame" name="d1_colour">
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>15</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLineEdit" name="diss_d1">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -889,6 +901,36 @@
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_31">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>D5</string>
+                </property>
+                <property name="buddy">
+                 <cstring>diss_d5</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_32">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>D7</string>
+                </property>
+                <property name="buddy">
+                 <cstring>diss_d7</cstring>
                 </property>
                </widget>
               </item>
@@ -940,19 +982,53 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QFrame" name="d1_colour">
-                <property name="maximumSize">
-                 <size>
-                  <width>25</width>
-                  <height>15</height>
-                 </size>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_33">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
                 </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
+                <property name="text">
+                 <string>D9</string>
                 </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
+                <property name="buddy">
+                 <cstring>diss_d9</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QCheckBox" name="d1_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QCheckBox" name="d3_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QCheckBox" name="d5_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QCheckBox" name="d7_check">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QCheckBox" name="d9_check">
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -1779,9 +1855,19 @@
      <addaction name="action_Scan_Connections"/>
      <addaction name="action_Disconnect"/>
     </widget>
+    <widget class="QMenu" name="menu_Export">
+     <property name="title">
+      <string>&amp;Export</string>
+     </property>
+     <addaction name="action_Raw_Data"/>
+     <addaction name="action_Noise_Reduced_Data"/>
+    </widget>
     <addaction name="action_Refresh_Ports"/>
     <addaction name="separator"/>
     <addaction name="menu_DAQ"/>
+    <addaction name="separator"/>
+    <addaction name="action_Open_Data_Folder"/>
+    <addaction name="menu_Export"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
@@ -1797,6 +1883,7 @@
      <addaction name="action_Voltage"/>
     </widget>
     <addaction name="menu_Update"/>
+    <addaction name="actionChange_Data_Folder"/>
     <addaction name="separator"/>
     <addaction name="action_Noise_Reduction"/>
     <addaction name="separator"/>
@@ -1919,6 +2006,26 @@
    </property>
    <property name="text">
     <string>&amp;Disconnect</string>
+   </property>
+  </action>
+  <action name="action_Open_Data_Folder">
+   <property name="text">
+    <string>Open &amp;Data Folder</string>
+   </property>
+  </action>
+  <action name="action_Raw_Data">
+   <property name="text">
+    <string>&amp;Raw Data</string>
+   </property>
+  </action>
+  <action name="action_Noise_Reduced_Data">
+   <property name="text">
+    <string>&amp;Noise Reduced Data</string>
+   </property>
+  </action>
+  <action name="actionChange_Data_Folder">
+   <property name="text">
+    <string>Change &amp;Data Folder</string>
    </property>
   </action>
  </widget>

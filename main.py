@@ -1659,6 +1659,12 @@ class Window(Ui_MainWindow):
             confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: No Calibration"), _translate("MainWindow", "You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
             if confirmation == QMessageBox.No:
                 return
+            
+        # Warn about file override
+        if self.auto_export.isChecked() and os.path.isfile(self.file_dest.text()):
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: File Override"), _translate("MainWindow", "The file you want to create already exists. Do you want to override it?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
 
         # Disable
         self.disable_all_ctrls()
@@ -1731,7 +1737,8 @@ class Window(Ui_MainWindow):
         self.stop_sensors()
 
         # Enable stuff
-        self.enable_measurement()
+        if self.qcm_port is not None and self.qcm_calibrated:
+            self.enable_measurement()
         self.enable_export()
         self.enable_start()
 
