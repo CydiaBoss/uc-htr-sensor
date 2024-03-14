@@ -981,8 +981,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.action_Raw_Data.setObjectName("action_Raw_Data")
         self.action_Noise_Reduced_Data = QtWidgets.QAction(MainWindow)
         self.action_Noise_Reduced_Data.setObjectName("action_Noise_Reduced_Data")
-        self.actionChange_Data_Folder = QtWidgets.QAction(MainWindow)
-        self.actionChange_Data_Folder.setObjectName("actionChange_Data_Folder")
+        self.action_Change_Data_Folder = QtWidgets.QAction(MainWindow)
+        self.action_Change_Data_Folder.setObjectName("action_Change_Data_Folder")
         self.menu_DAQ.addAction(self.action_Scan_Connections)
         self.menu_DAQ.addAction(self.action_Disconnect)
         self.menu_Export.addAction(self.action_Raw_Data)
@@ -998,7 +998,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.menu_Update.addAction(self.action_Resistor)
         self.menu_Update.addAction(self.action_Voltage)
         self.menu_Edit.addAction(self.menu_Update.menuAction())
-        self.menu_Edit.addAction(self.actionChange_Data_Folder)
+        self.menu_Edit.addAction(self.action_Change_Data_Folder)
         self.menu_Edit.addSeparator()
         self.menu_Edit.addAction(self.action_Noise_Reduction)
         self.menu_Edit.addSeparator()
@@ -1153,6 +1153,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.action_Open_Data_Folder.setText(_translate("MainWindow", "Open &Data Folder"))
         self.action_Raw_Data.setText(_translate("MainWindow", "&Raw Data"))
         self.action_Noise_Reduced_Data.setText(_translate("MainWindow", "&Noise Reduced Data"))
-        self.actionChange_Data_Folder.setText(_translate("MainWindow", "Change &Data Folder"))
+        self.action_Change_Data_Folder.setText(_translate("MainWindow", "Change &Data Folder"))
 from pglive.sources.live_plot_widget import LivePlotWidget
 import main_rc

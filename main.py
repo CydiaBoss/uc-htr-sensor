@@ -298,6 +298,7 @@ class Window(Ui_MainWindow):
         self.data_saver : DataSaving = None
         self.data_saving_thread : QtCore.QThread = None
         self.data_saving_timer : QtCore.QTimer = None
+        self.data_folder = SETTINGS.get_setting("data_folder", DATA_FOLDER)
 
         # Fill Frequency List
         self.fill_frequency_list()
@@ -1477,6 +1478,13 @@ class Window(Ui_MainWindow):
             self.update_perm_status(_translate("MainWindow", "Not Ready"))
 
     @QtCore.pyqtSlot()
+    def on_action_Open_Data_Folder_triggered(self):
+        try:
+            os.startfile(self.data_folder)
+        except:
+            self.statusBar().showMessage(_translate("MainWindow", "Could not open data folder. Please change to a new data folder."))
+
+    @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
 
@@ -1519,6 +1527,22 @@ class Window(Ui_MainWindow):
             # Update R Sensor if needed
             if self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_volt(volt[0])
+
+    @QtCore.pyqtSlot()
+    def on_action_Change_Data_Folder_triggered(self):
+        # Get File
+        new_data_dir = QFileDialog.getExistingDirectory(self, _translate("MainWindow", 'Data Folder Location'), f"{self.data_folder}/")
+
+        # Ignore if not selected
+        if new_data_dir.strip() == "":
+            return
+        
+        # Save
+        SETTINGS.update_setting("data_folder", new_data_dir)
+        self.data_folder = new_data_dir
+
+        # Notify
+        self.statusBar().showMessage(_translate("MainWindow", f"Data folder updated to {new_data_dir}"))
 
     @QtCore.pyqtSlot()
     def on_action_Noise_Reduction_triggered(self):
@@ -1622,14 +1646,14 @@ class Window(Ui_MainWindow):
     def on_auto_export_clicked(self):
         # If Check and Empty, set default
         if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
-            self.file_dest.setText(f"{DATA_FOLDER}/data-{int(time.time())}.csv")
-        elif not self.auto_export.isChecked() and self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
+            self.file_dest.setText(f"{self.data_folder}/data-{int(time.time())}.csv")
+        elif not self.auto_export.isChecked() and self.file_dest.text().startswith(f"{self.data_folder}/data-"):
             self.file_dest.clear()
 
     @QtCore.pyqtSlot()
     def on_file_select_clicked(self):
         # Get File
-        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{DATA_FOLDER}/", _translate("MainWindow", "CSV (*.csv)"))
+        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", _translate("MainWindow", "CSV (*.csv)"))
 
         # Save
         self.file_dest.setText(self.file_dialog[0])
@@ -1674,7 +1698,7 @@ class Window(Ui_MainWindow):
         SETTINGS.update_setting("measurement_mode", f"{self.measure_type.currentIndex()}")
         SETTINGS.update_setting("freq_select", f"{self.freq_list.currentIndex()}")
         SETTINGS.update_setting("auto_export", f"{self.auto_export.isChecked()}")
-        if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
+        if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{self.data_folder}/data-"):
             SETTINGS.update_setting("last_file_dest", self.file_dest.text())
         else:
             SETTINGS.update_setting("last_file_dest", " ")
