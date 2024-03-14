@@ -1763,6 +1763,7 @@ class Window(Ui_MainWindow):
         # Enable stuff
         if self.qcm_port is not None and self.qcm_calibrated:
             self.enable_measurement()
+        self.enable_calibrate()
         self.enable_export()
         self.enable_start()
 
