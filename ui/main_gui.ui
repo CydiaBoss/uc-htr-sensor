@@ -49,20 +49,7 @@
     </property>
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout_24">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;QCM Based H&lt;/span&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; vertical-align:sub;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt; Sensing&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="margin">
-         <number>11</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
+      <item row="0" column="2">
        <widget class="QLabel" name="label_36">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -87,6 +74,26 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_12">
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>QCM Based H&lt;sub&gt;2&lt;/sub&gt; Sensing</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="margin">
+         <number>11</number>
         </property>
        </widget>
       </item>
@@ -166,10 +173,12 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resistance (Ω)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Resistance (Ω)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -285,10 +294,12 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Humidity (%RH)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Humidity (%RH)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -389,10 +400,12 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Temperature (°C)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Temperature (°C)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -506,10 +519,12 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frequency (Hz)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Frequency (Hz)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -529,7 +544,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>F3</string>
+                 <string notr="true">F3</string>
                 </property>
                 <property name="buddy">
                  <cstring>freq_f3</cstring>
@@ -544,7 +559,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>F1</string>
+                 <string notr="true">F1</string>
                 </property>
                 <property name="buddy">
                  <cstring>freq_f1</cstring>
@@ -615,7 +630,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>F7</string>
+                 <string notr="true">F7</string>
                 </property>
                 <property name="buddy">
                  <cstring>freq_f7</cstring>
@@ -658,7 +673,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>F9</string>
+                 <string notr="true">F9</string>
                 </property>
                 <property name="buddy">
                  <cstring>freq_f9</cstring>
@@ -713,7 +728,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>F5</string>
+                 <string notr="true">F5</string>
                 </property>
                 <property name="buddy">
                  <cstring>freq_f5</cstring>
@@ -814,7 +829,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>D1</string>
+                 <string notr="true">D1</string>
                 </property>
                 <property name="buddy">
                  <cstring>diss_d1</cstring>
@@ -869,7 +884,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>D3</string>
+                 <string notr="true">D3</string>
                 </property>
                 <property name="buddy">
                  <cstring>diss_d3</cstring>
@@ -912,7 +927,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>D5</string>
+                 <string notr="true">D5</string>
                 </property>
                 <property name="buddy">
                  <cstring>diss_d5</cstring>
@@ -927,7 +942,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>D7</string>
+                 <string notr="true">D7</string>
                 </property>
                 <property name="buddy">
                  <cstring>diss_d7</cstring>
@@ -990,7 +1005,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>D9</string>
+                 <string notr="true">D9</string>
                 </property>
                 <property name="buddy">
                  <cstring>diss_d9</cstring>
@@ -1039,10 +1054,12 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Dissipation (ppm)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>Dissipation (ppm)</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1120,14 +1137,17 @@
                        <pointsize>10</pointsize>
                       </font>
                      </property>
+                     <property name="currentText">
+                      <string notr="true">5 MHz</string>
+                     </property>
                      <item>
                       <property name="text">
-                       <string>5 MHz</string>
+                       <string notr="true">5 MHz</string>
                       </property>
                      </item>
                      <item>
                       <property name="text">
-                       <string>10 MHz</string>
+                       <string notr="true">10 MHz</string>
                       </property>
                      </item>
                     </widget>
@@ -1191,8 +1211,6 @@
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -1297,8 +1315,6 @@
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -1325,8 +1341,6 @@
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -1447,8 +1461,6 @@
                 <property name="font">
                  <font>
                   <pointsize>12</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
                  </font>
                 </property>
                 <property name="text">
@@ -1928,58 +1940,6 @@
    </property>
    <property name="toolTip">
     <string>Reset the recorded data up to this point</string>
-   </property>
-  </action>
-  <action name="action_All">
-   <property name="text">
-    <string>&amp;All</string>
-   </property>
-   <property name="toolTip">
-    <string>Exports all data</string>
-   </property>
-  </action>
-  <action name="action_Resistance">
-   <property name="text">
-    <string>&amp;Resistance</string>
-   </property>
-   <property name="toolTip">
-    <string>Exports resistance data only</string>
-   </property>
-  </action>
-  <action name="action_Humidity">
-   <property name="text">
-    <string>&amp;Humidity</string>
-   </property>
-   <property name="toolTip">
-    <string>Exports humidity data only</string>
-   </property>
-  </action>
-  <action name="action_Temperature">
-   <property name="text">
-    <string>&amp;Temperature</string>
-   </property>
-   <property name="toolTip">
-    <string>Exports temperature data only</string>
-   </property>
-  </action>
-  <action name="action_Amplitude">
-   <property name="text">
-    <string>&amp;Amplitude</string>
-   </property>
-  </action>
-  <action name="action_Phase">
-   <property name="text">
-    <string>&amp;Phase</string>
-   </property>
-  </action>
-  <action name="actionDissipation">
-   <property name="text">
-    <string>Dissipation</string>
-   </property>
-  </action>
-  <action name="actionAbsorption">
-   <property name="text">
-    <string>Resonance &amp;Frequency</string>
    </property>
   </action>
   <action name="action_Refresh_Ports">
