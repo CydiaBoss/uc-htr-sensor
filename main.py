@@ -1170,7 +1170,7 @@ class Window(Ui_MainWindow):
 
             else:
                 # Continue to monitor
-                msg_status = _translate("MainWindow", "Monitoring! Sweep#{sweep_num}").format(sweep_num=_ser_control)
+                msg_status = _translate("MainWindow", "Monitoring! Sweep #{sweep_num}").format(sweep_num=_ser_control)
         
                 # Update QPB Style
                 self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)

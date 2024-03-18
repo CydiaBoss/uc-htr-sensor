@@ -6,7 +6,7 @@
     <message>
         <location filename="../main_gui.py" line="1091"/>
         <source>Sensor Fusion</source>
-        <translation type="unfinished">Fusion des capteurs</translation>
+        <translation>Fusion des capteurs</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1092"/>
@@ -473,252 +473,247 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main.py" line="874"/>
         <source>Calibrating QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>En Calibrant le QCM...</translation>
     </message>
     <message>
         <location filename="../main.py" line="919"/>
         <source>The operation might take just over a minute to complete... please wait...</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;exploitation va prendre quelques minutes pour completer... veuillez patienter...</translation>
     </message>
     <message>
         <location filename="../main.py" line="914"/>
         <source>Calibration Warning: empty buffer! Please, repeat the calibration after disconnecting/reconnecting the device!</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement de calibrage: buffer vide! Veuillez répéter le calibrage après désconnecter/reconnecter l&apos;appareil!</translation>
     </message>
     <message>
         <location filename="../main.py" line="923"/>
         <source>Calibration Success for baseline correction!</source>
-        <translation type="unfinished"></translation>
+        <translation>Calibrage réussi pour la correction de reference!</translation>
     </message>
     <message>
         <location filename="../main.py" line="930"/>
         <source>Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement de calibrage: Une erreur s&apos;est passée pendant l&apos;acquisition de réception. Veuillez répéter la calibrage</translation>
     </message>
     <message>
         <location filename="../main.py" line="933"/>
         <source>Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the calibration!</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement de calibrage: Le pic fontamental de réception ne pourrait pas être trouvé. Veuillez répéter la calibrage!</translation>
     </message>
     <message>
         <location filename="../main.py" line="949"/>
         <source>QCM Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM est prêt</translation>
     </message>
     <message>
         <location filename="../main.py" line="954"/>
         <source>Calibration failed as the expected fundamental frequency could not be found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le calibrage a été échoué parce que le pic fontamental de réception ne pourrait pas être trouvé.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1030"/>
         <source>Start measuring QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>Commencer à mesurer le QCM...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1166"/>
         <source>Please wait, processing early data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Veuillez attendre. En traitant les données prématurées...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1169"/>
         <source>Environment Reading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lecture des données d&apos;environnement...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1087"/>
         <source>Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: On n&apos;applique pas la fonction de la bande passante de moitié de la puissiance, la fréquence de coupure inférieuse et supérieure n&apos;a été pas trouvées</translation>
     </message>
     <message>
         <location filename="../main.py" line="1089"/>
         <source>Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: On n&apos;applique pas la fonction de la bande passante de moitié de la puissiance, la fréquence de coupure inférieuse (gauche) n&apos;a été pas trouvée</translation>
     </message>
     <message>
         <location filename="../main.py" line="1091"/>
         <source>Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: On n&apos;applique pas la fonction de la bande passante de moitié de la puissiance, la fréquence de coupure supérieure (droite) n&apos;a été pas trouvée</translation>
     </message>
     <message>
         <location filename="../main.py" line="1078"/>
         <source>Monitoring! Sweep #{sweep_num}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main.py" line="1173"/>
-        <source>Monitoring! Sweep#{sweep_num}</source>
-        <translation type="unfinished"></translation>
+        <translation>Surveillance! Cycle #{sweep_num}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1453"/>
         <source>R Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>R est prêt</translation>
     </message>
     <message>
         <location filename="../main.py" line="1774"/>
         <source>Confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmation</translation>
     </message>
     <message>
         <location filename="../main.py" line="1458"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Est-ce que vous êtes persuadé que vous vouliez désconnecter le DAQ? Le capteur de la résistance dans l&apos;HTR va être activé.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1481"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pourrait pas ouvrir le dossier des données. Veuillez changer le dossier des données.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1490"/>
         <source>Reference Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>Résistance de référence</translation>
     </message>
     <message>
         <location filename="../main.py" line="1490"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrez la nouvelle résistance de référence sur le capteur avec le multiplicateur de SI.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1499"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
-        <translation type="unfinished"></translation>
+        <translation>La résistance de référence ne pourrait pas être mise à jour, le formattage n&apos;est pas correct. Devez être (\d+(\.\d+)?)([a-zA-Z ])</translation>
     </message>
     <message>
         <location filename="../main.py" line="1506"/>
         <source>Reference resistance updated to {resist} {resist_unit}</source>
-        <translation type="unfinished"></translation>
+        <translation>La résistance de référence a été mise à jour à {resist} {resist_unit}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1517"/>
         <source>Reference Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>Voltage de référence</translation>
     </message>
     <message>
         <location filename="../main.py" line="1517"/>
         <source>Enter the new reference voltage from the controller.</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrez le nouveau voltage de référence du capteur.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1523"/>
         <source>Reference voltage updated to {volt}V</source>
-        <translation type="unfinished"></translation>
+        <translation>Le voltage de référence a été mis à jour à {volt}V</translation>
     </message>
     <message>
         <location filename="../main.py" line="1532"/>
         <source>Data Folder Location</source>
-        <translation type="unfinished"></translation>
+        <translation>Lieu du Dossier des données</translation>
     </message>
     <message>
         <location filename="../main.py" line="1543"/>
         <source>Data folder updated to {data_dir}</source>
-        <translation type="unfinished"></translation>
+        <translation>Le dossier des données a été mis à jour à {data_dir}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1548"/>
         <source>Noise Reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Réduction du bruit</translation>
     </message>
     <message>
         <location filename="../main.py" line="1548"/>
         <source>Enter the number of times to apply the noise filter.</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrez le nombre de fois pour appliquer le filtre de bruit.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1554"/>
         <source>Noise reduction filter will now iterate {noise} times</source>
-        <translation type="unfinished"></translation>
+        <translation>Le filtre de bruit réitérera pour {noise} fois</translation>
     </message>
     <message>
         <location filename="../main.py" line="1559"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
-        <translation type="unfinished"></translation>
+        <translation>Est-ce que vous êtes persuadé que vous vouliez réinitialiser tous? Les données qui ne sont pas enregistrées va être perdues.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1603"/>
         <source>Nothing to connect to...</source>
-        <translation type="unfinished"></translation>
+        <translation>Il n&apos;y a rien à se connecter avec...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1623"/>
         <source>Attempting to communicate with the sensors...</source>
-        <translation type="unfinished"></translation>
+        <translation>En essayant de connecter avec les capteurs...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1654"/>
         <source>Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportation</translation>
     </message>
     <message>
         <location filename="../main.py" line="1663"/>
         <source>Warning: Saving Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: sauvegarde désactivée</translation>
     </message>
     <message>
         <location filename="../main.py" line="1663"/>
         <source>Are you sure you want to start without saving any data?</source>
-        <translation type="unfinished"></translation>
+        <translation>Est-ce que vous êtes persuadé que vous vouliez commencer quand la sauvegarde est désactivée?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1669"/>
         <source>Warning: Missing QCM Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: capteur de QCM perdu</translation>
     </message>
     <message>
         <location filename="../main.py" line="1669"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous ratez le capteur de QCM! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1675"/>
         <source>Warning: Missing HTR Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: capteur d&apos;HTR perdu</translation>
     </message>
     <message>
         <location filename="../main.py" line="1675"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous ratez le capteur d&apos;HTR! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1681"/>
         <source>Warning: No Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: calibrage incomplet</translation>
     </message>
     <message>
         <location filename="../main.py" line="1681"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous ne calibrez pas le capteur de QCM! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1687"/>
         <source>Warning: File Override</source>
-        <translation type="unfinished"></translation>
+        <translation>Avertissement: contournement de ficher</translation>
     </message>
     <message>
         <location filename="../main.py" line="1687"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Le ficher que vous voulez créer exister déjà. Est-ce que vous voulez l&apos;outrepasser?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1750"/>
         <source>Monitoring Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>Surveillance arrêtée</translation>
     </message>
     <message>
         <location filename="../main.py" line="1769"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Prêt</translation>
     </message>
     <message>
         <location filename="../main.py" line="1769"/>
         <source>Reset Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Réinitialiser la configuration</translation>
     </message>
     <message>
         <location filename="../main.py" line="1774"/>
         <source>Are you sure you want to close the application?</source>
-        <translation type="unfinished"></translation>
+        <translation>Est-ce que vous êtes persuadé que vous vouliez quitter?</translation>
     </message>
 </context>
 </TS>

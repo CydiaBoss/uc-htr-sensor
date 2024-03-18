@@ -1895,7 +1895,7 @@
      <addaction name="action_Voltage"/>
     </widget>
     <addaction name="menu_Update"/>
-    <addaction name="actionChange_Data_Folder"/>
+    <addaction name="action_Change_Data_Folder"/>
     <addaction name="separator"/>
     <addaction name="action_Noise_Reduction"/>
     <addaction name="separator"/>
@@ -1983,7 +1983,7 @@
     <string>&amp;Noise Reduced Data</string>
    </property>
   </action>
-  <action name="actionChange_Data_Folder">
+  <action name="action_Change_Data_Folder">
    <property name="text">
     <string>Change &amp;Data Folder</string>
    </property>

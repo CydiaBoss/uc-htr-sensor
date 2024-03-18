@@ -6,6 +6,7 @@ from misc.constants import APPID
 from misc.logger import Logger
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QTranslator
 
 from main import Window
 
@@ -18,10 +19,16 @@ if __name__ == "__main__":
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
     # Start Logger
-    Logger()
+    # Logger()
 
     # Prep App Launch
     app = QApplication(sys.argv)
+
+    tran = QTranslator()
+    tran.load("fr", "lang")
+    print(tran.language())
+    app.installTranslator(tran)
+
     win = Window()
 
     # Show
