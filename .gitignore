@@ -8,3 +8,4 @@ logs
 *.csv
 core
 settings.ini
+lang.qm
