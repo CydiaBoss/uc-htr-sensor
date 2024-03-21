@@ -34,16 +34,16 @@ if __name__ == "__main__":
             print(tran.language(), "loaded")
             curr_lang = tran.language()
 
-            # Install
-            app.installTranslator(tran)
-
             # Attempt to update qtbase
             base_tran = QTranslator()
             if base_tran.load(f"qtbase_{curr_lang}", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
-                print("Correct qtbase loaded")
+                print("Correlating qtbase loaded")
 
                 # Install new qtbase language
                 app.installTranslator(base_tran)
+
+            # Install Pack
+            app.installTranslator(tran)
 
     win = Window()
 

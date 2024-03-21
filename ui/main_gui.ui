@@ -1905,17 +1905,15 @@
    <addaction name="menu_Edit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Connect">
-   <property name="text">
-    <string>&amp;Connect</string>
-   </property>
-  </action>
   <action name="action_Quit">
    <property name="text">
     <string>&amp;Quit</string>
    </property>
    <property name="toolTip">
     <string>Quit the program</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_Resistor">
@@ -1925,6 +1923,9 @@
    <property name="toolTip">
     <string>Update the reference resistor</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
   </action>
   <action name="action_Voltage">
    <property name="text">
@@ -1932,6 +1933,9 @@
    </property>
    <property name="toolTip">
     <string>Update the reference voltage</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
    </property>
   </action>
   <action name="action_Reset_Software">
@@ -1941,6 +1945,9 @@
    <property name="toolTip">
     <string>Reset the recorded data up to this point</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+R</string>
+   </property>
   </action>
   <action name="action_Refresh_Ports">
    <property name="text">
@@ -1949,15 +1956,30 @@
    <property name="toolTip">
     <string>Refresh the connected serial devices list</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
   <action name="action_Noise_Reduction">
    <property name="text">
     <string>&amp;Noise Reduction</string>
    </property>
+   <property name="toolTip">
+    <string>Adjust the noise filter on the signal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="action_Scan_Connections">
    <property name="text">
     <string>&amp;Scan Connections</string>
+   </property>
+   <property name="toolTip">
+    <string>Look for any DAQs that is connected to the system</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="action_Disconnect">
@@ -1967,25 +1989,43 @@
    <property name="text">
     <string>&amp;Disconnect</string>
    </property>
+   <property name="toolTip">
+    <string>Disconnect the DAQ</string>
+   </property>
   </action>
   <action name="action_Open_Data_Folder">
    <property name="text">
-    <string>Open &amp;Data Folder</string>
+    <string>&amp;Open Data Folder</string>
+   </property>
+   <property name="toolTip">
+    <string>Opens the default data folder</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="action_Raw_Data">
    <property name="text">
     <string>&amp;Raw Data</string>
    </property>
+   <property name="toolTip">
+    <string>Exports the raw data</string>
+   </property>
   </action>
   <action name="action_Noise_Reduced_Data">
    <property name="text">
     <string>&amp;Noise Reduced Data</string>
    </property>
+   <property name="toolTip">
+    <string>Exports the noise filtered data</string>
+   </property>
   </action>
   <action name="action_Change_Data_Folder">
    <property name="text">
     <string>Change &amp;Data Folder</string>
+   </property>
+   <property name="toolTip">
+    <string>Changes the default data folder</string>
    </property>
   </action>
  </widget>
