@@ -25,11 +25,19 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     tran = QTranslator()
+    sys_lang = "ko" #QLocale.system().name()
+    # Try looking for base if not already
+    if tran.load("qt_" + sys_lang, QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
+        app.installTranslator(tran)
+    if tran.load("qt_base_" + sys_lang[:2], QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
+        app.installTranslator(tran)
+    elif tran.load(QLocale.system(), "qt", "_", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
+        app.installTranslator(tran)
     # tran.load(QLocale.system(), "qt", "_", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
-    # print(tran.language())
+    print(tran.language())
     # tran.load("fr", "lang")
     # print(tran.language())
-    app.installTranslator(tran)
+    # app.installTranslator(tran)
 
     win = Window()
 
