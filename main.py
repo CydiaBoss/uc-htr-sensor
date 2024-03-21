@@ -40,7 +40,8 @@ class Window(Ui_MainWindow):
         self.disable_all_ctrls()
 
         # Setup Graphs
-        self.setup_plots()
+        self.setup_htr_plots()
+        self.setup_qcm_plots()
 
         # Setup Variables
         self.setup_variable()
@@ -59,9 +60,9 @@ class Window(Ui_MainWindow):
         self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
         self.resize(MIN_WIDTH, MIN_HEIGHT)
 
-    def setup_plots(self):
+    def setup_htr_plots(self):
         '''
-        Setups the graphs for live data collectrion
+        Setups the HTR plots
         '''
         # Setup Resistance Graph
         self.htr_layout.removeWidget(self.resist_plot)
@@ -101,7 +102,11 @@ class Window(Ui_MainWindow):
         self.temp_plot.show_crosshair()
         self.temp_data = DataConnector(self.temp_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.temp_plot)
-        
+
+    def setup_qcm_plots(self):
+        '''
+        Setups the QCM graphs
+        '''
         # Setup Amplitude Graph
         self.qcm_layout.removeWidget(self.amp_plot)
         self.amp_plot.setParent(None)
@@ -194,7 +199,7 @@ class Window(Ui_MainWindow):
 
         # Reset Everything if wanted
         if rebuild:
-            self.setup_plots()
+            self.setup_htr_plots()
 
     def setup_qcm_plots_multi(self):
         """
@@ -311,7 +316,7 @@ class Window(Ui_MainWindow):
         self.setStyleSheet(QPB_DEFAULT_STYLE)
 
         # Update Ohm SI Mult
-        self.resist_label.setText('<html><head/><body><p><span style=" font-weight:600;">' + _translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)</span></p></body></html>')
+        self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     def setup_signals(self):
         """
@@ -1500,16 +1505,25 @@ class Window(Ui_MainWindow):
                 return
 
             SETTINGS.update_setting("ref_resist", resist.group(1))
+
+            # Detect if Refresh is needed
+            refresh_ui = SETTINGS.get_setting("ref_resist_unit") != resist.group(3)
+
             SETTINGS.update_setting("ref_resist_unit", resist.group(3))
 
-            # TODO 
-            self.statusBar().showMessage(_translate("MainWindow", "Reference resistance updated to {resist} {resist_unit}").format(ressit=resist.group(1), resist_unit=f"{resist.group(3)}Ω".strip()), 5000)
+            # Message
+            self.statusBar().showMessage(_translate("MainWindow", "Reference resistance updated to {resist} {resist_unit}").format(resist=resist.group(1), resist_unit=f"{resist.group(3)}Ω".strip()), 5000)
 
             # Update R Sensor if needed
             if self.r_ctrl is not None:
                 self.r_ctrl.set_ref_resist(float(resist.group(1)))
             elif self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_resist(float(resist.group(1)))
+
+            # Update Resistance UI if needed
+            if refresh_ui:
+                self.setup_htr_plots()
+                self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     @QtCore.pyqtSlot()
     def on_action_Voltage_triggered(self):
@@ -1567,7 +1581,8 @@ class Window(Ui_MainWindow):
         self.reset_progress_bar()
 
         # Setup Graphs
-        self.setup_plots()
+        self.setup_htr_plots()
+        self.setup_qcm_plots()
 
         # Setup Variables
         self.setup_variable()
