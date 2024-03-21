@@ -6,7 +6,7 @@ from misc.constants import APPID
 from misc.logger import Logger
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QTranslator
+from PyQt5.QtCore import QTranslator, QLocale, QLibraryInfo
 
 from main import Window
 
@@ -25,8 +25,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     tran = QTranslator()
-    tran.load("fr", "lang")
-    print(tran.language())
+    # tran.load(QLocale.system(), "qt", "_", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+    # print(tran.language())
+    # tran.load("fr", "lang")
+    # print(tran.language())
     app.installTranslator(tran)
 
     win = Window()
