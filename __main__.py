@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Grab System Language
     sys_trans = QTranslator()
     if sys_trans.load(QLocale.system(), "qtbase", "_", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
-        print("system language loaded")
+        print("TRANS: system language loaded")
         app.installTranslator(sys_trans)
 
     # Look for Language Pack
@@ -37,13 +37,13 @@ if __name__ == "__main__":
 
         # Attempts to load file
         if tran.load("lang"):
-            print(tran.language(), "loaded")
+            print('TRANS:', tran.language(), "loaded")
             curr_lang = tran.language()
 
             # Attempt to update qtbase
             base_tran = QTranslator()
             if base_tran.load(f"qtbase_{curr_lang}", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
-                print("Correlating qtbase loaded")
+                print("TRANS: Correlating qtbase loaded")
 
                 # Install new qtbase language
                 app.installTranslator(base_tran)
