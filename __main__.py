@@ -25,6 +25,12 @@ if __name__ == "__main__":
     # Prep App Launch
     app = QApplication(sys.argv)
 
+    # Grab System Language
+    sys_trans = QTranslator()
+    if sys_trans.load(QLocale.system(), "qtbase", "_", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
+        print("system language loaded")
+        app.installTranslator(sys_trans)
+
     # Look for Language Pack
     if os.path.isfile("lang.qm"):
         tran = QTranslator()
