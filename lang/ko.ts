@@ -4,102 +4,92 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../main_gui.py" line="1091"/>
+        <location filename="../main_gui.py" line="1076"/>
         <source>Sensor Fusion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1092"/>
+        <location filename="../main_gui.py" line="1077"/>
         <source>QCM Based H&lt;sub&gt;2&lt;/sub&gt; Sensing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1093"/>
+        <location filename="../main_gui.py" line="1078"/>
         <source>Resistance (Ω)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1104"/>
+        <location filename="../main_gui.py" line="1089"/>
         <source>Average (&lt;50)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1103"/>
+        <location filename="../main_gui.py" line="1088"/>
         <source>Average (&lt;15)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1102"/>
+        <location filename="../main_gui.py" line="1087"/>
         <source>Average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1097"/>
+        <location filename="../main_gui.py" line="1082"/>
         <source>Humidity (%RH)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1101"/>
+        <location filename="../main_gui.py" line="1086"/>
         <source>Temperature (°C)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1105"/>
+        <location filename="../main_gui.py" line="1090"/>
         <source>Frequency (Hz)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1106"/>
+        <location filename="../main_gui.py" line="1091"/>
         <source>Dissipation (ppm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1107"/>
-        <source>5 MHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1108"/>
-        <source>10 MHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1109"/>
+        <location filename="../main_gui.py" line="1092"/>
         <source>Calibrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1110"/>
+        <location filename="../main_gui.py" line="1093"/>
         <source>Quartz Crystal Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1111"/>
+        <location filename="../main_gui.py" line="1094"/>
         <source>Step 1. Calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1112"/>
+        <location filename="../main_gui.py" line="1095"/>
         <source>Auto Export Data on Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1113"/>
+        <location filename="../main_gui.py" line="1096"/>
         <source>File Destination</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1114"/>
+        <location filename="../main_gui.py" line="1097"/>
         <source>Step 3. Exportation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1115"/>
+        <location filename="../main_gui.py" line="1098"/>
         <source>Step 2. Setup Measurement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1116"/>
+        <location filename="../main_gui.py" line="1099"/>
         <source>Measurement Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -109,178 +99,123 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1118"/>
+        <location filename="../main_gui.py" line="1101"/>
         <source>Single Measurement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1119"/>
+        <location filename="../main_gui.py" line="1102"/>
         <source>Multiple Measurements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1120"/>
+        <location filename="../main_gui.py" line="1103"/>
         <source>Step 4. Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1121"/>
+        <location filename="../main_gui.py" line="1104"/>
         <source>Stop</source>
         <translation>정지</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1122"/>
+        <location filename="../main_gui.py" line="1105"/>
         <source>Reset</source>
         <translation>리셋</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1123"/>
+        <location filename="../main_gui.py" line="1106"/>
         <source>Start</source>
         <translation>시작</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1124"/>
+        <location filename="../main_gui.py" line="1107"/>
         <source>&lt;font color=#0000ff &gt; Status &lt;/font&gt;</source>
         <translation>&lt;font color=#0000ff &gt; 상황 &lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1125"/>
+        <location filename="../main_gui.py" line="1108"/>
         <source>QCM Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1126"/>
+        <location filename="../main_gui.py" line="1109"/>
         <source>DAQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1127"/>
+        <location filename="../main_gui.py" line="1110"/>
         <source>HTR Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1128"/>
+        <location filename="../main_gui.py" line="1111"/>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1129"/>
+        <location filename="../main_gui.py" line="1112"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1130"/>
+        <location filename="../main_gui.py" line="1113"/>
         <source>&amp;DAQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1131"/>
+        <location filename="../main_gui.py" line="1114"/>
         <source>&amp;Export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1132"/>
+        <location filename="../main_gui.py" line="1115"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1133"/>
+        <location filename="../main_gui.py" line="1116"/>
         <source>&amp;Update References</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1134"/>
-        <source>&amp;Connect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1135"/>
+        <location filename="../main_gui.py" line="1117"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1136"/>
+        <location filename="../main_gui.py" line="1118"/>
         <source>Quit the program</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1137"/>
+        <location filename="../main_gui.py" line="1120"/>
         <source>&amp;Resistor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1138"/>
+        <location filename="../main_gui.py" line="1121"/>
         <source>Update the reference resistor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1139"/>
+        <location filename="../main_gui.py" line="1123"/>
         <source>&amp;Voltage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1140"/>
+        <location filename="../main_gui.py" line="1124"/>
         <source>Update the reference voltage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1141"/>
+        <location filename="../main_gui.py" line="1126"/>
         <source>&amp;Reset Software</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1142"/>
+        <location filename="../main_gui.py" line="1127"/>
         <source>Reset the recorded data up to this point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1143"/>
-        <source>&amp;All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1144"/>
-        <source>Exports all data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1145"/>
-        <source>&amp;Resistance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1146"/>
-        <source>Exports resistance data only</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1147"/>
-        <source>&amp;Humidity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1148"/>
-        <source>Exports humidity data only</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1149"/>
-        <source>&amp;Temperature</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1150"/>
-        <source>Exports temperature data only</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1151"/>
-        <source>&amp;Amplitude</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1152"/>
-        <source>&amp;Phase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -289,52 +224,42 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1154"/>
-        <source>Resonance &amp;Frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1155"/>
+        <location filename="../main_gui.py" line="1129"/>
         <source>&amp;Refresh Ports</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1156"/>
+        <location filename="../main_gui.py" line="1130"/>
         <source>Refresh the connected serial devices list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1157"/>
+        <location filename="../main_gui.py" line="1132"/>
         <source>&amp;Noise Reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1158"/>
+        <location filename="../main_gui.py" line="1135"/>
         <source>&amp;Scan Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1159"/>
+        <location filename="../main_gui.py" line="1138"/>
         <source>&amp;Disconnect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1160"/>
-        <source>Open &amp;Data Folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../main_gui.py" line="1161"/>
+        <location filename="../main_gui.py" line="1143"/>
         <source>&amp;Raw Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1162"/>
+        <location filename="../main_gui.py" line="1145"/>
         <source>&amp;Noise Reduced Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1163"/>
+        <location filename="../main_gui.py" line="1147"/>
         <source>Change &amp;Data Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -712,6 +637,86 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1789"/>
         <source>Are you sure you want to close the application?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1119"/>
+        <source>Ctrl+Q</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1122"/>
+        <source>Ctrl+Shift+R</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1125"/>
+        <source>Ctrl+Shift+V</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1128"/>
+        <source>Ctrl+Alt+R</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1131"/>
+        <source>Ctrl+R</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1133"/>
+        <source>Adjust the noise filter on the signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1134"/>
+        <source>Ctrl+N</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1136"/>
+        <source>Look for any DAQs that is connected to the system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1137"/>
+        <source>Ctrl+S</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1139"/>
+        <source>Disconnect the DAQ</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1140"/>
+        <source>&amp;Open Data Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1141"/>
+        <source>Opens the default data folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1142"/>
+        <source>Ctrl+O</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1144"/>
+        <source>Exports the raw data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1146"/>
+        <source>Exports the noise filtered data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1148"/>
+        <source>Changes the default data folder</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
