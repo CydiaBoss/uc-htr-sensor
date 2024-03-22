@@ -6,12 +6,12 @@
     <message>
         <location filename="../main_gui.py" line="1076"/>
         <source>Sensor Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>센서의 결합</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1077"/>
         <source>QCM Based H&lt;sub&gt;2&lt;/sub&gt; Sensing</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM에 기반을 H&lt;sub&gt;2&lt;/sub&gt; 센서</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1078"/>
@@ -96,7 +96,7 @@
     <message>
         <location filename="../main.py" line="139"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>주파수</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1101"/>
@@ -266,7 +266,7 @@
     <message>
         <location filename="../main.py" line="1526"/>
         <source>Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>전기 저힌</translation>
     </message>
     <message>
         <location filename="../main.py" line="72"/>
@@ -281,7 +281,7 @@
     <message>
         <location filename="../main.py" line="85"/>
         <source>Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>습도</translation>
     </message>
     <message>
         <location filename="../main.py" line="85"/>
@@ -291,7 +291,7 @@
     <message>
         <location filename="../main.py" line="98"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>온도</translation>
     </message>
     <message>
         <location filename="../main.py" line="98"/>
