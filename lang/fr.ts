@@ -668,7 +668,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1133"/>
         <source>Adjust the noise filter on the signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Régler le filtrage du bruit</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1134"/>
@@ -678,7 +678,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1136"/>
         <source>Look for any DAQs that is connected to the system</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanner les connecxions pour les DAQs</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1137"/>
@@ -688,7 +688,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1139"/>
         <source>Disconnect the DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>Désconnecter le DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1140"/>
@@ -698,7 +698,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1141"/>
         <source>Opens the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir le doisser des données par défaut</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1142"/>
@@ -708,17 +708,17 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1144"/>
         <source>Exports the raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporter les données brutes</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1146"/>
         <source>Exports the noise filtered data</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporter les données avec le filtrage du bruit</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1148"/>
         <source>Changes the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Changer le doisser des données par défaut</translation>
     </message>
 </context>
 </TS>
