@@ -16,47 +16,47 @@
     <message>
         <location filename="../main_gui.py" line="1078"/>
         <source>Resistance (Ω)</source>
-        <translation type="unfinished"></translation>
+        <translation>전기 저힌 (Ω)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1089"/>
         <source>Average (&lt;50)</source>
-        <translation type="unfinished"></translation>
+        <translation>평균 (&lt;50)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1088"/>
         <source>Average (&lt;15)</source>
-        <translation type="unfinished"></translation>
+        <translation>평균 (&lt;15)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1087"/>
         <source>Average</source>
-        <translation type="unfinished"></translation>
+        <translation>평균</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1082"/>
         <source>Humidity (%RH)</source>
-        <translation type="unfinished"></translation>
+        <translation>습도 (%RH)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1086"/>
         <source>Temperature (°C)</source>
-        <translation type="unfinished"></translation>
+        <translation>온도 (°C)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1090"/>
         <source>Frequency (Hz)</source>
-        <translation type="unfinished"></translation>
+        <translation>주파수 (Hz)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1091"/>
         <source>Dissipation (ppm)</source>
-        <translation type="unfinished"></translation>
+        <translation>소실 (ppm)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1092"/>
         <source>Calibrate</source>
-        <translation type="unfinished"></translation>
+        <translation>눈금을 매기다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1093"/>
@@ -141,7 +141,7 @@
     <message>
         <location filename="../main_gui.py" line="1109"/>
         <source>DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1110"/>
@@ -161,7 +161,7 @@
     <message>
         <location filename="../main_gui.py" line="1113"/>
         <source>&amp;DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1114"/>
@@ -191,7 +191,7 @@
     <message>
         <location filename="../main_gui.py" line="1120"/>
         <source>&amp;Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>저항기 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1121"/>
@@ -692,7 +692,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1140"/>
         <source>&amp;Open Data Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>폴더를 열다 (&amp;O)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1141"/>
