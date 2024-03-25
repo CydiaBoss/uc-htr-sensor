@@ -61,12 +61,12 @@
     <message>
         <location filename="../main_gui.py" line="1093"/>
         <source>Quartz Crystal Type</source>
-        <translation type="unfinished"></translation>
+        <translation>수정 진동자의 종류</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1094"/>
         <source>Step 1. Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>1단계. 눈금</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1095"/>
@@ -81,12 +81,12 @@
     <message>
         <location filename="../main_gui.py" line="1097"/>
         <source>Step 3. Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>3단계. 저장</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1098"/>
         <source>Step 2. Setup Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>2단계. 측정의 환경 설정</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1099"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="../main_gui.py" line="1103"/>
         <source>Step 4. Start</source>
-        <translation type="unfinished"></translation>
+        <translation>4단계. 시작</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1104"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../main_gui.py" line="1111"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>연결하다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1112"/>
@@ -221,7 +221,7 @@
     <message>
         <location filename="../main.py" line="151"/>
         <source>Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>소실</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1129"/>
@@ -246,7 +246,7 @@
     <message>
         <location filename="../main_gui.py" line="1138"/>
         <source>&amp;Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>연결을 끊다 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1143"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="../main.py" line="115"/>
         <source>Amplitude</source>
-        <translation type="unfinished"></translation>
+        <translation>진폭</translation>
     </message>
     <message>
         <location filename="../main.py" line="115"/>
@@ -477,7 +477,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1789"/>
         <source>Confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation>확인</translation>
     </message>
     <message>
         <location filename="../main.py" line="1463"/>
@@ -667,7 +667,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1133"/>
         <source>Adjust the noise filter on the signal</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 여과를 주정하다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1134"/>
