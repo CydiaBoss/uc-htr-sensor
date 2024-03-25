@@ -71,12 +71,12 @@
     <message>
         <location filename="../main_gui.py" line="1095"/>
         <source>Auto Export Data on Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>머묾에서 자동 저장하다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1096"/>
         <source>File Destination</source>
-        <translation type="unfinished"></translation>
+        <translation>파일의 목적지</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1097"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../main_gui.py" line="1099"/>
         <source>Measurement Type</source>
-        <translation type="unfinished"></translation>
+        <translation>측정의 종류</translation>
     </message>
     <message>
         <location filename="../main.py" line="139"/>
@@ -101,12 +101,12 @@
     <message>
         <location filename="../main_gui.py" line="1101"/>
         <source>Single Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>측정 한 개</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1102"/>
         <source>Multiple Measurements</source>
-        <translation type="unfinished"></translation>
+        <translation>많은 츤정</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1103"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="../main_gui.py" line="1108"/>
         <source>QCM Port</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM의 포트</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1109"/>
@@ -146,7 +146,7 @@
     <message>
         <location filename="../main_gui.py" line="1110"/>
         <source>HTR Port</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR의 포트</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1111"/>
@@ -156,7 +156,7 @@
     <message>
         <location filename="../main_gui.py" line="1112"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>파일 (&amp;F)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1113"/>
@@ -166,27 +166,27 @@
     <message>
         <location filename="../main_gui.py" line="1114"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"></translation>
+        <translation>저장하다 (&amp;E)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1115"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>편집하다 (&amp;E)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1116"/>
         <source>&amp;Update References</source>
-        <translation type="unfinished"></translation>
+        <translation>참조 번호를 갱신하다 (&amp;U)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1117"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>끝내다 (&amp;Q)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1118"/>
         <source>Quit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>프로그램을 끝내다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1120"/>
@@ -201,7 +201,7 @@
     <message>
         <location filename="../main_gui.py" line="1123"/>
         <source>&amp;Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>전압 (&amp;V)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1124"/>
@@ -211,7 +211,7 @@
     <message>
         <location filename="../main_gui.py" line="1126"/>
         <source>&amp;Reset Software</source>
-        <translation type="unfinished"></translation>
+        <translation>프로그램을 다시 시작하다 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1127"/>
@@ -226,7 +226,7 @@
     <message>
         <location filename="../main_gui.py" line="1129"/>
         <source>&amp;Refresh Ports</source>
-        <translation type="unfinished"></translation>
+        <translation>포트를 리프레시하다 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1130"/>
@@ -236,12 +236,12 @@
     <message>
         <location filename="../main_gui.py" line="1132"/>
         <source>&amp;Noise Reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 여과 (&amp;N)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1135"/>
         <source>&amp;Scan Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>접속을 조사하다 (&amp;S)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1138"/>
@@ -251,17 +251,17 @@
     <message>
         <location filename="../main_gui.py" line="1143"/>
         <source>&amp;Raw Data</source>
-        <translation type="unfinished"></translation>
+        <translation>원 데이터 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1145"/>
         <source>&amp;Noise Reduced Data</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 여과의 데이터 (&amp;N)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1147"/>
         <source>Change &amp;Data Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터의 폴더를 바꾸다 (&amp;C)</translation>
     </message>
     <message>
         <location filename="../main.py" line="1526"/>
@@ -271,12 +271,12 @@
     <message>
         <location filename="../main.py" line="72"/>
         <source>Real-time Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 전기 저힌</translation>
     </message>
     <message>
         <location filename="../main.py" line="151"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>시간</translation>
     </message>
     <message>
         <location filename="../main.py" line="85"/>
@@ -286,7 +286,7 @@
     <message>
         <location filename="../main.py" line="85"/>
         <source>Real-time Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 습도</translation>
     </message>
     <message>
         <location filename="../main.py" line="98"/>
@@ -296,7 +296,7 @@
     <message>
         <location filename="../main.py" line="98"/>
         <source>Real-time Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 온도</translation>
     </message>
     <message>
         <location filename="../main.py" line="115"/>
@@ -306,27 +306,27 @@
     <message>
         <location filename="../main.py" line="115"/>
         <source>Real-time Amplitude</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 진폭</translation>
     </message>
     <message>
         <location filename="../main.py" line="127"/>
         <source>Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>위상</translation>
     </message>
     <message>
         <location filename="../main.py" line="127"/>
         <source>Real-time Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 위상</translation>
     </message>
     <message>
         <location filename="../main.py" line="139"/>
         <source>Real-time Resonance Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 공명 진동수</translation>
     </message>
     <message>
         <location filename="../main.py" line="151"/>
         <source>Real-time Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>실시간 소실</translation>
     </message>
     <message>
         <location filename="../main.py" line="1479"/>
@@ -692,7 +692,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1140"/>
         <source>&amp;Open Data Folder</source>
-        <translation>폴더를 열다 (&amp;O)</translation>
+        <translation>데이터의 폴더를 열다 (&amp;O)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1141"/>
