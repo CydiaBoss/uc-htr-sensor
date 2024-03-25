@@ -266,7 +266,7 @@
     <message>
         <location filename="../main.py" line="1526"/>
         <source>Resistance</source>
-        <translation>전기 저힌</translation>
+        <translation>전기 저항</translation>
     </message>
     <message>
         <location filename="../main.py" line="72"/>
