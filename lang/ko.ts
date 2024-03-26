@@ -6,7 +6,7 @@
     <message>
         <location filename="../main_gui.py" line="1076"/>
         <source>Sensor Fusion</source>
-        <translation>센서의 결합</translation>
+        <translation>센서 결합</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1077"/>
@@ -352,7 +352,8 @@
         <location filename="../main.py" line="552"/>
         <source>It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?
 The HTR&apos;s resistor sensor will be disabled if so.</source>
-        <translation>DAQ는 컴퓨터에게 접속합니다. 저항 센서 입니까? 저항 센서 HTR 안에 끌 거예요.</translation>
+        <translation>DAQ는 컴퓨터에게 접속합니다. 저항 센서 입니까?
+저항 센서 HTR 안에 끌 거예요.</translation>
     </message>
     <message>
         <location filename="../main.py" line="559"/>
@@ -367,7 +368,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="576"/>
         <source>HTR and QCM cannot be on same port</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR과 QCM은 포트 한 개를 나누지 않습니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="618"/>
@@ -402,27 +403,27 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="924"/>
         <source>The operation might take just over a minute to complete... please wait...</source>
-        <translation type="unfinished"></translation>
+        <translation>작업을 완료하는 데 1분 정도 걸릴 수 있습니다... 기다리세요...</translation>
     </message>
     <message>
         <location filename="../main.py" line="919"/>
         <source>Calibration Warning: empty buffer! Please, repeat the calibration after disconnecting/reconnecting the device!</source>
-        <translation type="unfinished"></translation>
+        <translation>눈금 매기기 경고: 버퍼가 비어 있습니다! 장치를 분리했다가 다시 연결한 후 교정을 다시 수행하십시오!</translation>
     </message>
     <message>
         <location filename="../main.py" line="928"/>
         <source>Calibration Success for baseline correction!</source>
-        <translation type="unfinished"></translation>
+        <translation>눈금 매기기는 잘되었어요! 기준선는 고쳤어요!</translation>
     </message>
     <message>
         <location filename="../main.py" line="935"/>
         <source>Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>눈금 매기기 경고: 신호 획득 중 오류가 발생했습니다. 캘리브레이션을 다시 진행해주세요</translation>
     </message>
     <message>
         <location filename="../main.py" line="938"/>
         <source>Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the calibration!</source>
-        <translation type="unfinished"></translation>
+        <translation>눈금 매기기 경고: 기본 피크를 식별할 수 없습니다. 캘리브레이션을 다시 진행해주세요!</translation>
     </message>
     <message>
         <location filename="../main.py" line="954"/>
@@ -432,17 +433,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="959"/>
         <source>Calibration failed as the expected fundamental frequency could not be found.</source>
-        <translation type="unfinished"></translation>
+        <translation>예상되는 기본 주파수를 찾을 수 없어 교정에 실패했습니다.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1035"/>
         <source>Start measuring QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM 측정 시작...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1171"/>
         <source>Please wait, processing early data...</source>
-        <translation type="unfinished"></translation>
+        <translation>초기 데이터를 처리 중입니다...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1174"/>
@@ -452,17 +453,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1092"/>
         <source>Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 반전력 대역폭 방식을 적용할 수 없습니다. 하한 및 상한 차단 주파수를 찾을 수 없습니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="1094"/>
         <source>Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 반전력 대역폭 방법을 적용할 수 없습니다. 더 낮은 차단 주파수(왼쪽)를 찾을 수 없습니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="1096"/>
         <source>Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 반전력 대역폭 방법을 적용할 수 없습니다. 더 낮은 차단 주파수(오른쪽)를 찾을 수 없습니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="1178"/>
@@ -482,12 +483,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1463"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>정말로 장치 QCM을 해제하시겠습니까? 저항 센서 HTR 안에 점회됩니다.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1486"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터 폴더를 열 수 없습니다. 새로운 데이터 폴더로 변경해주세요.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1495"/>
@@ -497,7 +498,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1495"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
-        <translation type="unfinished"></translation>
+        <translation>샌 기준 저항과 SI 승수를 기입하시오.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1504"/>
@@ -507,7 +508,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1515"/>
         <source>Reference resistance updated to {resist} {resist_unit}</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 저항기는 {resist} {resist_unit}에게 바끕녔어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="1531"/>
@@ -517,12 +518,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1531"/>
         <source>Enter the new reference voltage from the controller.</source>
-        <translation type="unfinished"></translation>
+        <translation>샌 기준 전압을 기입하시오.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1537"/>
         <source>Reference voltage updated to {volt}V</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 전압은 {volt}V에게 바끕녔어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="1546"/>
@@ -542,7 +543,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1562"/>
         <source>Enter the number of times to apply the noise filter.</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 필터를 적용할 횟수를 입력하세요.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1568"/>
@@ -552,7 +553,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1573"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
-        <translation type="unfinished"></translation>
+        <translation>모든 것을 재설정하시겠습니까? 저장하지 않은 데이터는 모두 손실됩니다.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1618"/>
@@ -562,7 +563,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1638"/>
         <source>Attempting to communicate with the sensors...</source>
-        <translation type="unfinished"></translation>
+        <translation>센서와 통신을 시도하는 중...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1669"/>
@@ -572,17 +573,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1678"/>
         <source>Warning: Saving Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 잠긴 적립</translation>
     </message>
     <message>
         <location filename="../main.py" line="1678"/>
         <source>Are you sure you want to start without saving any data?</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터를 저장하지 않고 시작하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1684"/>
         <source>Warning: Missing QCM Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 없어진 QCM 센서</translation>
     </message>
     <message>
         <location filename="../main.py" line="1684"/>
@@ -592,7 +593,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1690"/>
         <source>Warning: Missing HTR Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 없어진 HTR 센서</translation>
     </message>
     <message>
         <location filename="../main.py" line="1690"/>
@@ -602,7 +603,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1696"/>
         <source>Warning: No Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 없어진 눈금</translation>
     </message>
     <message>
         <location filename="../main.py" line="1696"/>
@@ -612,7 +613,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1702"/>
         <source>Warning: File Override</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: 파일 재정의</translation>
     </message>
     <message>
         <location filename="../main.py" line="1702"/>
@@ -632,12 +633,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1784"/>
         <source>Reset Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>구성 재설정</translation>
     </message>
     <message>
         <location filename="../main.py" line="1789"/>
         <source>Are you sure you want to close the application?</source>
-        <translation type="unfinished"></translation>
+        <translation>정말로 애플리케이션을 닫으시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1119"/>
@@ -677,7 +678,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1136"/>
         <source>Look for any DAQs that is connected to the system</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ을 알아봅니다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1137"/>
@@ -697,7 +698,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1141"/>
         <source>Opens the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터의 폴더를 열습니다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1142"/>
