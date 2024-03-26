@@ -16,7 +16,7 @@
     <message>
         <location filename="../main_gui.py" line="1078"/>
         <source>Resistance (Ω)</source>
-        <translation>전기 저힌 (Ω)</translation>
+        <translation>전기 저항 (Ω)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1089"/>
@@ -331,7 +331,7 @@
     <message>
         <location filename="../main.py" line="1479"/>
         <source>Not Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>준비 다 안 됐어</translation>
     </message>
     <message>
         <location filename="../main.py" line="521"/>
@@ -346,7 +346,7 @@
     <message>
         <location filename="../main.py" line="552"/>
         <source>DAQ Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ는 발견했어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="552"/>
@@ -357,7 +357,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="559"/>
         <source>DAQ {daq_name} selected</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ의 {daq_name}는 선발했어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="562"/>
@@ -372,32 +372,32 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="618"/>
         <source>Port {port} is not the HTR</source>
-        <translation type="unfinished"></translation>
+        <translation>포트의 {port}는 HTR이 아닙니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="621"/>
         <source>Port {port} is the HTR</source>
-        <translation type="unfinished"></translation>
+        <translation>포트의 {port}는 HTR 입니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="622"/>
         <source>HTR Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR를 준비 다 됐어</translation>
     </message>
     <message>
         <location filename="../main.py" line="669"/>
         <source>Port {port} is not the QCM</source>
-        <translation type="unfinished"></translation>
+        <translation>포트의 {port}는 QCM이 아닙니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="672"/>
         <source>Port {port} is the QCM</source>
-        <translation type="unfinished"></translation>
+        <translation>포트의 {port}는 QCM 입니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="879"/>
         <source>Calibrating QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM을 눈금을 매기고 있어요...</translation>
     </message>
     <message>
         <location filename="../main.py" line="924"/>
@@ -427,7 +427,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="954"/>
         <source>QCM Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM을 준비 다 됐어</translation>
     </message>
     <message>
         <location filename="../main.py" line="959"/>
@@ -472,7 +472,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1458"/>
         <source>R Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>R를 준비 다 됐어</translation>
     </message>
     <message>
         <location filename="../main.py" line="1789"/>
@@ -627,7 +627,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1784"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>준비 다 됐어</translation>
     </message>
     <message>
         <location filename="../main.py" line="1784"/>
@@ -717,7 +717,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1148"/>
         <source>Changes the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터의 폴더를 바끕니다</translation>
     </message>
 </context>
 </TS>
