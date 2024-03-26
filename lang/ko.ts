@@ -503,7 +503,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1504"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 저항을 업데이트할 수 없습니다. 형식이 올바르지 않습니다. (\d+(\.\d+)?)([a-zA-Z ])여야 합니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="1515"/>
@@ -548,7 +548,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1568"/>
         <source>Noise reduction filter will now iterate {noise} times</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 감소 필터는 {noise}회 반복됩니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="1573"/>
@@ -588,7 +588,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1684"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1690"/>
@@ -598,7 +598,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1690"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1696"/>
@@ -608,7 +608,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1696"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM 센서를 교정하지 않았습니다. 그것 없이는 시작되지 않습니다. 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1702"/>
@@ -618,7 +618,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1702"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
-        <translation type="unfinished"></translation>
+        <translation>생성하려는 파일이 이미 존재합니다. 재정의하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../main.py" line="1765"/>
@@ -708,12 +708,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1144"/>
         <source>Exports the raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>원 데이터를 저장하다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1146"/>
         <source>Exports the noise filtered data</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 여과의 데이터를 저장하다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1148"/>
