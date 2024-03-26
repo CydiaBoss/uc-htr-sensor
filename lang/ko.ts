@@ -136,7 +136,7 @@
     <message>
         <location filename="../main_gui.py" line="1108"/>
         <source>QCM Port</source>
-        <translation>QCM의 포트</translation>
+        <translation>QCM 포트</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1109"/>
@@ -146,7 +146,7 @@
     <message>
         <location filename="../main_gui.py" line="1110"/>
         <source>HTR Port</source>
-        <translation>HTR의 포트</translation>
+        <translation>HTR 포트</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1111"/>
@@ -196,7 +196,7 @@
     <message>
         <location filename="../main_gui.py" line="1121"/>
         <source>Update the reference resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 저항기를 경신합니다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1123"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../main_gui.py" line="1124"/>
         <source>Update the reference voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 전압을 경신합니다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1126"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../main_gui.py" line="1127"/>
         <source>Reset the recorded data up to this point</source>
-        <translation type="unfinished"></translation>
+        <translation>기록된 데이터를 재출빌합니다</translation>
     </message>
     <message>
         <location filename="../main.py" line="151"/>
@@ -231,7 +231,7 @@
     <message>
         <location filename="../main_gui.py" line="1130"/>
         <source>Refresh the connected serial devices list</source>
-        <translation type="unfinished"></translation>
+        <translation>연결된 장치 목록을 충전합이다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1132"/>
@@ -336,12 +336,12 @@
     <message>
         <location filename="../main.py" line="521"/>
         <source>No New Ports Discovered</source>
-        <translation type="unfinished"></translation>
+        <translation>새롭은 포트 안 잡아내었어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="544"/>
         <source>New Ports Discovered</source>
-        <translation type="unfinished"></translation>
+        <translation>새롭은 포트 잡아내었어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="552"/>
@@ -352,7 +352,7 @@
         <location filename="../main.py" line="552"/>
         <source>It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?
 The HTR&apos;s resistor sensor will be disabled if so.</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ는 컴퓨터에게 접속합니다. 저항 센서 입니까? 저항 센서 HTR 안에 끌 거예요.</translation>
     </message>
     <message>
         <location filename="../main.py" line="559"/>
@@ -362,7 +362,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="562"/>
         <source>No DAQ detected</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ는 안 발견했어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="576"/>
@@ -447,7 +447,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1174"/>
         <source>Environment Reading...</source>
-        <translation type="unfinished"></translation>
+        <translation>환경 검침...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1092"/>
@@ -467,7 +467,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1178"/>
         <source>Monitoring! Sweep #{sweep_num}</source>
-        <translation type="unfinished"></translation>
+        <translation>지켜보고 있어요! 수명 #{sweep_num}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1458"/>
@@ -492,7 +492,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1495"/>
         <source>Reference Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 저항기</translation>
     </message>
     <message>
         <location filename="../main.py" line="1495"/>
@@ -512,7 +512,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1531"/>
         <source>Reference Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>기준 전압</translation>
     </message>
     <message>
         <location filename="../main.py" line="1531"/>
@@ -527,17 +527,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1546"/>
         <source>Data Folder Location</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터의 폴더의 위치</translation>
     </message>
     <message>
         <location filename="../main.py" line="1557"/>
         <source>Data folder updated to {data_dir}</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터의 폴더를 {data_dir}에게 바끕녔어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="1562"/>
         <source>Noise Reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>노이즈 여과</translation>
     </message>
     <message>
         <location filename="../main.py" line="1562"/>
@@ -557,7 +557,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1618"/>
         <source>Nothing to connect to...</source>
-        <translation type="unfinished"></translation>
+        <translation>연결할 일이 없어요...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1638"/>
@@ -567,7 +567,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1669"/>
         <source>Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>적림</translation>
     </message>
     <message>
         <location filename="../main.py" line="1678"/>
@@ -622,7 +622,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1765"/>
         <source>Monitoring Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>모니터를 그쳤어요</translation>
     </message>
     <message>
         <location filename="../main.py" line="1784"/>
@@ -687,7 +687,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1139"/>
         <source>Disconnect the DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ을 끊다</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1140"/>

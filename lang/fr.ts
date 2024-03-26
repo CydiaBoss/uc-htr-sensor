@@ -393,7 +393,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main.py" line="672"/>
         <source>Port {port} is the QCM</source>
-        <translation type="unfinished">La connexion {port} n&apos;est pas le QCM</translation>
+        <translation>La connexion {port} n&apos;est pas le QCM</translation>
     </message>
     <message>
         <location filename="../main.py" line="879"/>
