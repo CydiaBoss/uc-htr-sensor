@@ -40,7 +40,8 @@ class Window(Ui_MainWindow):
         self.disable_all_ctrls()
 
         # Setup Graphs
-        self.setup_plots()
+        self.setup_htr_plots()
+        self.setup_qcm_plots()
 
         # Setup Variables
         self.setup_variable()
@@ -59,9 +60,9 @@ class Window(Ui_MainWindow):
         self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
         self.resize(MIN_WIDTH, MIN_HEIGHT)
 
-    def setup_plots(self):
+    def setup_htr_plots(self):
         '''
-        Setups the graphs for live data collectrion
+        Setups the HTR plots
         '''
         # Setup Resistance Graph
         self.htr_layout.removeWidget(self.resist_plot)
@@ -101,7 +102,11 @@ class Window(Ui_MainWindow):
         self.temp_plot.show_crosshair()
         self.temp_data = DataConnector(self.temp_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.temp_plot)
-        
+
+    def setup_qcm_plots(self):
+        '''
+        Setups the QCM graphs
+        '''
         # Setup Amplitude Graph
         self.qcm_layout.removeWidget(self.amp_plot)
         self.amp_plot.setParent(None)
@@ -194,7 +199,7 @@ class Window(Ui_MainWindow):
 
         # Reset Everything if wanted
         if rebuild:
-            self.setup_plots()
+            self.setup_htr_plots()
 
     def setup_qcm_plots_multi(self):
         """
@@ -298,6 +303,7 @@ class Window(Ui_MainWindow):
         self.data_saver : DataSaving = None
         self.data_saving_thread : QtCore.QThread = None
         self.data_saving_timer : QtCore.QTimer = None
+        self.data_folder = SETTINGS.get_setting("data_folder", DATA_FOLDER)
 
         # Fill Frequency List
         self.fill_frequency_list()
@@ -310,7 +316,7 @@ class Window(Ui_MainWindow):
         self.setStyleSheet(QPB_DEFAULT_STYLE)
 
         # Update Ohm SI Mult
-        self.resist_label.setText(_translate("MainWindow", f'<html><head/><body><p><span style=" font-weight:600;">Resistance ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)</span></p></body></html>'))
+        self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     def setup_signals(self):
         """
@@ -512,7 +518,7 @@ class Window(Ui_MainWindow):
         # Ignore if nothing changed
         if identical_list(old_ports, self.ports):
             # Update
-            self.statusBar().showMessage("No New Ports Discovered", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "No New Ports Discovered"), 5000)
             return
         
         # Remove all menu items
@@ -535,7 +541,7 @@ class Window(Ui_MainWindow):
             self.qcm_serial.setCurrentText(self.qcm_port)
 
         # Update
-        self.statusBar().showMessage("New Ports Discovered", 5000)
+        self.statusBar().showMessage(_translate("MainWindow", "New Ports Discovered"), 5000)
 
     def look_for_daq(self):
         """
@@ -550,16 +556,16 @@ class Window(Ui_MainWindow):
                 self.r_device = r_daq[0]
 
                 # Success
-                self.statusBar().showMessage(f"DAQ {r_daq[0]} selected", 5000)
+                self.statusBar().showMessage(_translate('MainWindow', 'DAQ {daq_name} selected').format(daq_name=r_daq[0]), 5000)
 
         else:
-            self.statusBar().showMessage(f"No DAQ detected", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "No DAQ detected"), 5000)
 
     def update_perm_status(self, msg : str):
         """
         Update the status info box
         """
-        self.perm_status.setText("<font color=#0000ff > Status </font>" + msg)
+        self.perm_status.setText(f"<font color=#0000ff > {_translate('MainWindow', 'Status')} </font>" + msg)
 
     def port_conflict_detection(self):
         """
@@ -567,7 +573,7 @@ class Window(Ui_MainWindow):
         """
         # Cannot have matching ports
         if self.htr_serial.currentText() == self.qcm_serial.currentText():
-            self.statusBar().showMessage("HTR and QCM cannot be on same port", 2500)
+            self.statusBar().showMessage(_translate("MainWindow", "HTR and QCM cannot be on same port"), 2500)
         # Does anything seem new?
         elif self.htr_serial.currentText() != self.htr_port or self.qcm_serial.currentText() != self.qcm_port:
             self.connect_btn.setEnabled(True)
@@ -609,10 +615,10 @@ class Window(Ui_MainWindow):
         '''
         if not results:
             self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is not the HTR", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Port {port} is not the HTR").format(port=self.htr_serial.currentText()), 5000)
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
-            self.statusBar().showMessage(f"Port {self.htr_serial.currentText()} is the HTR", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Port {port} is the HTR").format(port=self.htr_serial.currentText()), 5000)
             self.update_perm_status(_translate("MainWindow", "HTR Ready"))
             self.htr_port = self.htr_serial.currentText()
             SETTINGS.update_setting("last_htr_port", self.htr_port)
@@ -660,10 +666,10 @@ class Window(Ui_MainWindow):
         '''
         if not results:
             self.qcm_status.setPixmap(QPixmap(":/main/cross.png"))
-            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is not the QCM", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Port {port} is not the QCM").format(port=self.qcm_serial.currentText()), 5000)
         else:
             self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
-            self.statusBar().showMessage(f"Port {self.qcm_serial.currentText()} is the QCM", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Port {port} is the QCM").format(port=self.qcm_serial.currentText()), 5000)
             self.qcm_port = self.qcm_serial.currentText()
             SETTINGS.update_setting("last_qcm_port", self.qcm_port)
             self.enable_calibrate()
@@ -870,7 +876,7 @@ class Window(Ui_MainWindow):
         self.qcm_thread.start()
 
         # Message
-        self.statusBar().showMessage("Calibrating QCM...")
+        self.statusBar().showMessage(_translate("MainWindow", "Calibrating QCM..."))
         
     def calibration_processing(self):
         """
@@ -900,7 +906,7 @@ class Window(Ui_MainWindow):
             vector2 = self.qcm_ctrl.worker.get_t3_buffer()
             vector3 = self.qcm_ctrl.worker.get_d3_buffer()
 
-            labelbar = 'The operation might take just over a minute to complete... please wait...'
+            msg_status = _translate("MainWindow", 'The operation might take just over a minute to complete... please wait...')
             
             # progressbar
             error1, _, _, _ser_control, _ = self.qcm_ctrl.worker.get_ser_error()
@@ -909,37 +915,32 @@ class Window(Ui_MainWindow):
                 _completed = (_ser_control/(Constants.calib_sections))*100
 
             # calibration buffer empty
-            if error1== 1 and vector3[0]==1:
-                labelbar = 'Calibration Warning: empty buffer! Please, repeat the Calibration after disconnecting/reconnecting Device!'
-                stop_flag=1
-
-            # calibration buffer empty and ValueError from the serial port
-            elif error1== 1 and vector2[0]==1:
-                labelbar = 'Calibration Warning: empty buffer/ValueError! Please, repeat the Calibration after disconnecting/reconnecting Device!'
+            if error1== 1 and (vector3[0]==1 or vector2[0]==1):
+                msg_status = _translate("MainWindow", 'Calibration Warning: empty buffer! Please, repeat the calibration after disconnecting/reconnecting the device!')
                 stop_flag=1
 
             # calibration buffer not empty
             elif error1==0:
-                labelbar = 'The operation might take just over a minute to complete... please wait...'
+                msg_status = _translate("MainWindow", 'The operation might take just over a minute to complete... please wait...')
 
                 # Success!
                 if vector2[0]== 0 and vector3[0]== 0:
-                    labelbar = 'Calibration Success for baseline correction!'
+                    msg_status = _translate("MainWindow", 'Calibration Success for baseline correction!')
                     stop_flag=1
                     success = True
                 
                 # Error Message
                 elif vector2[0]== 1 or vector3[0]== 1:
                     if vector2[0]== 1:
-                        labelbar = 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the Calibration'
-                        stop_flag=1 ##
+                        msg_status = _translate("MainWindow", 'Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the calibration')
+                        stop_flag=1 
                     elif vector3[0]== 1:
-                        labelbar = 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the Calibration!'
-                        stop_flag=1 ##
+                        msg_status = _translate("MainWindow", 'Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the calibration!')
+                        stop_flag=1 
                         
             # progressbar -------------
             self.calibration_bar.setValue(int(_completed + 10))
-            self.statusBar().showMessage(f"{labelbar}", 5000)
+            self.statusBar().showMessage(msg_status, 5000)
 
             # terminate the  calibration (simulate clicked stop)
             if stop_flag == 1:
@@ -978,6 +979,7 @@ class Window(Ui_MainWindow):
             self.phase_data.cb_set_data(x=calibration_readFREQ, y=vector2, pen=Constants.plot_colors[1])
         except AttributeError:
             # Error catch when qcm_ctrl destoryed
+            # Not dangerous, just to catch error
             pass
 
     def start_qcm(self):
@@ -1030,7 +1032,7 @@ class Window(Ui_MainWindow):
         self.qcm_thread.start()
 
         # Message
-        self.statusBar().showMessage("Start measuring QCM...", 5000)
+        self.statusBar().showMessage(_translate("MainWindow", "Start measuring QCM..."), 5000)
         
     def single_processing(self):
         """
@@ -1041,7 +1043,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue2()
         self.qcm_ctrl.worker.consume_queue3()
         self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
+        # Data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
@@ -1061,37 +1063,37 @@ class Window(Ui_MainWindow):
                 prep_process = True
 
             if str(vector1[0])=='nan' and not _ser_error1 and not _ser_error2:
-                labelbar = 'Please wait, processing early data...'
+                msg_status = _translate("MainWindow", 'Please wait, processing early data...')
 
                 # Status
                 self.update_perm_status(_translate("MainWindow", "Environment Reading..."))
 
             elif (str(vector1[0])=='nan' and (_ser_error1 or _ser_error2)):
                 if _ser_error1 and _ser_error2:
-                    labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
+                    msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found')
                 elif _ser_error1:
-                    labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
+                    msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found')
                 elif _ser_error2:
-                    labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
+                    msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found')
     
                 # Update QPB Style
                 self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
             else:
                 if not _ser_error1 and not _ser_error2:
-                    labelbar = 'Monitoring!'
+                    msg_status = _translate("MainWindow", 'Monitoring! Sweep #{sweep_num}').format(sweep_num=_ser_control)
         
                     # Update QPB Style
                     self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
 
                     # Status
-                    self.update_perm_status(_translate("MainWindow", labelbar))
+                    self.update_perm_status(msg_status)
                 else:
                     if _ser_error1 and _ser_error2:
-                        labelbar = 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found'
+                        msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found')
                     elif _ser_error1:
-                        labelbar = 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found'
+                        msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found')
                     elif _ser_error2:
-                        labelbar = 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found'
+                        msg_status = _translate("MainWindow", 'Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found')
     
                     # Update QPB Style
                     self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
@@ -1100,7 +1102,7 @@ class Window(Ui_MainWindow):
         self.progress_bar.setValue(int(self.qcm_progress + 2))
 
         # Message
-        self.statusBar().showMessage(labelbar, 5000)
+        self.statusBar().showMessage(msg_status, 5000)
 
         # Update Plot
         amp = self.qcm_ctrl.worker.get_value1_buffer()
@@ -1137,7 +1139,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.worker.consume_queue2()
         self.qcm_ctrl.worker.consume_queue3()
         self.qcm_ctrl.worker.consume_queue4()
-        # TODO note that data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
+        # Data is logged here, when self.qcm_ctrl.worker.consume_queue5() is called
         self.qcm_ctrl.worker.consume_queue5()
         # general error queue
         self.qcm_ctrl.worker.consume_queue6()
@@ -1153,39 +1155,39 @@ class Window(Ui_MainWindow):
         # Data
         vector1 = self.qcm_ctrl.worker.get_d1_buffer()
 
-        # TODO update plot
-        self._ser_error1, self._ser_error2, self._ser_control, self._ser_err_usb, self._overtone_number = self.qcm_ctrl.worker.get_ser_error()
+        # Grab status
+        _, _, _ser_control, _, _ = self.qcm_ctrl.worker.get_ser_error()
 
         if vector1.any():
             # progressbar
-            if self._ser_control <= Constants.environment:
+            if _ser_control <= Constants.environment:
                 prep_process = True
 
                 # VER 0.1.2 just a little thing  
-                self._completed = self._ser_control * 100 / Constants.environment
+                self._completed = _ser_control * 100 / Constants.environment
                 
                 # VER 0.1.2
                 # Optimize and update infobar and infostatus in multiscan mode
-                labelbar = 'Please wait, processing early data...'
+                msg_status = _translate("MainWindow", 'Please wait, processing early data...')
 
                 # Status
                 self.update_perm_status(_translate("MainWindow", "Environment Reading..."))
 
             else:
                 # Continue to monitor
-                labelbar = "Monitoring!"
+                msg_status = _translate("MainWindow", "Monitoring! Sweep #{sweep_num}").format(sweep_num=_ser_control)
         
                 # Update QPB Style
                 self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
 
                 # Status
-                self.update_perm_status(_translate("MainWindow", labelbar))
+                self.update_perm_status(msg_status)
                     
         # progressbar -------------
         self.progress_bar.setValue(int(self._completed + 2))
 
         # Message
-        self.statusBar().showMessage(labelbar, 5000)
+        self.statusBar().showMessage(msg_status, 5000)
 
         # Continue to wait until process is done
         if prep_process:
@@ -1477,6 +1479,13 @@ class Window(Ui_MainWindow):
             self.update_perm_status(_translate("MainWindow", "Not Ready"))
 
     @QtCore.pyqtSlot()
+    def on_action_Open_Data_Folder_triggered(self):
+        try:
+            os.startfile(self.data_folder)
+        except:
+            self.statusBar().showMessage(_translate("MainWindow", "Could not open data folder. Please change to a new data folder."))
+
+    @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
 
@@ -1492,19 +1501,29 @@ class Window(Ui_MainWindow):
 
             # Fail if not found
             if resist is None or len(resist.groups()) < 3:
-                self.statusBar().showMessage(f"Reference resistance could not be updated, formatting is not correct. Must be (\\d+(\\.\\d+)?)([a-zA-Z ])", 5000)
+                self.statusBar().showMessage(_translate("MainWindow", "Reference resistance could not be updated, formatting is not correct. Must be (\\d+(\\.\\d+)?)([a-zA-Z ])"), 5000)
                 return
 
             SETTINGS.update_setting("ref_resist", resist.group(1))
+
+            # Detect if Refresh is needed
+            refresh_ui = SETTINGS.get_setting("ref_resist_unit") != resist.group(3)
+
             SETTINGS.update_setting("ref_resist_unit", resist.group(3))
 
-            self.statusBar().showMessage(f"Reference resistance updated to {resist.group(1)} {resist.group(3)}Ω", 5000)
+            # Message
+            self.statusBar().showMessage(_translate("MainWindow", "Reference resistance updated to {resist} {resist_unit}").format(resist=resist.group(1), resist_unit=f"{resist.group(3)}Ω".strip()), 5000)
 
             # Update R Sensor if needed
             if self.r_ctrl is not None:
                 self.r_ctrl.set_ref_resist(float(resist.group(1)))
             elif self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_resist(float(resist.group(1)))
+
+            # Update Resistance UI if needed
+            if refresh_ui:
+                self.setup_htr_plots()
+                self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     @QtCore.pyqtSlot()
     def on_action_Voltage_triggered(self):
@@ -1514,11 +1533,28 @@ class Window(Ui_MainWindow):
         # Update
         if volt[1]:
             SETTINGS.update_setting("ref_volt", str(volt[0]))
-            self.statusBar().showMessage(f"Reference voltage updated to {volt[0]}V", 5000)
+            # TODO
+            self.statusBar().showMessage(_translate("MainWindow", "Reference voltage updated to {volt}V").format(volt=volt[0]), 5000)
 
             # Update R Sensor if needed
             if self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_volt(volt[0])
+
+    @QtCore.pyqtSlot()
+    def on_action_Change_Data_Folder_triggered(self):
+        # Get File
+        new_data_dir = QFileDialog.getExistingDirectory(self, _translate("MainWindow", 'Data Folder Location'), f"{self.data_folder}/")
+
+        # Ignore if not selected
+        if new_data_dir.strip() == "":
+            return
+        
+        # Save
+        SETTINGS.update_setting("data_folder", new_data_dir)
+        self.data_folder = new_data_dir
+
+        # Notify
+        self.statusBar().showMessage(_translate("MainWindow", "Data folder updated to {data_dir}").format(data_dir=new_data_dir))
 
     @QtCore.pyqtSlot()
     def on_action_Noise_Reduction_triggered(self):
@@ -1529,7 +1565,7 @@ class Window(Ui_MainWindow):
         if noise[1]:
             SETTINGS.update_setting("noise_reduce", str(noise[0]))
             self.noise_reduce = noise[0]
-            self.statusBar().showMessage(f"Noise reduction filter will now iterate {noise[0]} times", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Noise reduction filter will now iterate {noise} times").format(noise=noise[0]), 5000)
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
@@ -1545,7 +1581,8 @@ class Window(Ui_MainWindow):
         self.reset_progress_bar()
 
         # Setup Graphs
-        self.setup_plots()
+        self.setup_htr_plots()
+        self.setup_qcm_plots()
 
         # Setup Variables
         self.setup_variable()
@@ -1578,7 +1615,7 @@ class Window(Ui_MainWindow):
     def on_connect_btn_clicked(self):
         # Ensure something is selected
         if self.htr_serial.currentIndex() == -1 or self.qcm_serial.currentIndex() == -1:
-            self.statusBar().showMessage("Nothing to connect to...", 5000)
+            self.statusBar().showMessage(_translate("MainWindow", "Nothing to connect to..."), 5000)
             return
         
         running = False
@@ -1598,7 +1635,7 @@ class Window(Ui_MainWindow):
             return
         
         # Signal Launch
-        self.statusBar().showMessage("Attempting to communicate with the sensors...", 5000)
+        self.statusBar().showMessage(_translate("MainWindow", "Attempting to communicate with the sensors..."), 5000)
 
         # Disable
         self.disable_all_ctrls()
@@ -1622,14 +1659,14 @@ class Window(Ui_MainWindow):
     def on_auto_export_clicked(self):
         # If Check and Empty, set default
         if self.auto_export.isChecked() and self.file_dest.text().strip() == "":
-            self.file_dest.setText(f"{DATA_FOLDER}/data-{int(time.time())}.csv")
-        elif not self.auto_export.isChecked() and self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
+            self.file_dest.setText(f"{self.data_folder}/data-{int(time.time())}.csv")
+        elif not self.auto_export.isChecked() and self.file_dest.text().startswith(f"{self.data_folder}/data-"):
             self.file_dest.clear()
 
     @QtCore.pyqtSlot()
     def on_file_select_clicked(self):
         # Get File
-        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{DATA_FOLDER}/", _translate("MainWindow", "CSV (*.csv)"))
+        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
 
         # Save
         self.file_dest.setText(self.file_dialog[0])
@@ -1659,6 +1696,12 @@ class Window(Ui_MainWindow):
             confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: No Calibration"), _translate("MainWindow", "You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?"), QMessageBox.Yes | QMessageBox.No)
             if confirmation == QMessageBox.No:
                 return
+            
+        # Warn about file override
+        if self.auto_export.isChecked() and os.path.isfile(self.file_dest.text()):
+            confirmation = QMessageBox.question(self, _translate("MainWindow", "Warning: File Override"), _translate("MainWindow", "The file you want to create already exists. Do you want to override it?"), QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.No:
+                return
 
         # Disable
         self.disable_all_ctrls()
@@ -1668,7 +1711,7 @@ class Window(Ui_MainWindow):
         SETTINGS.update_setting("measurement_mode", f"{self.measure_type.currentIndex()}")
         SETTINGS.update_setting("freq_select", f"{self.freq_list.currentIndex()}")
         SETTINGS.update_setting("auto_export", f"{self.auto_export.isChecked()}")
-        if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{DATA_FOLDER}/data-"):
+        if self.file_dest.text() != "" and not self.file_dest.text().startswith(f"{self.data_folder}/data-"):
             SETTINGS.update_setting("last_file_dest", self.file_dest.text())
         else:
             SETTINGS.update_setting("last_file_dest", " ")
@@ -1719,7 +1762,7 @@ class Window(Ui_MainWindow):
         self.start_btn.setEnabled(True)
 
         # Update Status
-        self.update_perm_status("Monitoring Stopped; Ready")
+        self.update_perm_status(_translate("MainWindow", "Monitoring Stopped") + ";" + _translate("MainWindow", "Ready"))
 
     @QtCore.pyqtSlot()
     def on_reset_btn_clicked(self):
@@ -1731,12 +1774,14 @@ class Window(Ui_MainWindow):
         self.stop_sensors()
 
         # Enable stuff
-        self.enable_measurement()
+        if self.qcm_port is not None and self.qcm_calibrated:
+            self.enable_measurement()
+        self.enable_calibrate()
         self.enable_export()
         self.enable_start()
 
         # Update Status
-        self.update_perm_status("Reset Configuration; Ready")
+        self.update_perm_status(_translate("MainWindow", "Reset Configuration") + ";" + _translate("MainWindow", "Ready"))
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:

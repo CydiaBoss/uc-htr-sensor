@@ -37,6 +37,9 @@ class Settings:
         if key in self.config["DEFAULT"]:
             return self.config["DEFAULT"][key] or " "
         else:
+            # Auto write if not found
+            if default is not None:
+                self.update_setting(key, default)
             return default
 
     def update_setting(self, key: str, value):
