@@ -1568,6 +1568,27 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage(_translate("MainWindow", "Noise reduction filter will now iterate {noise} times").format(noise=noise[0]), 5000)
 
     @QtCore.pyqtSlot()
+    def on_action_Change_Language_triggered(self):
+        # Check lang folder for languages
+        lang_files = []
+        for file in os.listdir("lang"):
+            # Ignore if directory
+            if not os.path.isfile(f"lang{os.sep}{file}"):
+                continue
+
+            # Record if qm
+            if file.endswith(".qm"):
+                # QTranslate
+                q_lang_temp = QtCore.QTranslator()
+                print("loading", file)
+                if q_lang_temp.load(file, "lang"):
+                    print("loaded", q_lang_temp.language())
+                    lang_files.append(q_lang_temp)
+
+        # Provide options to user
+        demo = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [x.language() for x in lang_files], editable=False)
+
+    @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
         # Ask for confirmation before resetting
         confirmation = QMessageBox.question(self, _translate("MainWindow", "Confirmation"), _translate("MainWindow", "Are you sure you want to reset everything? All data not saved will be lost."), QMessageBox.Yes | QMessageBox.No)
