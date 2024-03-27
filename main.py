@@ -1570,6 +1570,8 @@ class Window(Ui_MainWindow):
             
         # Load all lang files
         lang_files = []
+        curr_index = -1
+        i = 0
         for file in os.listdir("lang"):
             # Ignore if directory
             if not os.path.isfile(f"lang/{file}"):
@@ -1579,13 +1581,22 @@ class Window(Ui_MainWindow):
             if file.endswith(".qm"):
                 # QTranslate
                 trans_temp = QtCore.QTranslator()
-                print("loading", file)
                 if trans_temp.load(file, "lang"):
-                    print("loaded", lang.LANG[trans_temp.language()[:2]])
+                    # Determine Current Language
+                    if trans_temp.language() == SETTINGS.get_setting("lang"):
+                        curr_index = i
                     lang_files.append(trans_temp)
+                    i += 1
 
         # Provide options to user
-        demo = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [lang.LANG[x.language()[:2]] for x in lang_files], editable=False)
+        lang_select = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [lang.LANG[x.language()[:2]] for x in lang_files], curr_index, False)
+
+        # Return if cancelled
+        if not lang_select[1]:
+            return
+        
+        # Update Start
+        # TODO language rewrite
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
@@ -1595,6 +1606,10 @@ class Window(Ui_MainWindow):
             # ignore
             return
 
+        # Language Reload
+        self.retranslateUi()
+        lang.retranslate_lang()
+        
         # Disable All
         self.disable_all_ctrls()
         self.reset_calibration_bar()
