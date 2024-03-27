@@ -4,92 +4,92 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../main_gui.py" line="1076"/>
+        <location filename="../main_gui.py" line="1142"/>
         <source>Sensor Fusion</source>
         <translation>센서 결합</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1077"/>
+        <location filename="../main_gui.py" line="1143"/>
         <source>QCM Based H&lt;sub&gt;2&lt;/sub&gt; Sensing</source>
         <translation>QCM에 기반을 H&lt;sub&gt;2&lt;/sub&gt; 센서</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1078"/>
+        <location filename="../main_gui.py" line="1144"/>
         <source>Resistance (Ω)</source>
         <translation>전기 저항 (Ω)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1089"/>
+        <location filename="../main_gui.py" line="1155"/>
         <source>Average (&lt;50)</source>
         <translation>평균 (&lt;50)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1088"/>
+        <location filename="../main_gui.py" line="1154"/>
         <source>Average (&lt;15)</source>
         <translation>평균 (&lt;15)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1087"/>
+        <location filename="../main_gui.py" line="1153"/>
         <source>Average</source>
         <translation>평균</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1082"/>
+        <location filename="../main_gui.py" line="1148"/>
         <source>Humidity (%RH)</source>
         <translation>습도 (%RH)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1086"/>
+        <location filename="../main_gui.py" line="1152"/>
         <source>Temperature (°C)</source>
         <translation>온도 (°C)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1090"/>
+        <location filename="../main_gui.py" line="1156"/>
         <source>Frequency (Hz)</source>
         <translation>주파수 (Hz)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1091"/>
+        <location filename="../main_gui.py" line="1157"/>
         <source>Dissipation (ppm)</source>
         <translation>소실 (ppm)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1092"/>
+        <location filename="../main_gui.py" line="1158"/>
         <source>Calibrate</source>
         <translation>눈금을 매기다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1093"/>
+        <location filename="../main_gui.py" line="1159"/>
         <source>Quartz Crystal Type</source>
         <translation>수정 진동자의 종류</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1094"/>
+        <location filename="../main_gui.py" line="1160"/>
         <source>Step 1. Calibration</source>
         <translation>1단계. 눈금</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1095"/>
+        <location filename="../main_gui.py" line="1161"/>
         <source>Auto Export Data on Stop</source>
         <translation>머묾에서 자동 저장하다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1096"/>
+        <location filename="../main_gui.py" line="1162"/>
         <source>File Destination</source>
         <translation>파일의 목적지</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1097"/>
+        <location filename="../main_gui.py" line="1163"/>
         <source>Step 3. Exportation</source>
         <translation>3단계. 저장</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1098"/>
+        <location filename="../main_gui.py" line="1164"/>
         <source>Step 2. Setup Measurement</source>
         <translation>2단계. 측정의 환경 설정</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1099"/>
+        <location filename="../main_gui.py" line="1165"/>
         <source>Measurement Type</source>
         <translation>측정의 종류</translation>
     </message>
@@ -99,122 +99,122 @@
         <translation>주파수</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1101"/>
+        <location filename="../main_gui.py" line="1167"/>
         <source>Single Measurement</source>
         <translation>측정 한 개</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1102"/>
+        <location filename="../main_gui.py" line="1168"/>
         <source>Multiple Measurements</source>
         <translation>많은 츤정</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1103"/>
+        <location filename="../main_gui.py" line="1169"/>
         <source>Step 4. Start</source>
         <translation>4단계. 시작</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1104"/>
+        <location filename="../main_gui.py" line="1170"/>
         <source>Stop</source>
         <translation>정지</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1105"/>
+        <location filename="../main_gui.py" line="1171"/>
         <source>Reset</source>
         <translation>리셋</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1106"/>
+        <location filename="../main_gui.py" line="1172"/>
         <source>Start</source>
         <translation>시작</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1107"/>
+        <location filename="../main_gui.py" line="1173"/>
         <source>&lt;font color=#0000ff &gt; Status &lt;/font&gt;</source>
         <translation>&lt;font color=#0000ff &gt; 상황 &lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1108"/>
+        <location filename="../main_gui.py" line="1174"/>
         <source>QCM Port</source>
         <translation>QCM 포트</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1109"/>
+        <location filename="../main_gui.py" line="1175"/>
         <source>DAQ</source>
         <translation>DAQ</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1110"/>
+        <location filename="../main_gui.py" line="1176"/>
         <source>HTR Port</source>
         <translation>HTR 포트</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1111"/>
+        <location filename="../main_gui.py" line="1177"/>
         <source>Connect</source>
         <translation>연결하다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1112"/>
+        <location filename="../main_gui.py" line="1178"/>
         <source>&amp;File</source>
         <translation>파일 (&amp;F)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1113"/>
+        <location filename="../main_gui.py" line="1179"/>
         <source>&amp;DAQ</source>
         <translation>&amp;DAQ</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1114"/>
+        <location filename="../main_gui.py" line="1180"/>
         <source>&amp;Export</source>
         <translation>저장하다 (&amp;E)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1115"/>
+        <location filename="../main_gui.py" line="1181"/>
         <source>&amp;Edit</source>
         <translation>편집하다 (&amp;E)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1116"/>
+        <location filename="../main_gui.py" line="1182"/>
         <source>&amp;Update References</source>
         <translation>참조 번호를 갱신하다 (&amp;U)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1117"/>
+        <location filename="../main_gui.py" line="1184"/>
         <source>&amp;Quit</source>
         <translation>끝내다 (&amp;Q)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1118"/>
+        <location filename="../main_gui.py" line="1185"/>
         <source>Quit the program</source>
         <translation>프로그램을 끝내다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1120"/>
+        <location filename="../main_gui.py" line="1187"/>
         <source>&amp;Resistor</source>
         <translation>저항기 (&amp;R)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1121"/>
+        <location filename="../main_gui.py" line="1188"/>
         <source>Update the reference resistor</source>
         <translation>기준 저항기를 경신합니다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1123"/>
+        <location filename="../main_gui.py" line="1190"/>
         <source>&amp;Voltage</source>
         <translation>전압 (&amp;V)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1124"/>
+        <location filename="../main_gui.py" line="1191"/>
         <source>Update the reference voltage</source>
         <translation>기준 전압을 경신합니다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1126"/>
+        <location filename="../main_gui.py" line="1193"/>
         <source>&amp;Reset Software</source>
         <translation>프로그램을 다시 시작하다 (&amp;R)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1127"/>
+        <location filename="../main_gui.py" line="1194"/>
         <source>Reset the recorded data up to this point</source>
         <translation>기록된 데이터를 재출빌합니다</translation>
     </message>
@@ -224,42 +224,42 @@
         <translation>소실</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1129"/>
+        <location filename="../main_gui.py" line="1196"/>
         <source>&amp;Refresh Ports</source>
         <translation>포트를 리프레시하다 (&amp;R)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1130"/>
+        <location filename="../main_gui.py" line="1197"/>
         <source>Refresh the connected serial devices list</source>
         <translation>연결된 장치 목록을 충전합이다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1132"/>
+        <location filename="../main_gui.py" line="1199"/>
         <source>&amp;Noise Reduction</source>
         <translation>노이즈 여과 (&amp;N)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1135"/>
+        <location filename="../main_gui.py" line="1202"/>
         <source>&amp;Scan Connections</source>
         <translation>접속을 조사하다 (&amp;S)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1138"/>
+        <location filename="../main_gui.py" line="1205"/>
         <source>&amp;Disconnect</source>
         <translation>연결을 끊다 (&amp;D)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1143"/>
+        <location filename="../main_gui.py" line="1210"/>
         <source>&amp;Raw Data</source>
         <translation>원 데이터 (&amp;R)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1145"/>
+        <location filename="../main_gui.py" line="1212"/>
         <source>&amp;Noise Reduced Data</source>
         <translation>노이즈 여과의 데이터 (&amp;N)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1147"/>
+        <location filename="../main_gui.py" line="1214"/>
         <source>Change &amp;Data Folder</source>
         <translation>데이터의 폴더를 바꾸다 (&amp;C)</translation>
     </message>
@@ -641,84 +641,129 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>정말로 애플리케이션을 닫으시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1119"/>
+        <location filename="../main_gui.py" line="1186"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1122"/>
+        <location filename="../main_gui.py" line="1189"/>
         <source>Ctrl+Shift+R</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1125"/>
+        <location filename="../main_gui.py" line="1192"/>
         <source>Ctrl+Shift+V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1128"/>
+        <location filename="../main_gui.py" line="1195"/>
         <source>Ctrl+Alt+R</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1131"/>
+        <location filename="../main_gui.py" line="1198"/>
         <source>Ctrl+R</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1133"/>
+        <location filename="../main_gui.py" line="1200"/>
         <source>Adjust the noise filter on the signal</source>
         <translation>노이즈 여과를 주정하다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1134"/>
+        <location filename="../main_gui.py" line="1201"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1136"/>
+        <location filename="../main_gui.py" line="1203"/>
         <source>Look for any DAQs that is connected to the system</source>
         <translation>DAQ을 알아봅니다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1137"/>
+        <location filename="../main_gui.py" line="1204"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1139"/>
+        <location filename="../main_gui.py" line="1206"/>
         <source>Disconnect the DAQ</source>
         <translation>DAQ을 끊다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1140"/>
+        <location filename="../main_gui.py" line="1207"/>
         <source>&amp;Open Data Folder</source>
         <translation>데이터의 폴더를 열다 (&amp;O)</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1141"/>
+        <location filename="../main_gui.py" line="1208"/>
         <source>Opens the default data folder</source>
         <translation>데이터의 폴더를 열습니다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1142"/>
+        <location filename="../main_gui.py" line="1209"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1144"/>
+        <location filename="../main_gui.py" line="1211"/>
         <source>Exports the raw data</source>
         <translation>원 데이터를 저장하다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1146"/>
+        <location filename="../main_gui.py" line="1213"/>
         <source>Exports the noise filtered data</source>
         <translation>노이즈 여과의 데이터를 저장하다</translation>
     </message>
     <message>
-        <location filename="../main_gui.py" line="1148"/>
+        <location filename="../main_gui.py" line="1215"/>
         <source>Changes the default data folder</source>
         <translation>데이터의 폴더를 바끕니다</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1183"/>
+        <source>&amp;View</source>
+        <translation>경치 (&amp;V)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1216"/>
+        <source>&amp;Resistance</source>
+        <translation>전기 저항 (&amp;R)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1217"/>
+        <source>&amp;Humidity</source>
+        <translation>습도 (&amp;H)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1218"/>
+        <source>&amp;Temperature</source>
+        <translation>온도 (&amp;T)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1219"/>
+        <source>&amp;Amplitude</source>
+        <translation>진폭 (&amp;A)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1220"/>
+        <source>&amp;Phase</source>
+        <translation>위상 (&amp;P)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1221"/>
+        <source>&amp;Frequency</source>
+        <translation>주파수 (&amp;F)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1222"/>
+        <source>&amp;Dissipation</source>
+        <translation>소실 (&amp;D)</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1223"/>
+        <source>Change &amp;Language</source>
+        <translation>언어를 바꾸다 (&amp;L)</translation>
     </message>
 </context>
 </TS>
