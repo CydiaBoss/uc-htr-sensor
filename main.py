@@ -1596,7 +1596,7 @@ class Window(Ui_MainWindow):
             return
         
         # Update Start
-        # TODO language rewrite
+        lang.LANG.values()
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):

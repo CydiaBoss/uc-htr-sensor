@@ -35,49 +35,25 @@ if __name__ == "__main__":
         app.installTranslator(sys_trans)
 
     # Look for Language Pack
-    if os.path.isfile("lang.qm"):
-        tran = QTranslator()
+    code = SETTINGS.get_setting("lang")
+    tran = QTranslator()
 
-        # Attempts to load file
-        if tran.load("lang"):
-            print('TRANS:', tran.language(), "loaded")
-            curr_lang = tran.language()
+    # Attempts to load file
+    if tran.load("lang") or tran.load(code, "lang"):
+        print('TRANS:', tran.language(), "loaded")
+        curr_lang = tran.language()
 
-            # Attempt to update qtbase
-            base_tran = QTranslator()
-            if base_tran.load(f"qtbase_{curr_lang}", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
-                print("TRANS: Correlating qtbase loaded")
+        # Attempt to update qtbase
+        base_tran = QTranslator()
+        if base_tran.load(f"qtbase_{curr_lang}", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
+            print("TRANS: Correlating qtbase loaded")
 
-                # Install new qtbase language
-                app.installTranslator(base_tran)
+            # Install new qtbase language
+            app.installTranslator(base_tran)
 
-            # Install Pack
-            curr_lang_code = curr_lang
-            app.installTranslator(tran)
-
-    # Otherwise, look at settings
-    else:
-        code = SETTINGS.get_setting("lang")
-
-        if code is not None:
-            tran = QTranslator()
-
-            # Attempts to load file
-            if tran.load(code, "lang"):
-                print('TRANS:', tran.language(), "loaded")
-                curr_lang = tran.language()
-
-                # Attempt to update qtbase
-                base_tran = QTranslator()
-                if base_tran.load(f"qtbase_{curr_lang}", QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)):
-                    print("TRANS: Correlating qtbase loaded")
-
-                    # Install new qtbase language
-                    app.installTranslator(base_tran)
-
-                # Install Pack
-                curr_lang_code = curr_lang
-                app.installTranslator(tran)
+        # Install Pack
+        curr_lang_code = curr_lang
+        app.installTranslator(tran)
 
     # Update language dictionary
     SETTINGS.update_setting("lang", curr_lang_code)
