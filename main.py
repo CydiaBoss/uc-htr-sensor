@@ -8,7 +8,7 @@ from misc.constants import *
 from misc.data import DataSaving
 from misc.tools import active_ports, identical_list, noise_filtering
 
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame, QApplication
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -32,6 +32,14 @@ class Window(Ui_MainWindow):
     def __init__(self, parent=None):
         # Setup Basic Stuff
         super().__init__(parent)
+
+        # Grab App Instance
+        self.app = QApplication.instance()
+
+        # Language
+        self.setup_lang()
+
+        # Setup UI
         self.setupUi(self)
 
         # Disable All
@@ -57,6 +65,43 @@ class Window(Ui_MainWindow):
         # Set Size
         self.setMinimumSize(QtCore.QSize(MIN_WIDTH, MIN_HEIGHT))
         self.resize(MIN_WIDTH, MIN_HEIGHT)
+
+    def setup_lang(self):
+        """
+        Setup all language stuff
+        """
+        # Grab System Language
+        curr_lang_code = ""
+        self.sys_trans = QtCore.QTranslator()
+        if self.sys_trans.load(QtCore.QLocale.system(), "qtbase", "_", QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryLocation.TranslationsPath)):
+            print("TRANS: system language loaded")
+            curr_lang_code = self.sys_trans.language()
+            self.app.installTranslator(self.sys_trans)
+
+        # Look for Language Pack
+        code = SETTINGS.get_setting("lang")
+        self.trans = QtCore.QTranslator()
+
+        # Attempts to load file
+        if self.trans.load("lang") or self.trans.load(code, "lang"):
+            print('TRANS:', self.trans.language(), "loaded")
+            curr_lang = self.trans.language()
+
+            # Attempt to update qtbase
+            self.base_trans = QtCore.QTranslator()
+            if self.base_trans.load(f"qtbase_{curr_lang}", QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryLocation.TranslationsPath)):
+                print("TRANS: Correlating qtbase loaded")
+
+                # Install new qtbase language
+                self.app.installTranslator(self.base_trans)
+
+            # Install Pack
+            curr_lang_code = curr_lang
+            self.app.installTranslator(self.trans)
+
+        # Update language dictionary
+        SETTINGS.update_setting("lang", curr_lang_code)
+        lang.retranslate_lang()
 
     def setup_htr_plots(self):
         '''
@@ -1569,7 +1614,7 @@ class Window(Ui_MainWindow):
     def on_action_Change_Language_triggered(self):
             
         # Load all lang files
-        lang_files = []
+        lang_files : list[QtCore.QTranslator] = []
         curr_index = -1
         i = 0
         for file in os.listdir("lang"):
@@ -1589,14 +1634,32 @@ class Window(Ui_MainWindow):
                     i += 1
 
         # Provide options to user
-        lang_select = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [lang.LANG[x.language()[:2]] for x in lang_files], curr_index, False)
+        lang_select = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [f"{lang.LANG[x.language()[:2]]} | {x.language()}" for x in lang_files], curr_index, False)
 
         # Return if cancelled
         if not lang_select[1]:
             return
         
         # Update Start
-        lang.LANG.values()
+        lang_code = lang_select[0].split(" | ")[1]
+        SETTINGS.update_setting("lang", lang_code)
+
+        # Update Translator
+        for lang_f in lang_files:
+
+            # Ignore Wrong Selection
+            if lang_code not in lang_f.language():
+                continue
+
+            # Remove old languages
+            self.app.removeTranslator(self.trans)
+            self.app.removeTranslator(self.base_trans)
+
+            # Find New Base Translation
+            # TODO
+
+            # Install new languages
+            self.app.install
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
