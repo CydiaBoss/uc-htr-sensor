@@ -2,6 +2,7 @@ import os, re, time
 from datetime import datetime
 from typing import Union
 
+from misc import lang
 from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester, RSensorCtrl
 from misc.constants import *
 from misc.data import DataSaving
@@ -29,9 +30,6 @@ _translate = QtCore.QCoreApplication.translate
 class Window(Ui_MainWindow):
 
     def __init__(self, parent=None):
-        # Initiate resources
-        main_rc.qInitResources()
-
         # Setup Basic Stuff
         super().__init__(parent)
         self.setupUi(self)
@@ -1569,24 +1567,25 @@ class Window(Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_action_Change_Language_triggered(self):
-        # Check lang folder for languages
+            
+        # Load all lang files
         lang_files = []
         for file in os.listdir("lang"):
             # Ignore if directory
-            if not os.path.isfile(f"lang{os.sep}{file}"):
+            if not os.path.isfile(f"lang/{file}"):
                 continue
 
             # Record if qm
             if file.endswith(".qm"):
                 # QTranslate
-                q_lang_temp = QtCore.QTranslator()
+                trans_temp = QtCore.QTranslator()
                 print("loading", file)
-                if q_lang_temp.load(file, "lang"):
-                    print("loaded", q_lang_temp.language())
-                    lang_files.append(q_lang_temp)
+                if trans_temp.load(file, "lang"):
+                    print("loaded", lang.LANG[trans_temp.language()[:2]])
+                    lang_files.append(trans_temp)
 
         # Provide options to user
-        demo = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [x.language() for x in lang_files], editable=False)
+        demo = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [lang.LANG[x.language()[:2]] for x in lang_files], editable=False)
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):

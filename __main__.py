@@ -3,6 +3,7 @@ import ctypes, sys
 
 from multiprocessing import freeze_support 
 
+from misc import lang
 from misc.constants import APPID
 from misc.logger import Logger
 
@@ -50,6 +51,9 @@ if __name__ == "__main__":
 
             # Install Pack
             app.installTranslator(tran)
+
+    # Update language dictionary
+    lang.retranslate_lang()
 
     win = Window()
 
