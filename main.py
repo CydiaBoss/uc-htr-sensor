@@ -22,8 +22,6 @@ from pglive.sources.live_axis import LiveAxis
 
 from nidaqmx.system.system import System
 
-import main_rc
-
 # Translate Component
 _translate = QtCore.QCoreApplication.translate
 
@@ -70,6 +68,23 @@ class Window(Ui_MainWindow):
         """
         Setup all language stuff
         """
+        # Setup Lang Variable if needed
+        if not hasattr(self, "sys_trans"):
+            self.sys_trans : QtCore.QTranslator = None
+            self.base_trans : QtCore.QTranslator = None
+            self.trans : QtCore.QTranslator = None
+
+        # Reset if needed
+        if self.sys_trans is not None:
+            self.app.removeTranslator(self.sys_trans)
+            self.sys_trans = None
+        if self.base_trans is not None:
+            self.app.removeTranslator(self.base_trans)
+            self.base_trans = None
+        if self.trans is not None:
+            self.app.removeTranslator(self.trans)
+            self.trans = None
+
         # Grab System Language
         curr_lang_code = ""
         self.sys_trans = QtCore.QTranslator()
@@ -83,7 +98,7 @@ class Window(Ui_MainWindow):
         self.trans = QtCore.QTranslator()
 
         # Attempts to load file
-        if self.trans.load("lang") or self.trans.load(code, "lang"):
+        if self.trans.load(code, "lang") or self.trans.load("lang"):
             print('TRANS:', self.trans.language(), "loaded")
             curr_lang = self.trans.language()
 
@@ -357,9 +372,6 @@ class Window(Ui_MainWindow):
         # Setup Style
         # QProgressBar
         self.setStyleSheet(QPB_DEFAULT_STYLE)
-
-        # Update Ohm SI Mult
-        self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     def setup_signals(self):
         """
@@ -1644,22 +1656,11 @@ class Window(Ui_MainWindow):
         lang_code = lang_select[0].split(" | ")[1]
         SETTINGS.update_setting("lang", lang_code)
 
-        # Update Translator
-        for lang_f in lang_files:
+        # Re-setup lang
+        self.setup_lang()
 
-            # Ignore Wrong Selection
-            if lang_code not in lang_f.language():
-                continue
-
-            # Remove old languages
-            self.app.removeTranslator(self.trans)
-            self.app.removeTranslator(self.base_trans)
-
-            # Find New Base Translation
-            # TODO
-
-            # Install new languages
-            self.app.install
+        # Retranslate all
+        self.retranslateUi(self)
 
     @QtCore.pyqtSlot()
     def on_action_Reset_Software_triggered(self):
@@ -1670,8 +1671,7 @@ class Window(Ui_MainWindow):
             return
 
         # Language Reload
-        self.retranslateUi()
-        lang.retranslate_lang()
+        self.retranslateUi(self)
         
         # Disable All
         self.disable_all_ctrls()
@@ -1894,3 +1894,21 @@ class Window(Ui_MainWindow):
         else:
             a0.ignore() 
             
+    def retranslateUi(self, MainWindow):
+        """
+        Retranslates all UI components as needed
+        """
+        # Update LANG dict
+        lang.retranslate_lang()
+
+        # Retranslate Graphs
+        self.setup_htr_plots()
+        self.setup_qcm_plots()
+        if hasattr(self, "multi_mode") and self.multi_mode:
+            self.setup_qcm_plots_multi()
+            
+        # Original Retranslate
+        super().retranslateUi(MainWindow)
+
+        # Translate Custom
+        self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
