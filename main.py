@@ -1475,15 +1475,39 @@ class Window(Ui_MainWindow):
 
         # Start DataSaving object
         self.data_saver = DataSaving(file_name=file_location[0].strip())
-        self.data_saver.set_htr(self.htr_port is not None)
-        self.data_saver.set_r(self.r_device is not None)
-        self.data_saver.set_qcm(self.qcm_port is not None and self.qcm_calibrated)
-        if self.multi_mode:
-            self.data_saver.set_freqs(self.peaks)
-        else:
-            self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
 
-        # TODO make thread to feed queues
+        # Fill up the queue
+        if self.htr_port is not None:
+            self.data_saver.set_htr(True)
+            [self.data_saver.htr_humid.put(x) for x in humidity]
+            [self.data_saver.htr_temp.put(x) for x in htr_temperature]
+
+            # Ignore resistance if off
+            if self.r_device is None:
+                [self.data_saver.htr_resist.put(x) for x in resistance]
+
+            # Time
+            [self.data_saver.htr_time.put(x) for x in self.htr_time]
+        else:
+            self.data_saver.set_htr(False)
+
+        if self.r_device is not None:
+            self.data_saver.set_r(True)
+            [self.data_saver.r_resist.put(x) for x in resistance]
+
+            # Time
+            [self.data_saver.r_time.put(x) for x in self.r_time]
+        else:
+            self.data_saver.set_r(False)
+
+        if self.qcm_port is not None and self.qcm_calibrated:
+            self.data_saver.set_qcm(True)
+            if self.multi_mode:
+                self.data_saver.set_freqs(self.peaks)
+            else:
+                self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
+        else:
+            self.data_saver.set_qcm(False)
 
         # Data Saving Thread
         # Setup
