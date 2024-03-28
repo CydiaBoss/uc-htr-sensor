@@ -1926,6 +1926,9 @@
      <addaction name="action_Disconnect"/>
     </widget>
     <widget class="QMenu" name="menu_Export">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>&amp;Export</string>
      </property>

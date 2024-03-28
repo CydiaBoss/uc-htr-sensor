@@ -817,13 +817,14 @@ class Window(Ui_MainWindow):
             else:
                 self.data_saver.htr_resist.put(r_data)
 
+        # Record
+        self.raw_resistance = np.append(self.raw_resistance, r_data)
+
         # Don't do anything for inf
         if r_data == np.inf:
-            self.raw_resistance = np.append(self.raw_resistance, r_data)
             return
         
         # Add to list
-        self.raw_resistance = np.append(self.raw_resistance, r_data)
         self.resistance = np.append(self.resistance, r_data)
         self.resistance_time = np.append(self.resistance_time, time_at)
 
@@ -1337,7 +1338,6 @@ class Window(Ui_MainWindow):
         if self.data_saver is not None:
             self.data_saver.qcm_time.put(temp_time)
 
-
     def frequency_processing(self, data : float, idx : int=0):
         """
         Processes the frequency values from qcm
@@ -1450,6 +1450,54 @@ class Window(Ui_MainWindow):
         # Start
         self.data_saving_thread.start()
 
+    def export_data(self, noise_cancel=1):
+        """
+        Exports the recorded data at the moment
+        """
+        # Ask for file location
+        file_location = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
+
+        # Ignore if no file location (cancelled)
+        if file_location[0].strip() == "":
+            return
+
+        # Prep temp data storage for noise cancel
+        # HTR
+        resistance = self.resistance
+        humidity = self.humidity
+        htr_temperature = self.htr_temperature
+
+        # Noise cancel the data if requested
+        if noise_cancel > 1:
+            resistance = noise_filtering(resistance, noise_cancel)
+            humidity = noise_filtering(humidity, noise_cancel)
+            htr_temperature = noise_filtering(htr_temperature, noise_cancel)
+
+        # Start DataSaving object
+        self.data_saver = DataSaving(file_name=file_location[0].strip())
+        self.data_saver.set_htr(self.htr_port is not None)
+        self.data_saver.set_r(self.r_device is not None)
+        self.data_saver.set_qcm(self.qcm_port is not None and self.qcm_calibrated)
+        if self.multi_mode:
+            self.data_saver.set_freqs(self.peaks)
+        else:
+            self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
+
+        # Data Saving Thread
+        # Setup
+        self.data_saving_thread = QtCore.QThread(self)
+        self.data_saving_timer = QtCore.QTimer(self)
+
+        # Connect Signals
+        self.data_saving_timer.timeout.connect(self.data_saver.write)
+        self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
+
+        # Start File Writing
+        self.data_saver.open()
+
+        # Start
+        self.data_saving_thread.start()
+
     def stop_sensors(self):
         """
         Stops all the processes in process
@@ -1540,6 +1588,14 @@ class Window(Ui_MainWindow):
         except:
             self.statusBar().showMessage(_translate("MainWindow", "Could not open data folder. Please change to a new data folder."))
 
+    @QtCore.pyqtSlot()
+    def on_action_Raw_Data_triggered(self):
+        self.export_data()
+
+    @QtCore.pyqtSlot()
+    def on_action_Noise_Reduced_Data_triggered(self):
+        self.export_data(self.noise_reduce)
+        
     @QtCore.pyqtSlot()
     def on_action_Quit_triggered(self):
         self.close()
@@ -1764,10 +1820,10 @@ class Window(Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_file_select_clicked(self):
         # Get File
-        self.file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
+        file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
 
         # Save
-        self.file_dest.setText(self.file_dialog[0])
+        self.file_dest.setText(file_dialog[0])
 
     @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):
@@ -1858,6 +1914,7 @@ class Window(Ui_MainWindow):
 
         # Enable button
         self.start_btn.setEnabled(True)
+        self.menu_Export.setEnabled(True)
 
         # Update Status
         self.update_perm_status(_translate("MainWindow", "Monitoring Stopped") + ";" + _translate("MainWindow", "Ready"))
@@ -1867,6 +1924,7 @@ class Window(Ui_MainWindow):
         # Disable button
         self.reset_btn.setEnabled(False)
         self.stop_btn.setEnabled(False)
+        self.menu_Export.setEnabled(False)
         self.clear_plots()
         self.clear_data()
         self.stop_sensors()

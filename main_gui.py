@@ -974,6 +974,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.menu_DAQ = QtWidgets.QMenu(self.menu_File)
         self.menu_DAQ.setObjectName("menu_DAQ")
         self.menu_Export = QtWidgets.QMenu(self.menu_File)
+        self.menu_Export.setEnabled(False)
         self.menu_Export.setObjectName("menu_Export")
         self.menu_Edit = QtWidgets.QMenu(self.menubar)
         self.menu_Edit.setObjectName("menu_Edit")
