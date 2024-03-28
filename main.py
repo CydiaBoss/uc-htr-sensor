@@ -1483,6 +1483,8 @@ class Window(Ui_MainWindow):
         else:
             self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
 
+        # TODO make thread to feed queues
+
         # Data Saving Thread
         # Setup
         self.data_saving_thread = QtCore.QThread(self)
