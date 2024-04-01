@@ -1454,16 +1454,21 @@ class Window(Ui_MainWindow):
         """
         Exports the recorded data at the moment
         """
+        # Ask for file location
+        file_location = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
+
+        # Ignore if no file location (cancelled)
+        if file_location[0].strip() == "":
+            self.statusBar().showMessage(_translate("MainWindow", "No file destination selected"), 5000)
+            return
+
         try:
-            # Ask for file location
-            file_location = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
+            # Reset indicators
+            self.menu_Export.setEnabled(False)
+            self.statusBar().showMessage(_translate("MainWindow", "Preparing to write to file the requested data"))
+            self.progress_bar.setStyleSheet("")
 
-            # Ignore if no file location (cancelled)
-            if file_location[0].strip() == "":
-                self.statusBar().showMessage(_translate("MainWindow", "No file destination selected"), 5000)
-                return
-
-            # Prep temp data storage for noise cancel
+            # Prep data storage for noise cancel
             # HTR
             resistance = self.resistance
             humidity = self.humidity
@@ -1500,7 +1505,7 @@ class Window(Ui_MainWindow):
             # Start Filling Queues
             # Info stuff
             self.statusBar().showMessage(_translate("MainWindow", "Writing data to file..."))
-            self.progress_bar.setStyleSheet("")
+
             max_rows = max(resistance.size, humidity.size, self.frequency[0].size)
             for i in range(max_rows):
                 # If HTR has data
@@ -1555,6 +1560,9 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage(_translate("MainWindow", "Data export error has occurred"))
             self.update_perm_status(_translate("MainWindow", "Data Export Failed"))
             self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
+
+        # Release
+        self.menu_Export.setEnabled(True)
 
     def stop_sensors(self):
         """
@@ -1702,7 +1710,6 @@ class Window(Ui_MainWindow):
         # Update
         if volt[1]:
             SETTINGS.update_setting("ref_volt", str(volt[0]))
-            # TODO
             self.statusBar().showMessage(_translate("MainWindow", "Reference voltage updated to {volt}V").format(volt=volt[0]), 5000)
 
             # Update R Sensor if needed
