@@ -349,8 +349,8 @@ class Window(Ui_MainWindow):
         self.htr_time = np.array([])
         self.r_time = np.array([])
         # QCM
-        self.frequency = np.array([])
-        self.dissipation = np.array([])
+        self.frequency = [np.array([]), ] * 5
+        self.dissipation = [np.array([]), ] * 5
         self.qcm_temperature = np.array([])
         self.qcm_time = np.array([])
 
@@ -1346,7 +1346,7 @@ class Window(Ui_MainWindow):
         if idx >= len(self.peaks):
             return
 
-        self.frequency = np.append(self.frequency, data)
+        self.frequency[idx] = np.append(self.frequency[idx], data)
 
         # Queue for data saving if needed
         if self.data_saver is not None:
@@ -1360,7 +1360,7 @@ class Window(Ui_MainWindow):
         if idx >= len(self.peaks):
             return
         
-        self.dissipation = np.append(self.dissipation, data)
+        self.dissipation[idx] = np.append(self.dissipation[idx], data)
 
         # Queue for data saving if needed
         if self.data_saver is not None:
@@ -1454,75 +1454,107 @@ class Window(Ui_MainWindow):
         """
         Exports the recorded data at the moment
         """
-        # Ask for file location
-        file_location = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
+        try:
+            # Ask for file location
+            file_location = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
 
-        # Ignore if no file location (cancelled)
-        if file_location[0].strip() == "":
-            return
+            # Ignore if no file location (cancelled)
+            if file_location[0].strip() == "":
+                self.statusBar().showMessage(_translate("MainWindow", "No file destination selected"), 5000)
+                return
 
-        # Prep temp data storage for noise cancel
-        # HTR
-        resistance = self.resistance
-        humidity = self.humidity
-        htr_temperature = self.htr_temperature
+            # Prep temp data storage for noise cancel
+            # HTR
+            resistance = self.resistance
+            humidity = self.humidity
+            htr_temperature = self.htr_temperature
 
-        # Noise cancel the data if requested
-        if noise_cancel > 1:
-            resistance = noise_filtering(resistance, noise_cancel)
-            humidity = noise_filtering(humidity, noise_cancel)
-            htr_temperature = noise_filtering(htr_temperature, noise_cancel)
+            # Noise cancel the data if requested
+            if noise_cancel > 1:
+                resistance = noise_filtering(resistance, noise_cancel)
+                humidity = noise_filtering(humidity, noise_cancel)
+                htr_temperature = noise_filtering(htr_temperature, noise_cancel)
 
-        # Start DataSaving object
-        self.data_saver = DataSaving(file_name=file_location[0].strip())
+            # Start DataSaving object
+            self.data_saver = DataSaving(file_name=file_location[0].strip())
+            self.data_saver.set_htr(self.htr_port is not None)
+            self.data_saver.set_r(self.r_device is not None)
+            self.data_saver.set_qcm(self.qcm_port is not None and self.qcm_calibrated)
+            self.data_saver.set_freqs(self.peaks if self.multi_mode else [self.peaks[self.freq_list.currentIndex()], ])
 
-        # Fill up the queue
-        if self.htr_port is not None:
-            self.data_saver.set_htr(True)
-            [self.data_saver.htr_humid.put(x) for x in humidity]
-            [self.data_saver.htr_temp.put(x) for x in htr_temperature]
+            # Data Saving Thread
+            # Setup
+            self.data_saving_thread = QtCore.QThread(self)
+            self.data_saving_timer = QtCore.QTimer(self)
 
-            # Ignore resistance if off
-            if self.r_device is None:
-                [self.data_saver.htr_resist.put(x) for x in resistance]
+            # Connect Signals
+            self.data_saving_timer.timeout.connect(self.data_saver.write)
+            self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
 
-            # Time
-            [self.data_saver.htr_time.put(x) for x in self.htr_time]
-        else:
-            self.data_saver.set_htr(False)
+            # Start File Writing
+            self.data_saver.open()
 
-        if self.r_device is not None:
-            self.data_saver.set_r(True)
-            [self.data_saver.r_resist.put(x) for x in resistance]
+            # Start
+            self.data_saving_thread.start()
 
-            # Time
-            [self.data_saver.r_time.put(x) for x in self.r_time]
-        else:
-            self.data_saver.set_r(False)
+            # Start Filling Queues
+            # Info stuff
+            self.statusBar().showMessage(_translate("MainWindow", "Writing data to file..."))
+            self.progress_bar.setStyleSheet("")
+            max_rows = max(resistance.size, humidity.size, self.frequency[0].size)
+            for i in range(max_rows):
+                # If HTR has data
+                if humidity.size > i:
+                    self.data_saver.htr_time.put(self.htr_time[i])
+                    self.data_saver.htr_humid.put(humidity[i])
+                    self.data_saver.htr_temp.put(htr_temperature[i])
 
-        if self.qcm_port is not None and self.qcm_calibrated:
-            self.data_saver.set_qcm(True)
-            if self.multi_mode:
-                self.data_saver.set_freqs(self.peaks)
-            else:
-                self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
-        else:
-            self.data_saver.set_qcm(False)
+                    # Ignore htr_resist if not needed
+                    if self.r_device is None:
+                        self.data_saver.htr_resist.put(resistance[i])
 
-        # Data Saving Thread
-        # Setup
-        self.data_saving_thread = QtCore.QThread(self)
-        self.data_saving_timer = QtCore.QTimer(self)
+                # If R has data
+                if self.r_device is not None and self.resistance.size > i:
+                    self.data_saver.r_time.put(self.r_time[i])
+                    self.data_saver.r_resist.put(resistance[i])
 
-        # Connect Signals
-        self.data_saving_timer.timeout.connect(self.data_saver.write)
-        self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
+                # If QCM has data
+                if self.frequency[0].size > i:
+                    self.data_saver.qcm_time.put(self.qcm_time[i])
+                    self.data_saver.qcm_temp.put(self.qcm_temperature[i])
 
-        # Start File Writing
-        self.data_saver.open()
+                    # Always has some data
+                    self.data_saver.qcm_freq[0].put(self.frequency[0][i])
+                    self.data_saver.qcm_diss[0].put(self.dissipation[0][i])
 
-        # Start
-        self.data_saving_thread.start()
+                    # If multi, do this
+                    if self.multi_mode:
+                        for j in range(1, self.peaks):
+                            self.data_saver.qcm_freq[j].put(self.frequency[j][i])
+                            self.data_saver.qcm_diss[j].put(self.dissipation[j][i])
+
+                # Update Status
+                self.update_perm_status(_translate("MainWindow", "Queuing row #{row_num}").format(row_num=i+1))
+                self.progress_bar.setValue(int((i+1)/max_rows))
+
+            # Run Closing Procedures
+            self.data_saving_timer.stop()
+            self.data_saving_thread.quit()
+            self.data_saving_timer.deleteLater()
+            self.data_saving_timer = None
+            self.data_saving_thread = None
+            self.data_saver.close()
+            self.data_saver = None
+
+            # Done notification
+            self.statusBar().showMessage(_translate("MainWindow", "Data exported successfully to {file}").format(file=file_location[0]))
+            self.update_perm_status(_translate("MainWindow", "Data Exported"))
+            self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+
+        except:
+            self.statusBar().showMessage(_translate("MainWindow", "Data export error has occurred"))
+            self.update_perm_status(_translate("MainWindow", "Data Export Failed"))
+            self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
 
     def stop_sensors(self):
         """
