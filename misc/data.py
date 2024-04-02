@@ -213,6 +213,10 @@ class DataSaving(QObject):
 		"""
 		Flushes the remaining data and closes the file
 		"""
+		# Ignore if already closed
+		if self.file.closed:
+			return
+
 		# Store for optimzation
 		htr_empty = self.is_htr_empty()
 		r_empty = self.is_r_empty()

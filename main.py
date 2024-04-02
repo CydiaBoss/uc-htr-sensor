@@ -918,7 +918,7 @@ class Window(Ui_MainWindow):
         self.qcm_ctrl.moveToThread(self.qcm_thread)
 
         # Reset
-        self.calibration_bar.setStyleSheet("")
+        self.reset_calibration_bar()
 
         # Setup Timer for Testing
         self.qcm_timer = QtCore.QTimer(self)
@@ -1465,13 +1465,12 @@ class Window(Ui_MainWindow):
         # Otherwise, Reset all
         self.data_saving_timer = None
         self.data_saving_thread = None
-        self.data_saver = None
 
         try:
             # Reset indicators
             self.menu_Export.setEnabled(False)
             self.statusBar().showMessage(_translate("MainWindow", "Preparing to write to file the requested data"))
-            self.progress_bar.setStyleSheet("")
+            self.reset_progress_bar()
 
             # Prep data storage for noise cancel
             # HTR
@@ -1500,7 +1499,6 @@ class Window(Ui_MainWindow):
             # Connect Signals
             self.data_saving_timer.timeout.connect(self.data_saver.write)
             self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
-            self.data_saving_thread.finished.connect(self.data_saver.close)
 
             # Start File Writing
             self.data_saver.open()
@@ -1552,6 +1550,8 @@ class Window(Ui_MainWindow):
             self.data_saving_timer.stop()
             self.data_saving_thread.quit()
             self.data_saving_timer.deleteLater()
+            self.data_saver.close()
+            self.data_saver = None
 
             # Done notification
             self.statusBar().showMessage(_translate("MainWindow", "Data exported successfully to {file}").format(file=file_location[0]))
@@ -1600,13 +1600,15 @@ class Window(Ui_MainWindow):
 
         # Stop Data Saving
         if self.data_saving_thread is not None:
-            self.data_saving_timer.stop()
             self.data_saving_thread.quit()
-            self.data_saving_timer.deleteLater()
-            self.data_saving_timer = None
             self.data_saving_thread = None
-            self.data_saver.close()
-            self.data_saver = None
+            if self.data_saving_timer is not None:
+                self.data_saving_timer.stop()
+                self.data_saving_timer.deleteLater()
+                self.data_saving_timer = None
+            if self.data_saver is not None:
+                self.data_saver.close()
+                self.data_saver = None
     
     # Slots
     @QtCore.pyqtSlot()
@@ -1971,7 +1973,8 @@ class Window(Ui_MainWindow):
             self.data_saver.set_r(False)
 
         # Start QCM
-        if self.qcm_port is not None and self.qcm_calibrated:
+        qcm_active = self.qcm_port is not None and self.qcm_calibrated
+        if qcm_active:
             self.start_qcm()
         elif self.auto_export.isChecked():
             self.data_saver.set_qcm(False)
@@ -1979,6 +1982,11 @@ class Window(Ui_MainWindow):
         # Data Saving Thread
         if self.auto_export.isChecked():
             self.start_data_saving()
+
+        # Progress Bar Stuff
+        if not qcm_active:
+            self.progress_bar.setValue(100)
+            self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
 
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):
