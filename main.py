@@ -1826,6 +1826,36 @@ class Window(Ui_MainWindow):
         # Startup Memory Stuff
         self.setup_memory()
 
+    # View Stuff
+    @QtCore.pyqtSlot()
+    def on_action_Resistance_triggered(self):
+        self.resist_plot.setVisible(self.action_Resistance.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Humidity_triggered(self):
+        self.humd_plot.setVisible(self.action_Humidity.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Temperature_triggered(self):
+        self.temp_plot.setVisible(self.action_Temperature.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Amplitude_triggered(self):
+        self.amp_plot.setVisible(self.action_Amplitude.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Phase_triggered(self):
+        self.phase_plot.setVisible(self.action_Phase.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Frequency_triggered(self):
+        self.freq_plot.setVisible(self.action_Frequency.isChecked())
+
+    @QtCore.pyqtSlot()
+    def on_action_Dissipation_triggered(self):
+        self.dissipate_plot.setVisible(self.action_Dissipation.isChecked())
+
+    # Button Signals
     @QtCore.pyqtSlot(int)
     def on_htr_serial_currentIndexChanged(self, _ : int):
         if self.htr_serial.currentText() != self.htr_port:
