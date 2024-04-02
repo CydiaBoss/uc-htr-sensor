@@ -105,30 +105,34 @@
        <number>2</number>
       </property>
       <item row="0" column="0" rowspan="2">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="htr_layout">
-          <item>
+       <layout class="QGridLayout" name="plot_layout" rowstretch="4,3,3">
+        <item row="2" column="0">
+         <layout class="QGridLayout" name="qcm_layout_bottom">
+          <item row="0" column="0">
+           <widget class="LivePlotWidget" name="freq_plot" native="true"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="LivePlotWidget" name="dissipate_plot" native="true"/>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="htr_layout">
+          <item row="0" column="0">
            <widget class="LivePlotWidget" name="resist_plot" native="true"/>
           </item>
-          <item>
+          <item row="0" column="1">
            <widget class="LivePlotWidget" name="humd_plot" native="true"/>
           </item>
-          <item>
+          <item row="0" column="2">
            <widget class="LivePlotWidget" name="temp_plot" native="true"/>
           </item>
          </layout>
         </item>
-        <item>
-         <layout class="QGridLayout" name="qcm_layout" columnminimumwidth="300,300">
+        <item row="1" column="0">
+         <layout class="QGridLayout" name="qcm_layout_top">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="amp_plot" native="true"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="LivePlotWidget" name="freq_plot" native="true"/>
-          </item>
-          <item row="1" column="1">
-           <widget class="LivePlotWidget" name="dissipate_plot" native="true"/>
           </item>
           <item row="0" column="1">
            <widget class="LivePlotWidget" name="phase_plot" native="true"/>
@@ -165,6 +169,9 @@
           </property>
           <property name="handleWidth">
            <number>2</number>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_15">
@@ -511,6 +518,9 @@
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QGridLayout" name="gridLayout_20">
