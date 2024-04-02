@@ -1741,6 +1741,12 @@ class Window(Ui_MainWindow):
 
         # Update
         if noise[1]:
+            # Update graph if needed
+            if self.noise_reduce != noise[0]:
+                self.resist_data.cb_set_data(noise_filtering(self.resistance, noise[0]), self.resistance_time)
+                self.humd_data.cb_set_data(noise_filtering(self.humidity, noise[0]), self.humidity_time)
+                self.temp_data.cb_set_data(noise_filtering(self.htr_temperature, noise[0]), self.htr_temperature_time)
+
             SETTINGS.update_setting("noise_reduce", str(noise[0]))
             self.noise_reduce = noise[0]
             self.statusBar().showMessage(_translate("MainWindow", "Noise reduction filter will now iterate {noise} times").format(noise=noise[0]), 5000)
