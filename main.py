@@ -418,7 +418,7 @@ class Window(Ui_MainWindow):
         last_file_dest = SETTINGS.get_setting("last_file_dest")
 
         if auto_export_opt is not None:
-            self.auto_export.setChecked(bool(auto_export_opt))
+            self.auto_export.setChecked(auto_export_opt == "True")
             self.file_dest.setEnabled(False)
             self.file_select.setEnabled(False)
         if last_file_dest is not None:
@@ -1461,6 +1461,11 @@ class Window(Ui_MainWindow):
         if file_location[0].strip() == "":
             self.statusBar().showMessage(_translate("MainWindow", "No file destination selected"), 5000)
             return
+        
+        # Otherwise, Reset all
+        self.data_saving_timer = None
+        self.data_saving_thread = None
+        self.data_saver = None
 
         try:
             # Reset indicators
@@ -1495,6 +1500,7 @@ class Window(Ui_MainWindow):
             # Connect Signals
             self.data_saving_timer.timeout.connect(self.data_saver.write)
             self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
+            self.data_saving_thread.finished.connect(self.data_saver.close)
 
             # Start File Writing
             self.data_saver.open()
@@ -1540,16 +1546,12 @@ class Window(Ui_MainWindow):
 
                 # Update Status
                 self.update_perm_status(_translate("MainWindow", "Queuing row #{row_num}").format(row_num=i+1))
-                self.progress_bar.setValue(int((i+1)/max_rows))
+                self.progress_bar.setValue(int((i+1)*100/max_rows))
 
             # Run Closing Procedures
             self.data_saving_timer.stop()
             self.data_saving_thread.quit()
             self.data_saving_timer.deleteLater()
-            self.data_saving_timer = None
-            self.data_saving_thread = None
-            self.data_saver.close()
-            self.data_saver = None
 
             # Done notification
             self.statusBar().showMessage(_translate("MainWindow", "Data exported successfully to {file}").format(file=file_location[0]))
@@ -1926,6 +1928,9 @@ class Window(Ui_MainWindow):
         self.disable_all_ctrls()
         self.reset_progress_bar()
 
+        # Update status
+        self.update_perm_status(_translate("MainWindow", "Ready"))
+
         # Save selection
         SETTINGS.update_setting("measurement_mode", f"{self.measure_type.currentIndex()}")
         SETTINGS.update_setting("freq_select", f"{self.freq_list.currentIndex()}")
@@ -1982,7 +1987,7 @@ class Window(Ui_MainWindow):
         self.menu_Export.setEnabled(True)
 
         # Update Status
-        self.update_perm_status(_translate("MainWindow", "Monitoring Stopped") + ";" + _translate("MainWindow", "Ready"))
+        self.update_perm_status(_translate("MainWindow", "Monitoring Stopped") + "; " + _translate("MainWindow", "Ready"))
 
     @QtCore.pyqtSlot()
     def on_reset_btn_clicked(self):
@@ -2002,7 +2007,7 @@ class Window(Ui_MainWindow):
         self.enable_start()
 
         # Update Status
-        self.update_perm_status(_translate("MainWindow", "Reset Configuration") + ";" + _translate("MainWindow", "Ready"))
+        self.update_perm_status(_translate("MainWindow", "Reset Configuration") + "; " + _translate("MainWindow", "Ready"))
 
     # Events
     def closeEvent(self, a0: QCloseEvent) -> None:
