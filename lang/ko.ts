@@ -18,6 +18,11 @@
         <source>Korean</source>
         <translation>한국어</translation>
     </message>
+    <message>
+        <location filename="../misc/lang.py" line="16"/>
+        <source>Mandarin (Simplified)</source>
+        <translation>중국어</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -282,7 +287,7 @@
         <translation>데이터의 폴더를 바꾸다 (&amp;C)</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2037"/>
+        <location filename="../main.py" line="2056"/>
         <source>Resistance</source>
         <translation>전기 저항</translation>
     </message>
@@ -347,7 +352,7 @@
         <translation>실시간 소실</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1648"/>
+        <location filename="../main.py" line="1652"/>
         <source>Not Ready</source>
         <translation>준비 다 안 됐어</translation>
     </message>
@@ -489,172 +494,172 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>지켜보고 있어요! 수명 #{sweep_num}</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1627"/>
+        <location filename="../main.py" line="1631"/>
         <source>R Ready</source>
         <translation>R를 준비 다 됐어</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2010"/>
+        <location filename="../main.py" line="2029"/>
         <source>Confirmation</source>
         <translation>확인</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1632"/>
+        <location filename="../main.py" line="1636"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
         <translation>정말로 장치 QCM을 해제하시겠습니까? 저항 센서 HTR 안에 점회됩니다.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1655"/>
+        <location filename="../main.py" line="1659"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
         <translation>데이터 폴더를 열 수 없습니다. 새로운 데이터 폴더로 변경해주세요.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1672"/>
+        <location filename="../main.py" line="1676"/>
         <source>Reference Resistor</source>
         <translation>기준 저항기</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1672"/>
+        <location filename="../main.py" line="1676"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
         <translation>샌 기준 저항과 SI 승수를 기입하시오.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1681"/>
+        <location filename="../main.py" line="1685"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
         <translation>기준 저항을 업데이트할 수 없습니다. 형식이 올바르지 않습니다. (\d+(\.\d+)?)([a-zA-Z ])여야 합니다</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1692"/>
+        <location filename="../main.py" line="1696"/>
         <source>Reference resistance updated to {resist} {resist_unit}</source>
         <translation>기준 저항기는 {resist} {resist_unit}에게 바끕녔어요</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1708"/>
+        <location filename="../main.py" line="1712"/>
         <source>Reference Voltage</source>
         <translation>기준 전압</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1708"/>
+        <location filename="../main.py" line="1712"/>
         <source>Enter the new reference voltage from the controller.</source>
         <translation>샌 기준 전압을 기입하시오.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1713"/>
+        <location filename="../main.py" line="1717"/>
         <source>Reference voltage updated to {volt}V</source>
         <translation>기준 전압은 {volt}V에게 바끕녔어요</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1722"/>
+        <location filename="../main.py" line="1726"/>
         <source>Data Folder Location</source>
         <translation>데이터의 폴더의 위치</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1733"/>
+        <location filename="../main.py" line="1737"/>
         <source>Data folder updated to {data_dir}</source>
         <translation>데이터의 폴더를 {data_dir}에게 바끕녔어요</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1738"/>
+        <location filename="../main.py" line="1742"/>
         <source>Noise Reduction</source>
         <translation>노이즈 여과</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1738"/>
+        <location filename="../main.py" line="1742"/>
         <source>Enter the number of times to apply the noise filter.</source>
         <translation>노이즈 필터를 적용할 횟수를 입력하세요.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1744"/>
+        <location filename="../main.py" line="1754"/>
         <source>Noise reduction filter will now iterate {noise} times</source>
         <translation>노이즈 감소 필터는 {noise}회 반복됩니다</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1789"/>
+        <location filename="../main.py" line="1799"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
         <translation>모든 것을 재설정하시겠습니까? 저장하지 않은 데이터는 모두 손실됩니다.</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1837"/>
+        <location filename="../main.py" line="1847"/>
         <source>Nothing to connect to...</source>
         <translation>연결할 일이 없어요...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1857"/>
+        <location filename="../main.py" line="1867"/>
         <source>Attempting to communicate with the sensors...</source>
         <translation>센서와 통신을 시도하는 중...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1888"/>
+        <location filename="../main.py" line="1898"/>
         <source>Exportation</source>
         <translation>적림</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1897"/>
+        <location filename="../main.py" line="1907"/>
         <source>Warning: Saving Disabled</source>
         <translation>경고: 잠긴 적립</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1897"/>
+        <location filename="../main.py" line="1907"/>
         <source>Are you sure you want to start without saving any data?</source>
         <translation>데이터를 저장하지 않고 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1903"/>
+        <location filename="../main.py" line="1913"/>
         <source>Warning: Missing QCM Sensor</source>
         <translation>경고: 없어진 QCM 센서</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1903"/>
+        <location filename="../main.py" line="1913"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
         <translation>QCM 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1909"/>
+        <location filename="../main.py" line="1919"/>
         <source>Warning: Missing HTR Sensor</source>
         <translation>경고: 없어진 HTR 센서</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1909"/>
+        <location filename="../main.py" line="1919"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
         <translation>HTR 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1915"/>
+        <location filename="../main.py" line="1925"/>
         <source>Warning: No Calibration</source>
         <translation>경고: 없어진 눈금</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1915"/>
+        <location filename="../main.py" line="1925"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
         <translation>QCM 센서를 교정하지 않았습니다. 그것 없이는 시작되지 않습니다. 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1921"/>
+        <location filename="../main.py" line="1931"/>
         <source>Warning: File Override</source>
         <translation>경고: 파일 재정의</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1921"/>
+        <location filename="../main.py" line="1931"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
         <translation>생성하려는 파일이 이미 존재합니다. 재정의하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1985"/>
+        <location filename="../main.py" line="2004"/>
         <source>Monitoring Stopped</source>
         <translation>모니터를 그쳤어요</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2005"/>
+        <location filename="../main.py" line="2024"/>
         <source>Ready</source>
         <translation>준비 다 됐어</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2005"/>
+        <location filename="../main.py" line="2024"/>
         <source>Reset Configuration</source>
         <translation>구성 재설정</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2010"/>
+        <location filename="../main.py" line="2029"/>
         <source>Are you sure you want to close the application?</source>
         <translation>정말로 애플리케이션을 닫으시겠습니까?</translation>
     </message>
@@ -784,12 +789,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>언어를 바꾸다 (&amp;L)</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1770"/>
+        <location filename="../main.py" line="1780"/>
         <source>Language Selection</source>
         <translation>언어의 선발</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1770"/>
+        <location filename="../main.py" line="1780"/>
         <source>Select the preferred language of choice.</source>
         <translation>원하는 언어를 선택하세요.</translation>
     </message>
@@ -799,37 +804,37 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>선택한 파일 대상이 없습니다</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1468"/>
+        <location filename="../main.py" line="1472"/>
         <source>Preparing to write to file the requested data</source>
         <translation>요청된 데이터를 파일에 쓰기 준비 중</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1507"/>
+        <location filename="../main.py" line="1511"/>
         <source>Writing data to file...</source>
         <translation>파일에 데이터를 쓰는 중...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1542"/>
+        <location filename="../main.py" line="1546"/>
         <source>Queuing row #{row_num}</source>
         <translation>대기열 #{row_num}</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1555"/>
+        <location filename="../main.py" line="1557"/>
         <source>Data exported successfully to {file}</source>
         <translation>데이터를 {file}로 성공적으로 내보냈습니다</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1556"/>
+        <location filename="../main.py" line="1558"/>
         <source>Data Exported</source>
         <translation>내보낸 데이터</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1560"/>
+        <location filename="../main.py" line="1562"/>
         <source>Data export error has occurred</source>
         <translation>데이터 내보내기 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1561"/>
+        <location filename="../main.py" line="1563"/>
         <source>Data Export Failed</source>
         <translation>데이터 내보내기 실패</translation>
     </message>

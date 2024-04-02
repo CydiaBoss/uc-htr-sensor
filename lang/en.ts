@@ -18,6 +18,11 @@
         <source>Korean</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="../misc/lang.py" line="16"/>
+        <source>Mandarin (Simplified)</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -402,7 +407,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="2037"/>
+        <location filename="../main.py" line="2056"/>
         <source>Resistance</source>
         <translation></translation>
     </message>
@@ -472,7 +477,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1648"/>
+        <location filename="../main.py" line="1652"/>
         <source>Not Ready</source>
         <translation></translation>
     </message>
@@ -613,182 +618,182 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1627"/>
+        <location filename="../main.py" line="1631"/>
         <source>R Ready</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="2010"/>
+        <location filename="../main.py" line="2029"/>
         <source>Confirmation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1632"/>
+        <location filename="../main.py" line="1636"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1655"/>
+        <location filename="../main.py" line="1659"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1672"/>
+        <location filename="../main.py" line="1676"/>
         <source>Reference Resistor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1672"/>
+        <location filename="../main.py" line="1676"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1681"/>
+        <location filename="../main.py" line="1685"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1692"/>
+        <location filename="../main.py" line="1696"/>
         <source>Reference resistance updated to {resist} {resist_unit}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1708"/>
+        <location filename="../main.py" line="1712"/>
         <source>Reference Voltage</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1708"/>
+        <location filename="../main.py" line="1712"/>
         <source>Enter the new reference voltage from the controller.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1713"/>
+        <location filename="../main.py" line="1717"/>
         <source>Reference voltage updated to {volt}V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1722"/>
+        <location filename="../main.py" line="1726"/>
         <source>Data Folder Location</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1733"/>
+        <location filename="../main.py" line="1737"/>
         <source>Data folder updated to {data_dir}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1738"/>
+        <location filename="../main.py" line="1742"/>
         <source>Noise Reduction</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1738"/>
+        <location filename="../main.py" line="1742"/>
         <source>Enter the number of times to apply the noise filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1744"/>
+        <location filename="../main.py" line="1754"/>
         <source>Noise reduction filter will now iterate {noise} times</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1770"/>
+        <location filename="../main.py" line="1780"/>
         <source>Language Selection</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1770"/>
+        <location filename="../main.py" line="1780"/>
         <source>Select the preferred language of choice.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1789"/>
+        <location filename="../main.py" line="1799"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1837"/>
+        <location filename="../main.py" line="1847"/>
         <source>Nothing to connect to...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1857"/>
+        <location filename="../main.py" line="1867"/>
         <source>Attempting to communicate with the sensors...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1888"/>
+        <location filename="../main.py" line="1898"/>
         <source>Exportation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1897"/>
+        <location filename="../main.py" line="1907"/>
         <source>Warning: Saving Disabled</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1897"/>
+        <location filename="../main.py" line="1907"/>
         <source>Are you sure you want to start without saving any data?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1903"/>
+        <location filename="../main.py" line="1913"/>
         <source>Warning: Missing QCM Sensor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1903"/>
+        <location filename="../main.py" line="1913"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1909"/>
+        <location filename="../main.py" line="1919"/>
         <source>Warning: Missing HTR Sensor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1909"/>
+        <location filename="../main.py" line="1919"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1915"/>
+        <location filename="../main.py" line="1925"/>
         <source>Warning: No Calibration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1915"/>
+        <location filename="../main.py" line="1925"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1921"/>
+        <location filename="../main.py" line="1931"/>
         <source>Warning: File Override</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1921"/>
+        <location filename="../main.py" line="1931"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1985"/>
+        <location filename="../main.py" line="2004"/>
         <source>Monitoring Stopped</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="2005"/>
+        <location filename="../main.py" line="2024"/>
         <source>Ready</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="2005"/>
+        <location filename="../main.py" line="2024"/>
         <source>Reset Configuration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="2010"/>
+        <location filename="../main.py" line="2029"/>
         <source>Are you sure you want to close the application?</source>
         <translation></translation>
     </message>
@@ -798,37 +803,37 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1468"/>
+        <location filename="../main.py" line="1472"/>
         <source>Preparing to write to file the requested data</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1507"/>
+        <location filename="../main.py" line="1511"/>
         <source>Writing data to file...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1542"/>
+        <location filename="../main.py" line="1546"/>
         <source>Queuing row #{row_num}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1555"/>
+        <location filename="../main.py" line="1557"/>
         <source>Data exported successfully to {file}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1556"/>
+        <location filename="../main.py" line="1558"/>
         <source>Data Exported</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1560"/>
+        <location filename="../main.py" line="1562"/>
         <source>Data export error has occurred</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../main.py" line="1561"/>
+        <location filename="../main.py" line="1563"/>
         <source>Data Export Failed</source>
         <translation></translation>
     </message>
