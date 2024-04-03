@@ -107,7 +107,7 @@
       <item row="0" column="0" rowspan="2">
        <layout class="QGridLayout" name="plot_layout" rowstretch="4,3,3">
         <item row="2" column="0">
-         <layout class="QGridLayout" name="qcm_layout_bottom">
+         <layout class="QGridLayout" name="qcm_layout_bottom" columnstretch="1,1">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="freq_plot" native="true"/>
           </item>
@@ -117,7 +117,7 @@
          </layout>
         </item>
         <item row="0" column="0">
-         <layout class="QGridLayout" name="htr_layout">
+         <layout class="QGridLayout" name="htr_layout" columnstretch="1,1,1">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="resist_plot" native="true"/>
           </item>
@@ -130,7 +130,7 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <layout class="QGridLayout" name="qcm_layout_top">
+         <layout class="QGridLayout" name="qcm_layout_top" columnstretch="1,1">
           <item row="0" column="0">
            <widget class="LivePlotWidget" name="amp_plot" native="true"/>
           </item>
