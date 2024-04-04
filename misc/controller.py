@@ -14,7 +14,6 @@ from misc.constants import (
     Architecture,
     OSType,
 )
-from misc.logger import Logger as Log
 
 from openqcm.core.worker import Worker
 
@@ -62,7 +61,7 @@ class RSensorCtrl(QObject):
         devices = System.local().devices
         # Device not connected
         if self.device not in devices:
-            Log.e(self.tag, "R sensor not connected to computer")
+            print(self.tag, "R sensor not connected to computer")
             return False
 
         # Save
@@ -160,7 +159,7 @@ class HTRSensorCtrl(QObject):
         Open connection to HTR
         """
         # Opening Port
-        Log.i(self.tag, "Connecting to HTR sensor...")
+        print(self.tag, "Connecting to HTR sensor...")
         self.serial = Serial(port=self.port, baudrate=self.baud, timeout=self.timeout)
 
         # Wait for Launch Message
@@ -168,7 +167,7 @@ class HTRSensorCtrl(QObject):
         while "Running" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag, "Could not connect to specified port")
+                print(self.tag, "Could not connect to specified port")
                 self.serial.close()
                 break
             tick_to_timeout += 1
@@ -176,7 +175,7 @@ class HTRSensorCtrl(QObject):
 
         if not self.serial.is_open:
             # Success
-            Log.i(self.tag, f"HTR sensor connected at port {self.port}!")
+            print(self.tag, f"HTR sensor connected at port {self.port}!")
 
             # Prep for exit
             atexit.register(self.serial.close)
@@ -259,7 +258,7 @@ class HTRSensorCtrl(QObject):
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag, "Reference resistor failed to update")
+                print(self.tag, "Reference resistor failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)
@@ -275,7 +274,7 @@ class HTRSensorCtrl(QObject):
         while "ok" not in self.read_from():
             # Timeout
             if tick_to_timeout > READ_TIMEOUT:
-                Log.e(self.tag, "Reference voltage failed to update")
+                print(self.tag, "Reference voltage failed to update")
                 break
             tick_to_timeout += 1
             time.sleep(1)

@@ -7,6 +7,7 @@ from misc.controller import HTRSensorCtrl, HTRTester, QCMSensorCtrl, QCMTester, 
 from misc.constants import *
 from misc.data import DataSaving
 from misc.tools import active_ports, identical_list, noise_filtering
+from misc.logger import Logger as Log
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame, QApplication
 from PyQt5.QtGui import QPixmap, QCloseEvent
@@ -89,7 +90,7 @@ class Window(Ui_MainWindow):
         curr_lang_code = ""
         self.sys_trans = QtCore.QTranslator()
         if self.sys_trans.load(QtCore.QLocale.system(), "qtbase", "_", QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryLocation.TranslationsPath)):
-            print("TRANS: system language loaded")
+            Log.i("Translation", "system language loaded")
             curr_lang_code = self.sys_trans.language()
             self.app.installTranslator(self.sys_trans)
 
@@ -99,13 +100,13 @@ class Window(Ui_MainWindow):
 
         # Attempts to load file
         if self.trans.load(code, "lang") or self.trans.load("lang"):
-            print('TRANS:', self.trans.language(), "loaded")
+            Log.i('Translation', self.trans.language(), "loaded")
             curr_lang = self.trans.language()
 
             # Attempt to update qtbase
             self.base_trans = QtCore.QTranslator()
             if self.base_trans.load(f"qtbase_{curr_lang}", QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryLocation.TranslationsPath)):
-                print("TRANS: Correlating qtbase loaded")
+                Log.i("Translation", "Correlating qtbase loaded")
 
                 # Install new qtbase language
                 self.app.installTranslator(self.base_trans)
@@ -160,6 +161,9 @@ class Window(Ui_MainWindow):
         self.temp_plot.show_crosshair()
         self.temp_data = DataConnector(self.temp_curve, update_rate=1.0)
         self.htr_layout.addWidget(self.temp_plot, 0, 2, 1, 1)
+
+        # Log
+        Log.i("Graph", "HTR Plots Ready")
 
     def setup_qcm_plots(self):
         '''
@@ -220,6 +224,9 @@ class Window(Ui_MainWindow):
                 colour_frame : QFrame = getattr(self, f"{c}{odd_num[i]}_colour")
                 colour_frame.setStyleSheet(f"background-color:{Constants.plot_color_multi[i]};")
 
+        # Log
+        Log.i("Graph", "QCM Plots Ready")
+
     def clear_qcm_plots_multi(self, rebuild=True):
         """
         Resets the plots for single measurements
@@ -258,6 +265,9 @@ class Window(Ui_MainWindow):
         # Reset Everything if wanted
         if rebuild:
             self.setup_htr_plots()
+
+        # Log
+        Log.i("Graph", "QCM Multi Off")
 
     def setup_qcm_plots_multi(self):
         """
@@ -298,6 +308,9 @@ class Window(Ui_MainWindow):
 
         # Signal multi mode
         self.multi_mode = True
+
+        # Log
+        Log.i("Graph", "QCM Multi On")
 
     def setup_variable(self):
         """
@@ -373,6 +386,9 @@ class Window(Ui_MainWindow):
         # QProgressBar
         self.setStyleSheet(QPB_DEFAULT_STYLE)
 
+        # Log
+        Log.i("Memory", "Variable Initialized")
+
     def setup_signals(self):
         """
         Setup all essential connections
@@ -383,6 +399,9 @@ class Window(Ui_MainWindow):
 
         # Measurement Selection
         self.measure_type.currentIndexChanged.connect(lambda : self.freq_list.setEnabled(self.measure_type.currentIndex() == 0))
+
+        # Log
+        Log.i("Signal", "Signals Ready")
 
     def setup_memory(self):
         """
@@ -423,6 +442,9 @@ class Window(Ui_MainWindow):
             self.file_select.setEnabled(False)
         if last_file_dest is not None:
             self.file_dest.setText(last_file_dest)
+
+        # Log
+        Log.i("Memory", "Previous Settings Restored")
 
     def disable_all_ctrls(self):
         """
@@ -482,6 +504,9 @@ class Window(Ui_MainWindow):
         if self.r_device is not None:
             self.action_Disconnect.setEnabled(True)
 
+        # Log
+        Log.i("Control", "Ports Ready")
+
     def enable_daq_indicator(self):
         """
         Control DAQ indicator
@@ -489,6 +514,9 @@ class Window(Ui_MainWindow):
         self.daq_label.setEnabled(True)
         self.daq_status.setEnabled(True)
         self.daq_device.setEnabled(True)
+
+        # Log
+        Log.i("Control", "DAQ Ready")
 
     def disable_daq_indicator(self):
         """
@@ -507,6 +535,9 @@ class Window(Ui_MainWindow):
         self.qc_type.setEnabled(True)
         self.calibrate_btn.setEnabled(True)
 
+        # Log
+        Log.i("Control", "Calibiration Ready")
+
     def fill_frequency_list(self):
         """
         Fills the frequency list from the file
@@ -521,6 +552,10 @@ class Window(Ui_MainWindow):
 
             for peak in self.peaks:
                 self.freq_list.addItem(f"{peak} Hz")
+
+            # Log
+            Log.i("Control", "Frequency List Filled")
+
         except FileNotFoundError:
             pass
 
@@ -536,6 +571,9 @@ class Window(Ui_MainWindow):
         if self.measure_type.currentIndex() == 0:
             self.freq_list.setEnabled(True)
 
+        # Log
+        Log.i("Control", "Measurements Ready")
+
     def enable_export(self):
         """
         Enable all export ctrls
@@ -550,11 +588,17 @@ class Window(Ui_MainWindow):
             # Trigger slot
             self.on_auto_export_clicked()
 
+        # Log
+        Log.i("Control", "Export Ready")
+
     def enable_start(self):
         """
         Enable all start ctrls
         """
         self.start_btn.setEnabled(True)
+
+        # Log
+        Log.i("Control", "Start Ready")
 
     def update_ports(self):
         """
@@ -598,12 +642,19 @@ class Window(Ui_MainWindow):
         # Update
         self.statusBar().showMessage(_translate("MainWindow", "New Ports Discovered"), 5000)
 
+        # Log
+        Log.i("Control", "New Ports:", *self.ports)
+
     def look_for_daq(self):
         """
         Detect the DAQ sensor
         """
         # Look for DAQs for resistance replacement
         if len(System.local().devices) > 0:
+
+            # Log
+            Log.i("Control", "New DAQ Detected")
+
             r_daq = QInputDialog.getItem(self, _translate("MainWindow", "DAQ Detected"), _translate("MainWindow", "It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?\nThe HTR's resistor sensor will be disabled if so."), [x.name for x in System.local().devices], editable=False)
             
             # Look for r_daq
@@ -613,6 +664,9 @@ class Window(Ui_MainWindow):
                 # Success
                 self.statusBar().showMessage(_translate('MainWindow', 'DAQ {daq_name} selected').format(daq_name=r_daq[0]), 5000)
 
+                # Log
+                Log.i("Control", "DAQ", r_daq[0], "Selected")
+
         else:
             self.statusBar().showMessage(_translate("MainWindow", "No DAQ detected"), 5000)
 
@@ -621,6 +675,7 @@ class Window(Ui_MainWindow):
         Update the status info box
         """
         self.perm_status.setText(f"<font color=#0000ff > {_translate('MainWindow', 'Status')} </font>" + msg)
+        Log.i("Status", msg)
 
     def port_conflict_detection(self):
         """
@@ -671,6 +726,8 @@ class Window(Ui_MainWindow):
         if not results:
             self.htr_status.setPixmap(QPixmap(":/main/cross.png"))
             self.statusBar().showMessage(_translate("MainWindow", "Port {port} is not the HTR").format(port=self.htr_serial.currentText()), 5000)
+
+            Log.w("Control", "HTR failed to connect")
         else:
             self.htr_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(_translate("MainWindow", "Port {port} is the HTR").format(port=self.htr_serial.currentText()), 5000)
@@ -679,6 +736,8 @@ class Window(Ui_MainWindow):
             SETTINGS.update_setting("last_htr_port", self.htr_port)
             self.enable_export()
             self.enable_start()
+
+            Log.i("Control", "HTR connected")
 
         # Unlock
         if self.qcm_serial.isEnabled() or self.qcm_serial.currentIndex() == 0:
@@ -722,12 +781,16 @@ class Window(Ui_MainWindow):
         if not results:
             self.qcm_status.setPixmap(QPixmap(":/main/cross.png"))
             self.statusBar().showMessage(_translate("MainWindow", "Port {port} is not the QCM").format(port=self.qcm_serial.currentText()), 5000)
+
+            Log.w("Control", "QCM failed to connect")
         else:
             self.qcm_status.setPixmap(QPixmap(":/main/check.png"))
             self.statusBar().showMessage(_translate("MainWindow", "Port {port} is the QCM").format(port=self.qcm_serial.currentText()), 5000)
             self.qcm_port = self.qcm_serial.currentText()
             SETTINGS.update_setting("last_qcm_port", self.qcm_port)
             self.enable_calibrate()
+
+            Log.i("Control", "QCM connected")
 
         # Unlock
         if self.htr_serial.isEnabled() or self.htr_serial.currentIndex() == 0:
@@ -755,6 +818,8 @@ class Window(Ui_MainWindow):
     
         # Initialize Data Collection
         self.r_thread.start()
+
+        Log.i("Sensor", "R started")
 
     def update_r_time(self):
         """
@@ -794,6 +859,8 @@ class Window(Ui_MainWindow):
     
         # Initialize Data Collection
         self.htr_thread.start()
+
+        Log.i("Sensor", "HTR started")
 
     def update_htr_time(self):
         """
@@ -931,6 +998,8 @@ class Window(Ui_MainWindow):
         # Start
         self.qcm_thread.start()
 
+        Log.i("Sensor", "QCM Calibration started")
+
         # Message
         self.statusBar().showMessage(_translate("MainWindow", "Calibrating QCM..."))
         
@@ -1061,6 +1130,8 @@ class Window(Ui_MainWindow):
             self.qcm_timer.timeout.connect(self.single_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.single(self.peaks[self.freq_list.currentIndex()]))
 
+            Log.i("Sensor", "QCM in single mode at", self.peaks[self.freq_list.currentIndex()])
+
             # Set the Data Saver
             if self.data_saver is not None:
                 self.data_saver.set_freqs([self.peaks[self.freq_list.currentIndex()], ])
@@ -1069,6 +1140,8 @@ class Window(Ui_MainWindow):
             self.setup_qcm_plots_multi()
             self.qcm_timer.timeout.connect(self.multi_processing)
             self.qcm_thread.started.connect(lambda : self.qcm_ctrl.multi())
+
+            Log.i("Sensor", "QCM in multi mode")
 
             # Set the Data Saver
             if self.data_saver is not None:
@@ -1086,6 +1159,8 @@ class Window(Ui_MainWindow):
 
         # Start
         self.qcm_thread.start()
+
+        Log.i("Sensor", "QCM started")
 
         # Message
         self.statusBar().showMessage(_translate("MainWindow", "Start measuring QCM..."), 5000)
@@ -1398,6 +1473,8 @@ class Window(Ui_MainWindow):
             self.multi_freq_datas[i].cb_set_data([0,], [0,])
             self.multi_dissipate_datas[i].cb_set_data([0,], [0,])
 
+        Log.i("Graph", "Plots Cleared")
+
     def clear_data(self):
         """
         Clear the graphs
@@ -1432,6 +1509,8 @@ class Window(Ui_MainWindow):
             self.update_indicator_freq(i, "")
             self.update_indicator_dissipation(i, "")
 
+        Log.i("Data", "Data Cleared")
+
     def start_data_saving(self):
         """
         Starts the data saving process
@@ -1450,6 +1529,8 @@ class Window(Ui_MainWindow):
         # Start
         self.data_saving_thread.start()
 
+        Log.i("Data", "Data Saver Started")
+
     def export_data(self, noise_cancel=1):
         """
         Exports the recorded data at the moment
@@ -1461,10 +1542,6 @@ class Window(Ui_MainWindow):
         if file_location[0].strip() == "":
             self.statusBar().showMessage(_translate("MainWindow", "No file destination selected"), 5000)
             return
-        
-        # Otherwise, Reset all
-        self.data_saving_timer = None
-        self.data_saving_thread = None
 
         try:
             # Reset indicators
@@ -1498,7 +1575,7 @@ class Window(Ui_MainWindow):
 
             # Connect Signals
             self.data_saving_timer.timeout.connect(self.data_saver.write)
-            self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms))
+            self.data_saving_thread.started.connect(lambda : self.data_saving_timer.start(Constants.data_timeout_ms) if self.data_saving_timer is not None else lambda : None)
 
             # Start File Writing
             self.data_saver.open()
@@ -1509,8 +1586,10 @@ class Window(Ui_MainWindow):
             # Start Filling Queues
             # Info stuff
             self.statusBar().showMessage(_translate("MainWindow", "Writing data to file..."))
-
             max_rows = max(resistance.size, humidity.size, self.frequency[0].size)
+
+            Log.i("Data", max_rows, "rows to save")
+
             for i in range(max_rows):
                 # If HTR has data
                 if humidity.size > i:
@@ -1547,18 +1626,22 @@ class Window(Ui_MainWindow):
                 self.progress_bar.setValue(int((i+1)*100/max_rows))
 
             # Run Closing Procedures
-            self.data_saving_timer.stop()
             self.data_saving_thread.quit()
+            self.data_saving_thread = None
+            self.data_saving_timer.stop()
             self.data_saving_timer.deleteLater()
+            self.data_saving_timer = None
             self.data_saver.close()
             self.data_saver = None
+            Log.i("Data", "Data saved successfully with", noise_cancel - 1 , "noise filter(s)")
 
             # Done notification
             self.statusBar().showMessage(_translate("MainWindow", "Data exported successfully to {file}").format(file=file_location[0]))
             self.update_perm_status(_translate("MainWindow", "Data Exported"))
             self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
 
-        except:
+        except Exception as e:
+            Log.e("Data", str(e))
             self.statusBar().showMessage(_translate("MainWindow", "Data export error has occurred"))
             self.update_perm_status(_translate("MainWindow", "Data Export Failed"))
             self.progress_bar.setStyleSheet(QPB_ERROR_STYLE)
@@ -1609,6 +1692,10 @@ class Window(Ui_MainWindow):
             if self.data_saver is not None:
                 self.data_saver.close()
                 self.data_saver = None
+
+            Log.i("Sensor", "Data Saved")
+
+        Log.i("Sensor", "All Sensors Closed")
     
     # Slots
     @QtCore.pyqtSlot()
@@ -1701,6 +1788,9 @@ class Window(Ui_MainWindow):
             elif self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_resist(float(resist.group(1)))
 
+            # Log
+            Log.i("Sensor", "Reference Resistor updated to", resist.group(1), resist.group(3), "Ω")
+
             # Update Resistance UI if needed
             if refresh_ui:
                 self.setup_htr_plots()
@@ -1720,6 +1810,9 @@ class Window(Ui_MainWindow):
             if self.htr_ctrl is not None:
                 self.htr_ctrl.update_ref_volt(volt[0])
 
+            # Log
+            Log.i("Sensor", "Reference Voltage updated to", volt[0], "V")
+
     @QtCore.pyqtSlot()
     def on_action_Change_Data_Folder_triggered(self):
         # Get File
@@ -1735,6 +1828,9 @@ class Window(Ui_MainWindow):
 
         # Notify
         self.statusBar().showMessage(_translate("MainWindow", "Data folder updated to {data_dir}").format(data_dir=new_data_dir))
+
+        # Log
+        Log.i("Data", "Data Folder changed to", new_data_dir)
 
     @QtCore.pyqtSlot()
     def on_action_Noise_Reduction_triggered(self):
@@ -1752,6 +1848,8 @@ class Window(Ui_MainWindow):
             SETTINGS.update_setting("noise_reduce", str(noise[0]))
             self.noise_reduce = noise[0]
             self.statusBar().showMessage(_translate("MainWindow", "Noise reduction filter will now iterate {noise} times").format(noise=noise[0]), 5000)
+
+            Log.i("Data", "Noise filter will be applied", noise[0], "times")
 
     @QtCore.pyqtSlot()
     def on_action_Change_Language_triggered(self):
@@ -1825,6 +1923,9 @@ class Window(Ui_MainWindow):
 
         # Startup Memory Stuff
         self.setup_memory()
+
+        # Log
+        Log.i("Control", "System Reset")
 
     # View Stuff
     @QtCore.pyqtSlot()
@@ -2018,6 +2119,9 @@ class Window(Ui_MainWindow):
             self.progress_bar.setValue(100)
             self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
 
+        # Log
+        Log.i("Control", "Started")
+
     @QtCore.pyqtSlot()
     def on_stop_btn_clicked(self):
         # Disable button
@@ -2029,6 +2133,9 @@ class Window(Ui_MainWindow):
         # Enable button
         self.start_btn.setEnabled(True)
         self.menu_Export.setEnabled(True)
+
+        # Log
+        Log.i("Control", "Stop")
 
         # Update Status
         self.update_perm_status(_translate("MainWindow", "Monitoring Stopped") + "; " + _translate("MainWindow", "Ready"))
@@ -2050,6 +2157,9 @@ class Window(Ui_MainWindow):
         self.enable_export()
         self.enable_start()
 
+        # Log
+        Log.i("Control", "Reset")
+
         # Update Status
         self.update_perm_status(_translate("MainWindow", "Reset Configuration") + "; " + _translate("MainWindow", "Ready"))
 
@@ -2060,6 +2170,9 @@ class Window(Ui_MainWindow):
         if confirmation == QMessageBox.Yes:
             # Close Controllers
             self.stop_sensors()
+
+            # Log
+            Log.i("Control", "Closing")
 
             # Close
             a0.accept()

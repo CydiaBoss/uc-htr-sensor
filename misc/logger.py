@@ -4,7 +4,7 @@ import logging.handlers
 from enum import Enum
 import time
 
-from misc.constants import LOG_FOLDER, Constants, Architecture
+from misc.constants import MAX_LOG, LOG_FOLDER, Constants, Architecture
 
 
 ###############################################################################
@@ -45,7 +45,7 @@ class Logger:
         log_files.sort()
 
         # Delete older files
-        while len(log_files) > 15:
+        while len(log_files) > MAX_LOG:
             os.remove(os.path.join(log_dir_path, log_files.pop(0)))
 
         file_handler = logging.handlers.RotatingFileHandler(
@@ -81,22 +81,22 @@ class Logger:
         :param tag: TAG to identify the log :type tag: str.
         :param msg: Message to log.         :type msg: str.
         """
-        logging.debug("[{}] {}".format(str(tag), " ".join(msg)))
+        logging.debug("[{}] {}".format(str(tag), " ".join([str(x) for x in msg])))
 
     ####
     @staticmethod
     def i(tag, *msg):
-        logging.info("[{}] {}".format(str(tag), " ".join(msg)))
+        logging.info("[{}] {}".format(str(tag), " ".join([str(x) for x in msg])))
 
     ####
     @staticmethod
     def w(tag, *msg):
-        logging.warning("[{}] {}".format(str(tag), " ".join(msg)))
+        logging.warning("[{}] {}".format(str(tag), " ".join([str(x) for x in msg])))
 
     ####
     @staticmethod
     def e(tag, *msg):
-        logging.error("[{}] {}".format(str(tag), " ".join(msg)))
+        logging.error("[{}] {}".format(str(tag), " ".join([str(x) for x in msg])))
 
     ###########################################################################
     # logs and prints architecture-related informations
