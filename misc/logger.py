@@ -37,7 +37,16 @@ class Logger:
         self.logger.setLevel(level.value)
 
         # Make directory if needed
-        os.makedirs(os.path.dirname(f"{LOG_FOLDER}/"), exist_ok=True)
+        log_dir_path = os.path.dirname(f"{LOG_FOLDER}/")
+        os.makedirs(log_dir_path, exist_ok=True)
+
+        # Grab current log files
+        log_files = [f for f in os.listdir(log_dir_path) if f.endswith(".log") and os.path.isfile(os.path.join(log_dir_path, f))]
+        log_files.sort()
+
+        # Delete older files
+        while len(log_files) > 15:
+            os.remove(os.path.join(log_dir_path, log_files.pop(0)))
 
         file_handler = logging.handlers.RotatingFileHandler(
             "{}/{}".format(LOG_FOLDER, f"{int(time.time())}.log"),

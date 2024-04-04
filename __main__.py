@@ -18,7 +18,7 @@ if __name__ == "__main__":
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
     # Start Logger
-    # Logger()
+    Logger()
 
     # Prep App Launch
     app = QApplication(sys.argv)
