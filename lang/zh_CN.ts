@@ -69,7 +69,7 @@
     <message>
         <location filename="../main.py" line="177"/>
         <source>Amplitude</source>
-        <translation type="unfinished"></translation>
+        <translation>振幅</translation>
     </message>
     <message>
         <location filename="../main.py" line="177"/>
@@ -465,7 +465,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2169"/>
         <source>Are you sure you want to close the application?</source>
-        <translation type="unfinished"></translation>
+        <translation>你决定要关这个软件吗？</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1156"/>
@@ -480,17 +480,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1169"/>
         <source>Average (&lt;50)</source>
-        <translation type="unfinished"></translation>
+        <translation>中等 (&lt;50)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1168"/>
         <source>Average (&lt;15)</source>
-        <translation type="unfinished"></translation>
+        <translation>中等 (&lt;15)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1167"/>
         <source>Average</source>
-        <translation type="unfinished"></translation>
+        <translation>中等</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1162"/>
@@ -515,7 +515,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1172"/>
         <source>Calibrate</source>
-        <translation type="unfinished"></translation>
+        <translation>校准</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1173"/>
@@ -595,7 +595,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1189"/>
         <source>DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1190"/>
@@ -615,7 +615,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1193"/>
         <source>&amp;DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1194"/>
@@ -650,7 +650,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1200"/>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1201"/>
@@ -665,7 +665,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1203"/>
         <source>Ctrl+Shift+R</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1204"/>
@@ -680,7 +680,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1206"/>
         <source>Ctrl+Shift+V</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1207"/>
@@ -695,7 +695,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1209"/>
         <source>Ctrl+Alt+R</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1210"/>
@@ -710,7 +710,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1212"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1213"/>
@@ -725,7 +725,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1215"/>
         <source>Ctrl+N</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1216"/>
@@ -740,7 +740,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1218"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1219"/>
@@ -765,7 +765,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1223"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1224"/>
@@ -815,7 +815,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1233"/>
         <source>&amp;Amplitude</source>
-        <translation type="unfinished"></translation>
+        <translation>振幅 (&amp;A)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1234"/>
