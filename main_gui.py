@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\Users\andre\Documents\Python\sensor-fusion\uc-htr-sensor\ui\main_gui.ui'
+# Form implementation generated from reading ui file 'ui/main_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -64,6 +64,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.dissipate_plot = LivePlotWidget(self.centralwidget)
         self.dissipate_plot.setObjectName("dissipate_plot")
         self.qcm_layout_bottom.addWidget(self.dissipate_plot, 0, 1, 1, 1)
+        self.qcm_layout_bottom.setColumnStretch(0, 1)
+        self.qcm_layout_bottom.setColumnStretch(1, 1)
         self.plot_layout.addLayout(self.qcm_layout_bottom, 2, 0, 1, 1)
         self.htr_layout = QtWidgets.QGridLayout()
         self.htr_layout.setObjectName("htr_layout")
@@ -76,6 +78,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.temp_plot = LivePlotWidget(self.centralwidget)
         self.temp_plot.setObjectName("temp_plot")
         self.htr_layout.addWidget(self.temp_plot, 0, 2, 1, 1)
+        self.htr_layout.setColumnStretch(0, 1)
+        self.htr_layout.setColumnStretch(1, 1)
+        self.htr_layout.setColumnStretch(2, 1)
         self.plot_layout.addLayout(self.htr_layout, 0, 0, 1, 1)
         self.qcm_layout_top = QtWidgets.QGridLayout()
         self.qcm_layout_top.setObjectName("qcm_layout_top")
@@ -85,6 +90,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.phase_plot = LivePlotWidget(self.centralwidget)
         self.phase_plot.setObjectName("phase_plot")
         self.qcm_layout_top.addWidget(self.phase_plot, 0, 1, 1, 1)
+        self.qcm_layout_top.setColumnStretch(0, 1)
+        self.qcm_layout_top.setColumnStretch(1, 1)
         self.plot_layout.addLayout(self.qcm_layout_top, 1, 0, 1, 1)
         self.plot_layout.setRowStretch(0, 4)
         self.plot_layout.setRowStretch(1, 3)
@@ -1147,7 +1154,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sensor Fusion"))
-        self.label_12.setText(_translate("MainWindow", "QCM Based H<sub>2</sub> Sensing"))
+        self.label_12.setText(_translate("MainWindow", "Hydrogen Multisensory System"))
         self.resist_label.setText(_translate("MainWindow", "Resistance (Ω)"))
         self.label_10.setText(_translate("MainWindow", "Average (<50)"))
         self.label_11.setText(_translate("MainWindow", "Average (<15)"))
