@@ -1908,6 +1908,9 @@ class Window(Ui_MainWindow):
             # ignore
             return
 
+        # Language
+        self.setup_lang()
+ 
         # Language Reload
         self.retranslateUi(self)
         
@@ -2012,20 +2015,19 @@ class Window(Ui_MainWindow):
             self.statusBar().showMessage(_translate("MainWindow", "Nothing to connect to..."), 5000)
             return
         
-        running = False
-        
         # Test HTR (Ignore if ---)
-        if self.htr_serial.currentIndex() != 0 and self.htr_port != self.htr_serial.currentText():
-            running = True
+        test_htr = self.htr_serial.currentIndex() != 0 and self.htr_port != self.htr_serial.currentText()
+        if test_htr:
             self.test_htr_port()
                 
         # Test QCM (Ignore if ---)
-        if self.qcm_serial.currentIndex() != 0 and self.qcm_port != self.qcm_serial.currentText():
-            running = True
+        test_qcm = self.qcm_serial.currentIndex() != 0 and self.qcm_port != self.qcm_serial.currentText()
+        if test_qcm:
             self.test_qcm_port()
 
         # If nothing is running, do nothing
-        if not running:
+        if not test_htr and not test_qcm:
+            self.statusBar().showMessage(_translate("MainWindow", "Nothing to connect to..."), 5000)
             return
         
         # Signal Launch
@@ -2035,6 +2037,10 @@ class Window(Ui_MainWindow):
         self.disable_all_ctrls()
         self.reset_calibration_bar()
         self.reset_progress_bar()
+
+        # Enable untested ports
+        self.htr_serial.setEnabled(not test_htr)
+        self.qcm_serial.setEnabled(not test_qcm)
 
     @QtCore.pyqtSlot()
     def on_calibrate_btn_clicked(self):
@@ -2196,9 +2202,11 @@ class Window(Ui_MainWindow):
         self.stop_sensors()
 
         # Enable stuff
-        if self.qcm_port is not None and self.qcm_calibrated:
-            self.enable_measurement()
-        self.enable_calibrate()
+        self.enable_ports()
+        if self.qcm_port is not None:
+            self.enable_calibrate()
+            if self.qcm_calibrated:
+                self.enable_measurement()
         self.enable_export()
         self.enable_start()
 
