@@ -1927,34 +1927,59 @@ class Window(Ui_MainWindow):
         # Log
         Log.i("Control", "System Reset")
 
+    @QtCore.pyqtSlot()
+    def on_menu_View_aboutToShow(self):
+        # Unlock all at first
+        [x.setEnabled(True) for x in self.menu_View.actions()]
+
+        # Filter for checked items for validation
+        checked_actions = list(filter(lambda x: x.isChecked(), self.menu_View.actions()))
+
+        # Disable if only one left
+        [x.setEnabled(len(checked_actions) > 1) for x in checked_actions]
+        
     # View Stuff
     @QtCore.pyqtSlot()
     def on_action_Resistance_triggered(self):
         self.resist_plot.setVisible(self.action_Resistance.isChecked())
+        self.htr_layout.setColumnStretch(0, int(self.action_Resistance.isChecked()))
+        self.htr_layout.update()
 
     @QtCore.pyqtSlot()
     def on_action_Humidity_triggered(self):
         self.humd_plot.setVisible(self.action_Humidity.isChecked())
+        self.htr_layout.setColumnStretch(1, int(self.action_Humidity.isChecked()))
+        self.htr_layout.update()
 
     @QtCore.pyqtSlot()
     def on_action_Temperature_triggered(self):
         self.temp_plot.setVisible(self.action_Temperature.isChecked())
+        self.htr_layout.setColumnStretch(2, int(self.action_Temperature.isChecked()))
+        self.htr_layout.update()
 
     @QtCore.pyqtSlot()
     def on_action_Amplitude_triggered(self):
         self.amp_plot.setVisible(self.action_Amplitude.isChecked())
+        self.qcm_layout_top.setColumnStretch(0, int(self.action_Amplitude.isChecked()))
+        self.qcm_layout_top.update()
 
     @QtCore.pyqtSlot()
     def on_action_Phase_triggered(self):
         self.phase_plot.setVisible(self.action_Phase.isChecked())
+        self.qcm_layout_top.setColumnStretch(1, int(self.action_Phase.isChecked()))
+        self.qcm_layout_top.update()
 
     @QtCore.pyqtSlot()
     def on_action_Frequency_triggered(self):
         self.freq_plot.setVisible(self.action_Frequency.isChecked())
+        self.qcm_layout_bottom.setColumnStretch(0, int(self.action_Frequency.isChecked()))
+        self.qcm_layout_bottom.update()
 
     @QtCore.pyqtSlot()
     def on_action_Dissipation_triggered(self):
         self.dissipate_plot.setVisible(self.action_Dissipation.isChecked())
+        self.qcm_layout_bottom.setColumnStretch(1, int(self.action_Dissipation.isChecked()))
+        self.qcm_layout_bottom.update()
 
     # Button Signals
     @QtCore.pyqtSlot(int)
