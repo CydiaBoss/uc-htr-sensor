@@ -1937,48 +1937,48 @@ class Window(Ui_MainWindow):
 
         # Disable if only one left
         [x.setEnabled(len(checked_actions) > 1) for x in checked_actions]
-        
+
     # View Stuff
-    @QtCore.pyqtSlot()
-    def on_action_Resistance_triggered(self):
-        self.resist_plot.setVisible(self.action_Resistance.isChecked())
-        self.htr_layout.setColumnStretch(0, int(self.action_Resistance.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Resistance_toggled(self, status : bool):
+        self.resist_plot.setVisible(status)
+        self.htr_layout.setColumnStretch(0, int(status))
         self.htr_layout.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Humidity_triggered(self):
-        self.humd_plot.setVisible(self.action_Humidity.isChecked())
-        self.htr_layout.setColumnStretch(1, int(self.action_Humidity.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Humidity_toggled(self, status : bool):
+        self.humd_plot.setVisible(status)
+        self.htr_layout.setColumnStretch(1, int(status))
         self.htr_layout.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Temperature_triggered(self):
-        self.temp_plot.setVisible(self.action_Temperature.isChecked())
-        self.htr_layout.setColumnStretch(2, int(self.action_Temperature.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Temperature_toggled(self, status : bool):
+        self.temp_plot.setVisible(status)
+        self.htr_layout.setColumnStretch(2, int(status))
         self.htr_layout.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Amplitude_triggered(self):
-        self.amp_plot.setVisible(self.action_Amplitude.isChecked())
-        self.qcm_layout_top.setColumnStretch(0, int(self.action_Amplitude.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Amplitude_toggled(self, status : bool):
+        self.amp_plot.setVisible(status)
+        self.qcm_layout_top.setColumnStretch(0, int(status))
         self.qcm_layout_top.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Phase_triggered(self):
-        self.phase_plot.setVisible(self.action_Phase.isChecked())
-        self.qcm_layout_top.setColumnStretch(1, int(self.action_Phase.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Phase_toggled(self, status : bool):
+        self.phase_plot.setVisible(status)
+        self.qcm_layout_top.setColumnStretch(1, int(status))
         self.qcm_layout_top.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Frequency_triggered(self):
-        self.freq_plot.setVisible(self.action_Frequency.isChecked())
-        self.qcm_layout_bottom.setColumnStretch(0, int(self.action_Frequency.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Frequency_toggled(self, status : bool):
+        self.freq_plot.setVisible(status)
+        self.qcm_layout_bottom.setColumnStretch(0, int(status))
         self.qcm_layout_bottom.update()
 
-    @QtCore.pyqtSlot()
-    def on_action_Dissipation_triggered(self):
-        self.dissipate_plot.setVisible(self.action_Dissipation.isChecked())
-        self.qcm_layout_bottom.setColumnStretch(1, int(self.action_Dissipation.isChecked()))
+    @QtCore.pyqtSlot(bool)
+    def on_action_Dissipation_toggled(self, status : bool):
+        self.dissipate_plot.setVisible(status)
+        self.qcm_layout_bottom.setColumnStretch(1, int(status))
         self.qcm_layout_bottom.update()
 
     # Button Signals
@@ -2117,13 +2117,15 @@ class Window(Ui_MainWindow):
             self.data_saver = DataSaving(file_name=self.file_dest.text())
 
         # Start HTR
-        if self.htr_port is not None:
+        htr_active = self.htr_port is not None
+        if htr_active:
             self.start_htr()
         elif self.auto_export.isChecked():
-            self.data_saver.set_htr(False)
+                self.data_saver.set_htr(False)
 
         # Start R
-        if self.r_device is not None:
+        r_active = self.r_device is not None
+        if r_active:
             self.start_r()
         elif self.auto_export.isChecked():
             self.data_saver.set_r(False)
@@ -2143,6 +2145,15 @@ class Window(Ui_MainWindow):
         if not qcm_active:
             self.progress_bar.setValue(100)
             self.progress_bar.setStyleSheet(QPB_COMPLETED_STYLE)
+
+        # Update Graph View if needed
+        self.action_Resistance.setChecked(htr_active or r_active)
+        self.action_Humidity.setChecked(htr_active)
+        self.action_Temperature.setChecked(htr_active)
+        self.action_Amplitude.setChecked(qcm_active)
+        self.action_Phase.setChecked(qcm_active)
+        self.action_Frequency.setChecked(qcm_active)
+        self.action_Dissipation.setChecked(qcm_active)
 
         # Log
         Log.i("Control", "Started")
