@@ -1473,6 +1473,15 @@ class Window(Ui_MainWindow):
             self.multi_freq_datas[i].cb_set_data([0,], [0,])
             self.multi_dissipate_datas[i].cb_set_data([0,], [0,])
 
+        # Restore Auto Range
+        self.resist_plot.auto_btn_clicked()
+        self.humd_plot.auto_btn_clicked()
+        self.temp_plot.auto_btn_clicked()
+        self.amp_plot.auto_btn_clicked()
+        self.phase_plot.auto_btn_clicked()
+        self.freq_plot.auto_btn_clicked()
+        self.dissipate_plot.auto_btn_clicked()
+
         Log.i("Graph", "Plots Cleared")
 
     def clear_data(self):
