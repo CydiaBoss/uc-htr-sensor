@@ -12,9 +12,9 @@ def retranslate_lang():
     Initialize language dictionary
     """
     LANG.clear()
-    LANG["en"] = _translate("Language", "English")
-    LANG["fr"] = _translate("Language", "French")
-    LANG["ko"] = _translate("Language", "Korean")
+    LANG["en_US"] = _translate("Language", "English")
+    LANG["fr_FR"] = _translate("Language", "French")
+    LANG["ko_KR"] = _translate("Language", "Korean")
     LANG["zh_CN"] = _translate("Language", "Mandarin (Simplified)")
     LANG["zh_TW"] = _translate("Language", "Mandarin (Traditional)")
 

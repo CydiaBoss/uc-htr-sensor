@@ -1890,7 +1890,7 @@ class Window(Ui_MainWindow):
                     i += 1
 
         # Provide options to user
-        lang_select = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [f"{lang.LANG[x.language()[:2]]} | {x.language()}" for x in lang_files], curr_index, False)
+        lang_select = QInputDialog.getItem(self, _translate("MainWindow", "Language Selection"), _translate("MainWindow", "Select the preferred language of choice."), [f"{lang.LANG[x.language()]} | {x.language()}" for x in lang_files], curr_index, False)
 
         # Return if cancelled
         if not lang_select[1]:
