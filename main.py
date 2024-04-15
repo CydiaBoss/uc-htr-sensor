@@ -744,6 +744,9 @@ class Window(Ui_MainWindow):
             self.enable_ports()
         self.htr_serial.setEnabled(True)
 
+        # Reset Thread
+        self.htr_thread = None
+
         # Casually Look for DAQ also
         self.on_action_Scan_Connections_triggered()
 
@@ -796,6 +799,9 @@ class Window(Ui_MainWindow):
         if self.htr_serial.isEnabled() or self.htr_serial.currentIndex() == 0:
             self.enable_ports()
         self.qcm_serial.setEnabled(True)
+
+        # Reset Thread
+        self.qcm_thread = None
 
     def start_r(self):
         '''

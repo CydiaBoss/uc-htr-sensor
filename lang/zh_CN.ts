@@ -470,12 +470,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1156"/>
         <source>Sensor Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>传感器融合</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1158"/>
         <source>Resistance (Ω)</source>
-        <translation type="unfinished"></translation>
+        <translation>电阻 (Ω)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1169"/>
@@ -495,22 +495,22 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1162"/>
         <source>Humidity (%RH)</source>
-        <translation type="unfinished"></translation>
+        <translation>湿度 (%RH)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1166"/>
         <source>Temperature (°C)</source>
-        <translation type="unfinished"></translation>
+        <translation>温度 (°C)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1170"/>
         <source>Frequency (Hz)</source>
-        <translation type="unfinished"></translation>
+        <translation>频率 (Hz)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1171"/>
         <source>Dissipation (ppm)</source>
-        <translation type="unfinished"></translation>
+        <translation>散逸 (ppm)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1172"/>
@@ -520,7 +520,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1173"/>
         <source>Quartz Crystal Type</source>
-        <translation type="unfinished"></translation>
+        <translation>石英晶体类型</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1174"/>
@@ -570,7 +570,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1184"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>停</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1185"/>
@@ -800,17 +800,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1230"/>
         <source>&amp;Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>电阻 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1231"/>
         <source>&amp;Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>湿度 (&amp;H)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1232"/>
         <source>&amp;Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>温度 (&amp;T)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1233"/>
@@ -825,12 +825,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1235"/>
         <source>&amp;Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>频率 (&amp;F)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1236"/>
         <source>&amp;Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>散逸 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1237"/>

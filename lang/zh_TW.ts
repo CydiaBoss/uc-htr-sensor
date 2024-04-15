@@ -34,12 +34,12 @@
     <message>
         <location filename="../main_gui.py" line="1156"/>
         <source>Sensor Fusion</source>
-        <translation type="unfinished"></translation>
+        <translation>感測器融合</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1158"/>
         <source>Resistance (Ω)</source>
-        <translation type="unfinished"></translation>
+        <translation>電阻 (Ω)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1169"/>
@@ -59,22 +59,22 @@
     <message>
         <location filename="../main_gui.py" line="1162"/>
         <source>Humidity (%RH)</source>
-        <translation type="unfinished"></translation>
+        <translation>濕度 (%RH)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1166"/>
         <source>Temperature (°C)</source>
-        <translation type="unfinished"></translation>
+        <translation>溫度 (°C)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1170"/>
         <source>Frequency (Hz)</source>
-        <translation type="unfinished"></translation>
+        <translation>頻率 (Hz)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1171"/>
         <source>Dissipation (ppm)</source>
-        <translation type="unfinished"></translation>
+        <translation>散逸 (ppm)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1172"/>
@@ -84,72 +84,72 @@
     <message>
         <location filename="../main_gui.py" line="1173"/>
         <source>Quartz Crystal Type</source>
-        <translation type="unfinished"></translation>
+        <translation>石英晶體類型</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1174"/>
         <source>Step 1. Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>第一. 查刻度</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1175"/>
         <source>Auto Export Data on Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>自動儲存</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1176"/>
         <source>File Destination</source>
-        <translation type="unfinished"></translation>
+        <translation>文件地方</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1177"/>
         <source>Step 3. Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>第三. 儲存</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1178"/>
         <source>Step 2. Setup Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>第二. 測定</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1179"/>
         <source>Measurement Type</source>
-        <translation type="unfinished"></translation>
+        <translation>測定方法</translation>
     </message>
     <message>
         <location filename="../main.py" line="201"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>頻率</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1181"/>
         <source>Single Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>測定一次</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1182"/>
         <source>Multiple Measurements</source>
-        <translation type="unfinished"></translation>
+        <translation>都測定</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1183"/>
         <source>Step 4. Start</source>
-        <translation type="unfinished"></translation>
+        <translation>第四. 開始</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1184"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>停</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1185"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>清零</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1186"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>開始</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1187"/>
@@ -159,7 +159,7 @@
     <message>
         <location filename="../main_gui.py" line="1188"/>
         <source>QCM Port</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM接口</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1189"/>
@@ -169,17 +169,17 @@
     <message>
         <location filename="../main_gui.py" line="1190"/>
         <source>HTR Port</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR接口</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1191"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>連接</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1192"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>文件 (&amp;F)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1193"/>
@@ -189,12 +189,12 @@
     <message>
         <location filename="../main_gui.py" line="1194"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"></translation>
+        <translation>儲存 (&amp;E)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1195"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>改變 (&amp;E)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1196"/>
@@ -209,12 +209,12 @@
     <message>
         <location filename="../main_gui.py" line="1198"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>出口 (&amp;Q)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1199"/>
         <source>Quit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>關閉這軟件</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1200"/>
@@ -224,7 +224,7 @@
     <message>
         <location filename="../main_gui.py" line="1201"/>
         <source>&amp;Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>電阻器 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1202"/>
@@ -239,7 +239,7 @@
     <message>
         <location filename="../main_gui.py" line="1204"/>
         <source>&amp;Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>電壓 (&amp;V)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1205"/>
@@ -369,17 +369,17 @@
     <message>
         <location filename="../main_gui.py" line="1230"/>
         <source>&amp;Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>電阻 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1231"/>
         <source>&amp;Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>濕度 (&amp;H)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1232"/>
         <source>&amp;Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>溫度 (&amp;T)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1233"/>
@@ -389,22 +389,22 @@
     <message>
         <location filename="../main_gui.py" line="1234"/>
         <source>&amp;Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>相位 (&amp;P)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1235"/>
         <source>&amp;Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>頻率 (&amp;F)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1236"/>
         <source>&amp;Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>散逸 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1237"/>
         <source>Change &amp;Language</source>
-        <translation type="unfinished"></translation>
+        <translation>換語言 (&amp;L)</translation>
     </message>
     <message>
         <location filename="../main.py" line="2199"/>
@@ -675,7 +675,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1723"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>你決定要斷線DAQ嗎? HTR的電阻傳感器會啟用.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1746"/>
@@ -755,7 +755,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1897"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
-        <translation type="unfinished"></translation>
+        <translation>你決定要重裝軟件嗎? 所有未儲存的質料會被刪除.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1978"/>
@@ -775,7 +775,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2038"/>
         <source>Are you sure you want to start without saving any data?</source>
-        <translation type="unfinished"></translation>
+        <translation>你決定不要自動儲存嗎?</translation>
     </message>
     <message>
         <location filename="../main.py" line="2044"/>
