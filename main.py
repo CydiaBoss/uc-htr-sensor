@@ -9,7 +9,7 @@ from misc.data import DataSaving
 from misc.tools import active_ports, identical_list, noise_filtering
 from misc.logger import Logger as Log
 
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame, QApplication
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QInputDialog, QFrame, QApplication, QMainWindow
 from PyQt5.QtGui import QPixmap, QCloseEvent
 from PyQt5 import QtCore
 from numpy import loadtxt
@@ -26,7 +26,7 @@ from nidaqmx.system.system import System
 # Translate Component
 _translate = QtCore.QCoreApplication.translate
 
-class Window(Ui_MainWindow):
+class Window(Ui_MainWindow, QMainWindow):
 
     def __init__(self, parent=None):
         # Setup Basic Stuff
