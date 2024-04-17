@@ -111,6 +111,12 @@ class RSensorCtrl(QObject):
             # Progress
             self.progress.emit()
 
+            # Bypass if 0 error
+            if data[1] - data[0] <= 1e-6:
+                # Sleep for a bit
+                time.sleep(READ_DELAY)
+                continue
+
             # Calculate resistance
             resist = data[0] * self.ref_resist / (data[1] - data[0])
 
