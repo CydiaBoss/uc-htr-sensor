@@ -30,7 +30,7 @@ QC_10MHZ = "10 MHz"
 
 # Internal Usage
 DATA_PARSE = r"([a-zA-Z ])Ω:(inf|\d+\.\d{2}),%RH:(inf|\d+\.\d{2}),°C:(inf|\d+\.\d{2})"
-REF_RESIST_PARSE = r"(\d+(\.\d+)?)([a-zA-Z ])"
+REF_RESIST_PARSE = r"(\d+(\.\d+)?)([a-zA-Z ]?)"
 TIME_AXIS_CONFIG = {
     "orientation": "bottom",
     "text": "Time",

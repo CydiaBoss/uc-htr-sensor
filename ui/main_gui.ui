@@ -576,18 +576,6 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
-               <widget class="QLineEdit" name="freq_f5">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="2">
                <widget class="QLineEdit" name="freq_f3">
                 <property name="font">
@@ -801,9 +789,6 @@
                 </property>
                 <property name="text">
                  <string notr="true">F5</string>
-                </property>
-                <property name="buddy">
-                 <cstring>freq_f5</cstring>
                 </property>
                </widget>
               </item>
@@ -2232,7 +2217,6 @@
   <tabstop>temp_avg_15</tabstop>
   <tabstop>freq_f1</tabstop>
   <tabstop>freq_f3</tabstop>
-  <tabstop>freq_f5</tabstop>
   <tabstop>diss_d9</tabstop>
   <tabstop>diss_d5</tabstop>
   <tabstop>diss_d7</tabstop>

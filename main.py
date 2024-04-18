@@ -1808,7 +1808,19 @@ class Window(Ui_MainWindow, QMainWindow):
 
             # Update Resistance UI if needed
             if refresh_ui:
-                self.setup_htr_plots()
+                # Refresh Resistance Graph
+                self.htr_layout.removeWidget(self.resist_plot)
+                self.resist_plot.setParent(None)
+                self.resist_plot.deleteLater()
+                self.resist_axis = LiveAxis('left', text=_translate("MainWindow", "Resistance"), units="Ω", unitPrefix=SETTINGS.get_setting("ref_resist_unit").strip())
+                self.resist_plot = LivePlotWidget(self.centralwidget, title=_translate("MainWindow", "Real-time Resistance"), axisItems={"left": self.resist_axis, "bottom": LiveAxis(**TIME_AXIS_CONFIG)}, labels={"left": _translate("MainWindow", "Resistance") + f" ({SETTINGS.get_setting('ref_resist_unit').strip()}Ω)", "bottom": _translate("MainWindow", "Time") + " (s)"})
+                self.resist_curve = LiveLinePlot(brush="red", pen="red")
+                self.resist_plot.addItem(self.resist_curve)
+                self.resist_plot.setBackground(background="w")
+                self.resist_plot.show_crosshair()
+                self.resist_data = DataConnector(self.resist_curve, update_rate=1.0)
+                self.htr_layout.addWidget(self.resist_plot, 0, 0, 1, 1)
+
                 self.resist_label.setText(_translate("MainWindow", 'Resistance') + f' ({SETTINGS.get_setting("ref_resist_unit").strip()}Ω)')
 
     @QtCore.pyqtSlot()

@@ -289,7 +289,7 @@
     <message>
         <location filename="../main_gui.py" line="1214"/>
         <source>Adjust the noise filter on the signal</source>
-        <translation type="unfinished"></translation>
+        <translation>調整信號的噪音濾波器</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1215"/>
@@ -359,12 +359,12 @@
     <message>
         <location filename="../main_gui.py" line="1228"/>
         <source>Change &amp;Data Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>改變質料文件夾 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1229"/>
         <source>Changes the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>改變質料的文件夾</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1230"/>
@@ -479,12 +479,12 @@
     <message>
         <location filename="../main.py" line="1739"/>
         <source>Not Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>還沒有準備好</translation>
     </message>
     <message>
         <location filename="../main.py" line="620"/>
         <source>No New Ports Discovered</source>
-        <translation type="unfinished"></translation>
+        <translation>沒有新的接口</translation>
     </message>
     <message>
         <location filename="../main.py" line="643"/>
@@ -545,7 +545,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1004"/>
         <source>Calibrating QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>在校準QCM...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1049"/>
@@ -555,22 +555,22 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1044"/>
         <source>Calibration Warning: empty buffer! Please, repeat the calibration after disconnecting/reconnecting the device!</source>
-        <translation type="unfinished"></translation>
+        <translation>校準錯誤: 緩衝區空! 請把機器斷線/連結一下. 然後再建準一次!</translation>
     </message>
     <message>
         <location filename="../main.py" line="1053"/>
         <source>Calibration Success for baseline correction!</source>
-        <translation type="unfinished"></translation>
+        <translation>校準成功了!</translation>
     </message>
     <message>
         <location filename="../main.py" line="1060"/>
         <source>Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>校準錯誤: 一般錯誤! 請再建準一次</translation>
     </message>
     <message>
         <location filename="../main.py" line="1063"/>
         <source>Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the calibration!</source>
-        <translation type="unfinished"></translation>
+        <translation>校準錯誤: 基頻找不到! 請再建準一次!</translation>
     </message>
     <message>
         <location filename="../main.py" line="1079"/>
@@ -580,7 +580,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1084"/>
         <source>Calibration failed as the expected fundamental frequency could not be found.</source>
-        <translation type="unfinished"></translation>
+        <translation>校準失敗了因為基頻找不到.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1166"/>
@@ -670,7 +670,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2169"/>
         <source>Confirmation</source>
-        <translation type="unfinished"></translation>
+        <translation>批准</translation>
     </message>
     <message>
         <location filename="../main.py" line="1723"/>
@@ -680,7 +680,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1746"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>質料文件夾打不開. 請做一個新的質料文件夾.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1763"/>
@@ -765,7 +765,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1998"/>
         <source>Attempting to communicate with the sensors...</source>
-        <translation type="unfinished"></translation>
+        <translation>跟感測器說話...</translation>
     </message>
     <message>
         <location filename="../main.py" line="2038"/>
@@ -840,7 +840,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1157"/>
         <source>Hydrogen Multisensory System</source>
-        <translation type="unfinished">氫氣</translation>
+        <translation>氫氣多感覺系統</translation>
     </message>
 </context>
 </TS>
