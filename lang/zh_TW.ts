@@ -409,37 +409,37 @@
     <message>
         <location filename="../main.py" line="2199"/>
         <source>Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>電阻</translation>
     </message>
     <message>
         <location filename="../main.py" line="131"/>
         <source>Real-time Resistance</source>
-        <translation type="unfinished"></translation>
+        <translation>實時電阻</translation>
     </message>
     <message>
         <location filename="../main.py" line="213"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>時間</translation>
     </message>
     <message>
         <location filename="../main.py" line="144"/>
         <source>Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>濕度</translation>
     </message>
     <message>
         <location filename="../main.py" line="144"/>
         <source>Real-time Humidity</source>
-        <translation type="unfinished"></translation>
+        <translation>實時濕度</translation>
     </message>
     <message>
         <location filename="../main.py" line="157"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>溫度</translation>
     </message>
     <message>
         <location filename="../main.py" line="157"/>
         <source>Real-time Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>實時溫度</translation>
     </message>
     <message>
         <location filename="../main.py" line="177"/>
@@ -449,32 +449,32 @@
     <message>
         <location filename="../main.py" line="177"/>
         <source>Real-time Amplitude</source>
-        <translation type="unfinished"></translation>
+        <translation>實時振幅</translation>
     </message>
     <message>
         <location filename="../main.py" line="189"/>
         <source>Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>相位</translation>
     </message>
     <message>
         <location filename="../main.py" line="189"/>
         <source>Real-time Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>實時相位</translation>
     </message>
     <message>
         <location filename="../main.py" line="201"/>
         <source>Real-time Resonance Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>實時共振頻率</translation>
     </message>
     <message>
         <location filename="../main.py" line="213"/>
         <source>Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>散逸</translation>
     </message>
     <message>
         <location filename="../main.py" line="213"/>
         <source>Real-time Dissipation</source>
-        <translation type="unfinished"></translation>
+        <translation>實時散逸</translation>
     </message>
     <message>
         <location filename="../main.py" line="1739"/>
@@ -840,7 +840,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1157"/>
         <source>Hydrogen Multisensory System</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">氫氣</translation>
     </message>
 </context>
 </TS>
