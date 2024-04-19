@@ -621,17 +621,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2087"/>
         <source>Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>儲存</translation>
     </message>
     <message>
         <location filename="../main.py" line="1558"/>
         <source>No file destination selected</source>
-        <translation type="unfinished"></translation>
+        <translation>沒有選擇文件地方</translation>
     </message>
     <message>
         <location filename="../main.py" line="1564"/>
         <source>Preparing to write to file the requested data</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">開始</translation>
     </message>
     <message>
         <location filename="../main.py" line="1603"/>
@@ -646,27 +646,27 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1654"/>
         <source>Data exported successfully to {file}</source>
-        <translation type="unfinished"></translation>
+        <translation>質料儲存到 {file} 成功了</translation>
     </message>
     <message>
         <location filename="../main.py" line="1655"/>
         <source>Data Exported</source>
-        <translation type="unfinished"></translation>
+        <translation>質料儲存了</translation>
     </message>
     <message>
         <location filename="../main.py" line="1660"/>
         <source>Data export error has occurred</source>
-        <translation type="unfinished"></translation>
+        <translation>質料儲存錯誤發生了</translation>
     </message>
     <message>
         <location filename="../main.py" line="1661"/>
         <source>Data Export Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>質料儲存失敗了</translation>
     </message>
     <message>
         <location filename="../main.py" line="1733"/>
         <source>R Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>R可以了</translation>
     </message>
     <message>
         <location filename="../main.py" line="2240"/>
@@ -686,7 +686,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1778"/>
         <source>Reference Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>參考電阻</translation>
     </message>
     <message>
         <location filename="../main.py" line="1778"/>
@@ -706,7 +706,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1829"/>
         <source>Reference Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>參考電壓</translation>
     </message>
     <message>
         <location filename="../main.py" line="1829"/>
@@ -731,7 +731,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1865"/>
         <source>Noise Reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>噪音濾波器</translation>
     </message>
     <message>
         <location filename="../main.py" line="1865"/>
@@ -746,12 +746,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1905"/>
         <source>Language Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>選擇語言</translation>
     </message>
     <message>
         <location filename="../main.py" line="1905"/>
         <source>Select the preferred language of choice.</source>
-        <translation type="unfinished"></translation>
+        <translation>選擇需要的語言.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1924"/>
@@ -761,7 +761,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2048"/>
         <source>Nothing to connect to...</source>
-        <translation type="unfinished"></translation>
+        <translation>沒什麼能連接到...</translation>
     </message>
     <message>
         <location filename="../main.py" line="2052"/>
@@ -786,7 +786,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2102"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>你沒有QCM感測器. 你決定要開始嗎?</translation>
     </message>
     <message>
         <location filename="../main.py" line="2108"/>
@@ -796,7 +796,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2108"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>你沒有HTR感測器. 你決定要開始嗎?</translation>
     </message>
     <message>
         <location filename="../main.py" line="2114"/>
@@ -806,7 +806,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2114"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
-        <translation type="unfinished"></translation>
+        <translation>你還沒校準QCM感測器. 它不會開始. 你決定要開始嗎?</translation>
     </message>
     <message>
         <location filename="../main.py" line="2120"/>
@@ -816,22 +816,22 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2120"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
-        <translation type="unfinished"></translation>
+        <translation>你想做的文件都已經有了. 你決定要凌駕它嗎?</translation>
     </message>
     <message>
         <location filename="../main.py" line="2235"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>可以了</translation>
     </message>
     <message>
         <location filename="../main.py" line="2210"/>
         <source>Monitoring Stopped</source>
-        <translation type="unfinished"></translation>
+        <translation>測量停了</translation>
     </message>
     <message>
         <location filename="../main.py" line="2235"/>
         <source>Reset Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>清零配置</translation>
     </message>
     <message>
         <location filename="../main.py" line="2240"/>
