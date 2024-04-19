@@ -199,12 +199,12 @@
     <message>
         <location filename="../main_gui.py" line="1187"/>
         <source>&amp;Update References</source>
-        <translation type="unfinished"></translation>
+        <translation>改變參考 (&amp;U)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1188"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>風 (&amp;V)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1189"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../main_gui.py" line="1193"/>
         <source>Update the reference resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>改變參考電阻</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1194"/>
@@ -244,7 +244,7 @@
     <message>
         <location filename="../main_gui.py" line="1196"/>
         <source>Update the reference voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>改變參考電壓</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1197"/>
@@ -254,12 +254,12 @@
     <message>
         <location filename="../main_gui.py" line="1198"/>
         <source>&amp;Reset Software</source>
-        <translation type="unfinished"></translation>
+        <translation>清零軟件 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1199"/>
         <source>Reset the recorded data up to this point</source>
-        <translation type="unfinished"></translation>
+        <translation>清零質料</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1200"/>
@@ -269,12 +269,12 @@
     <message>
         <location filename="../main_gui.py" line="1201"/>
         <source>&amp;Refresh Ports</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新接口 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1202"/>
         <source>Refresh the connected serial devices list</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新連結的接口</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1203"/>
@@ -284,7 +284,7 @@
     <message>
         <location filename="../main_gui.py" line="1204"/>
         <source>&amp;Noise Reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>噪音濾波器 (&amp;N)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1205"/>
@@ -299,12 +299,12 @@
     <message>
         <location filename="../main_gui.py" line="1207"/>
         <source>&amp;Scan Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>掃接觸 (&amp;S)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1208"/>
         <source>Look for any DAQs that is connected to the system</source>
-        <translation type="unfinished"></translation>
+        <translation>找所有連結的DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1209"/>
@@ -314,22 +314,22 @@
     <message>
         <location filename="../main_gui.py" line="1210"/>
         <source>&amp;Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>斷線 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1211"/>
         <source>Disconnect the DAQ</source>
-        <translation type="unfinished"></translation>
+        <translation>斷線DAQ</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1212"/>
         <source>&amp;Open Data Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>打開質料文件夾 (&amp;O)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1213"/>
         <source>Opens the default data folder</source>
-        <translation type="unfinished"></translation>
+        <translation>打開質料文件夾</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1214"/>
@@ -339,22 +339,22 @@
     <message>
         <location filename="../main_gui.py" line="1215"/>
         <source>&amp;Raw Data</source>
-        <translation type="unfinished"></translation>
+        <translation>原質料 (&amp;R)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1216"/>
         <source>Exports the raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>儲存原質料</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1217"/>
         <source>&amp;Noise Reduced Data</source>
-        <translation type="unfinished"></translation>
+        <translation>噪音濾波器的質料 (&amp;N)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1218"/>
         <source>Exports the noise filtered data</source>
-        <translation type="unfinished"></translation>
+        <translation>儲存噪音濾波器的質料</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1219"/>
@@ -489,58 +489,59 @@
     <message>
         <location filename="../main.py" line="643"/>
         <source>New Ports Discovered</source>
-        <translation type="unfinished"></translation>
+        <translation>有新的接口</translation>
     </message>
     <message>
         <location filename="../main.py" line="658"/>
         <source>DAQ Detected</source>
-        <translation type="unfinished"></translation>
+        <translation>找到了DAQ</translation>
     </message>
     <message>
         <location filename="../main.py" line="658"/>
         <source>It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?
 The HTR&apos;s resistor sensor will be disabled if so.</source>
-        <translation type="unfinished"></translation>
+        <translation>好像有DAQ連結到你的電腦. 是不是電阻感測器嗎?
+如果是的, HTR的電阻感測器會關掉.</translation>
     </message>
     <message>
         <location filename="../main.py" line="665"/>
         <source>DAQ {daq_name} selected</source>
-        <translation type="unfinished"></translation>
+        <translation>選了DAQ {daq_name}</translation>
     </message>
     <message>
         <location filename="../main.py" line="671"/>
         <source>No DAQ detected</source>
-        <translation type="unfinished"></translation>
+        <translation>找不到DAQ</translation>
     </message>
     <message>
         <location filename="../main.py" line="686"/>
         <source>HTR and QCM cannot be on same port</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR和QCM不可能在一樣的接口</translation>
     </message>
     <message>
         <location filename="../main.py" line="728"/>
         <source>Port {port} is not the HTR</source>
-        <translation type="unfinished"></translation>
+        <translation>接口 {port} 不是HTR</translation>
     </message>
     <message>
         <location filename="../main.py" line="733"/>
         <source>Port {port} is the HTR</source>
-        <translation type="unfinished"></translation>
+        <translation>接口 {port} 是HTR</translation>
     </message>
     <message>
         <location filename="../main.py" line="734"/>
         <source>HTR Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR可以了</translation>
     </message>
     <message>
         <location filename="../main.py" line="786"/>
         <source>Port {port} is not the QCM</source>
-        <translation type="unfinished"></translation>
+        <translation>接口 {port} 不是QCM</translation>
     </message>
     <message>
         <location filename="../main.py" line="791"/>
         <source>Port {port} is the QCM</source>
-        <translation type="unfinished"></translation>
+        <translation>接口 {port} 是QCM</translation>
     </message>
     <message>
         <location filename="../main.py" line="1010"/>
@@ -550,7 +551,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1055"/>
         <source>The operation might take just over a minute to complete... please wait...</source>
-        <translation type="unfinished"></translation>
+        <translation>運算可能需要一點時間... 請等一下...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1050"/>
@@ -575,7 +576,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1085"/>
         <source>QCM Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM可以了</translation>
     </message>
     <message>
         <location filename="../main.py" line="1090"/>
@@ -585,17 +586,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1172"/>
         <source>Start measuring QCM...</source>
-        <translation type="unfinished"></translation>
+        <translation>開始測量QCM...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1308"/>
         <source>Please wait, processing early data...</source>
-        <translation type="unfinished"></translation>
+        <translation>請等, 處理早質料...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1311"/>
         <source>Environment Reading...</source>
-        <translation type="unfinished"></translation>
+        <translation>周邊處理...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1229"/>
