@@ -616,7 +616,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1315"/>
         <source>Monitoring! Sweep #{sweep_num}</source>
-        <translation type="unfinished"></translation>
+        <translation>監控! 周波 #{sweep_num}</translation>
     </message>
     <message>
         <location filename="../main.py" line="2087"/>
@@ -631,17 +631,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1564"/>
         <source>Preparing to write to file the requested data</source>
-        <translation type="unfinished">開始</translation>
+        <translation>開始寫質料到文件裡</translation>
     </message>
     <message>
         <location filename="../main.py" line="1603"/>
         <source>Writing data to file...</source>
-        <translation type="unfinished"></translation>
+        <translation>寫質料到文件...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1640"/>
         <source>Queuing row #{row_num}</source>
-        <translation type="unfinished"></translation>
+        <translation>排行 #{row_num}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1654"/>
@@ -691,17 +691,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1778"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
-        <translation type="unfinished"></translation>
+        <translation>請輸入新的參考電阻和它的英語基本單位.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1787"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
-        <translation type="unfinished"></translation>
+        <translation>參考電阻升級失敗了因為你寫的版式錯了. 請用(\d+(\.\d+)?)([a-zA-Z ])</translation>
     </message>
     <message>
         <location filename="../main.py" line="1798"/>
         <source>Reference resistance updated to {resist} {resist_unit}</source>
-        <translation type="unfinished"></translation>
+        <translation>參考電阻換到 {resist} {resist_unit}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1829"/>
@@ -711,22 +711,22 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1829"/>
         <source>Enter the new reference voltage from the controller.</source>
-        <translation type="unfinished"></translation>
+        <translation>請輸入感測器的新參考電壓.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1834"/>
         <source>Reference voltage updated to {volt}V</source>
-        <translation type="unfinished"></translation>
+        <translation>參考電壓換到 {volt}V</translation>
     </message>
     <message>
         <location filename="../main.py" line="1846"/>
         <source>Data Folder Location</source>
-        <translation type="unfinished"></translation>
+        <translation>質料文件夾地方</translation>
     </message>
     <message>
         <location filename="../main.py" line="1857"/>
         <source>Data folder updated to {data_dir}</source>
-        <translation type="unfinished"></translation>
+        <translation>質料的文件夾換到 {data_dir}</translation>
     </message>
     <message>
         <location filename="../main.py" line="1865"/>
@@ -736,12 +736,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1865"/>
         <source>Enter the number of times to apply the noise filter.</source>
-        <translation type="unfinished"></translation>
+        <translation>請輸入想要的號碼你想用噪音濾波器.</translation>
     </message>
     <message>
         <location filename="../main.py" line="1877"/>
         <source>Noise reduction filter will now iterate {noise} times</source>
-        <translation type="unfinished"></translation>
+        <translation>噪音濾波器會用 {noise} 次</translation>
     </message>
     <message>
         <location filename="../main.py" line="1905"/>
@@ -771,7 +771,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2096"/>
         <source>Warning: Saving Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>警報: 儲存停用</translation>
     </message>
     <message>
         <location filename="../main.py" line="2096"/>
@@ -781,7 +781,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2102"/>
         <source>Warning: Missing QCM Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>警報: 沒有QCM感測器</translation>
     </message>
     <message>
         <location filename="../main.py" line="2102"/>
@@ -791,7 +791,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2108"/>
         <source>Warning: Missing HTR Sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>警報: 沒有HTR感測器</translation>
     </message>
     <message>
         <location filename="../main.py" line="2108"/>
@@ -801,7 +801,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2114"/>
         <source>Warning: No Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>警報: 沒有查刻度</translation>
     </message>
     <message>
         <location filename="../main.py" line="2114"/>
@@ -811,7 +811,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2120"/>
         <source>Warning: File Override</source>
-        <translation type="unfinished"></translation>
+        <translation>警報: 文件凌駕</translation>
     </message>
     <message>
         <location filename="../main.py" line="2120"/>
