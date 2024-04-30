@@ -21,12 +21,12 @@
     <message>
         <location filename="../misc/lang.py" line="18"/>
         <source>Mandarin (Simplified)</source>
-        <translation>國語</translation>
+        <translation>國語 (簡體中文)</translation>
     </message>
     <message>
         <location filename="../misc/lang.py" line="19"/>
         <source>Mandarin (Traditional)</source>
-        <translation>普通話</translation>
+        <translation>普通話 (繁體中文)</translation>
     </message>
 </context>
 <context>
@@ -601,17 +601,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1229"/>
         <source>Warning: unable to apply half-power bandwidth method, lower and upper cut-off frequency not found</source>
-        <translation type="unfinished"></translation>
+        <translation>警告：無法應用半功率頻寬方法，未找到下限和上限截止頻率</translation>
     </message>
     <message>
         <location filename="../main.py" line="1231"/>
         <source>Warning: unable to apply half-power bandwidth method, lower cut-off frequency (left side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>警告：無法應用半功率頻寬方法，未找到下限(左邊)截止頻率</translation>
     </message>
     <message>
         <location filename="../main.py" line="1233"/>
         <source>Warning: unable to apply half-power bandwidth method, upper cut-off frequency (right side) not found</source>
-        <translation type="unfinished"></translation>
+        <translation>警告：無法應用半功率頻寬方法，未找到上限(右邊)截止頻率</translation>
     </message>
     <message>
         <location filename="../main.py" line="1315"/>

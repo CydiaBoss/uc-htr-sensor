@@ -21,12 +21,12 @@
     <message>
         <location filename="../misc/lang.py" line="18"/>
         <source>Mandarin (Simplified)</source>
-        <translation>国语</translation>
+        <translation>国语 （简体中文）</translation>
     </message>
     <message>
         <location filename="../misc/lang.py" line="19"/>
         <source>Mandarin (Traditional)</source>
-        <translation>普通话</translation>
+        <translation>普通话 （繁体中文）</translation>
     </message>
 </context>
 <context>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../main.py" line="201"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>频率</translation>
     </message>
     <message>
         <location filename="../main.py" line="189"/>
@@ -525,47 +525,47 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1165"/>
         <source>Step 1. Calibration</source>
-        <translation type="unfinished"></translation>
+        <translation>第一。查刻度</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1166"/>
         <source>Auto Export Data on Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>自动储存</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1167"/>
         <source>File Destination</source>
-        <translation type="unfinished"></translation>
+        <translation>文件地方</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1168"/>
         <source>Step 3. Exportation</source>
-        <translation type="unfinished"></translation>
+        <translation>第三。储存</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1169"/>
         <source>Step 2. Setup Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>第二。测定</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1170"/>
         <source>Measurement Type</source>
-        <translation type="unfinished"></translation>
+        <translation>测定方法</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1172"/>
         <source>Single Measurement</source>
-        <translation type="unfinished"></translation>
+        <translation>测定一次</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1173"/>
         <source>Multiple Measurements</source>
-        <translation type="unfinished"></translation>
+        <translation>都测定</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1174"/>
         <source>Step 4. Start</source>
-        <translation type="unfinished"></translation>
+        <translation>第四。开始</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1175"/>
@@ -575,12 +575,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1176"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>清零</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1177"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>开始</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1178"/>
@@ -590,7 +590,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1179"/>
         <source>QCM Port</source>
-        <translation type="unfinished"></translation>
+        <translation>QCM接口</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1180"/>
@@ -600,17 +600,17 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1181"/>
         <source>HTR Port</source>
-        <translation type="unfinished"></translation>
+        <translation>HTR接口</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1182"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>连接</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1183"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>文件 （&amp;F）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1184"/>
@@ -620,32 +620,32 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1185"/>
         <source>&amp;Export</source>
-        <translation type="unfinished"></translation>
+        <translation>储存 （&amp;E）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1186"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>改变 （&amp;E）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1187"/>
         <source>&amp;Update References</source>
-        <translation type="unfinished"></translation>
+        <translation>改变参考 （&amp;U）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1188"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>风 （&amp;V）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1189"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>出口 （&amp;Q）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1190"/>
         <source>Quit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭这软件</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1191"/>
@@ -655,12 +655,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1192"/>
         <source>&amp;Resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>电阻器 （&amp;R）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1193"/>
         <source>Update the reference resistor</source>
-        <translation type="unfinished"></translation>
+        <translation>改变参考电阻</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1194"/>
@@ -670,12 +670,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1195"/>
         <source>&amp;Voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>电压 （&amp;V）</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1196"/>
         <source>Update the reference voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>改变参考电压</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1197"/>
