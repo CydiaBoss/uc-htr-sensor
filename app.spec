@@ -24,7 +24,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='qcmh2sensor',
+    name='qcmh2sensor-biomed',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
