@@ -59,7 +59,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>150</width>
+          <width>220</width>
           <height>48</height>
          </size>
         </property>
@@ -67,7 +67,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="resources/main.qrc">:/main/uclogo.png</pixmap>
+         <pixmap resource="resources/main.qrc">:/main/biomed.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -2224,7 +2224,6 @@
   <tabstop>diss_d1</tabstop>
  </tabstops>
  <resources>
-  <include location="resources/main.qrc"/>
   <include location="resources/main.qrc"/>
  </resources>
  <connections>
