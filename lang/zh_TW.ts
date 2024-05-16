@@ -324,7 +324,7 @@
     <message>
         <location filename="../main_gui.py" line="1212"/>
         <source>&amp;Open Data Folder</source>
-        <translation>打開質料文件夾 (&amp;O)</translation>
+        <translation>打開質料文件夾 (&amp;D)</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1213"/>
@@ -500,8 +500,8 @@
         <location filename="../main.py" line="658"/>
         <source>It seems that there are DAQs attached to the computer. Is one of them the resistor sensor?
 The HTR&apos;s resistor sensor will be disabled if so.</source>
-        <translation>好像有DAQ連結到你的電腦. 是不是電阻感測器嗎?
-如果是的, HTR的電阻感測器會關掉.</translation>
+        <translation>好像有DAQ連結到你的電腦。是不是電阻感測器嗎？
+如果是的，HTR的電阻感測器會關掉.</translation>
     </message>
     <message>
         <location filename="../main.py" line="665"/>
@@ -556,22 +556,22 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1050"/>
         <source>Calibration Warning: empty buffer! Please, repeat the calibration after disconnecting/reconnecting the device!</source>
-        <translation>校準錯誤: 緩衝區空! 請把機器斷線/連結一下. 然後再建準一次!</translation>
+        <translation>校準錯誤：緩衝區空！請把機器斷線/連結一下。然後再建準一次！</translation>
     </message>
     <message>
         <location filename="../main.py" line="1059"/>
         <source>Calibration Success for baseline correction!</source>
-        <translation>校準成功了!</translation>
+        <translation>校準成功了！</translation>
     </message>
     <message>
         <location filename="../main.py" line="1066"/>
         <source>Calibration Warning: ValueError or generic error during signal acquisition. Please, repeat the calibration</source>
-        <translation>校準錯誤: 一般錯誤! 請再建準一次</translation>
+        <translation>校準錯誤：一般錯誤！請再建準一次</translation>
     </message>
     <message>
         <location filename="../main.py" line="1069"/>
         <source>Calibration Warning: unable to identify fundamental peak or apply peak detection algorithm. Please, repeat the calibration!</source>
-        <translation>校準錯誤: 基頻找不到! 請再建準一次!</translation>
+        <translation>校準錯誤：基頻找不到！請再建準一次！</translation>
     </message>
     <message>
         <location filename="../main.py" line="1085"/>
@@ -581,7 +581,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1090"/>
         <source>Calibration failed as the expected fundamental frequency could not be found.</source>
-        <translation>校準失敗了因為基頻找不到.</translation>
+        <translation>校準失敗了因為基頻找不到。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1172"/>
@@ -591,7 +591,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1308"/>
         <source>Please wait, processing early data...</source>
-        <translation>請等, 處理早質料...</translation>
+        <translation>請等，處理早質料...</translation>
     </message>
     <message>
         <location filename="../main.py" line="1311"/>
@@ -616,7 +616,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1315"/>
         <source>Monitoring! Sweep #{sweep_num}</source>
-        <translation>監控! 周波 #{sweep_num}</translation>
+        <translation>監控！周波 #{sweep_num}</translation>
     </message>
     <message>
         <location filename="../main.py" line="2087"/>
@@ -676,12 +676,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1738"/>
         <source>Are you sure you want to disconnect the DAQ? The HTR&apos;s resistor sensor will be re-enabled.</source>
-        <translation>你決定要斷線DAQ嗎? HTR的電阻傳感器會啟用.</translation>
+        <translation>你決定要斷線DAQ嗎？HTR的電阻傳感器會啟用。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1761"/>
         <source>Could not open data folder. Please change to a new data folder.</source>
-        <translation>質料文件夾打不開. 請做一個新的質料文件夾.</translation>
+        <translation>質料文件夾打不開。請做一個新的質料文件夾。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1778"/>
@@ -691,12 +691,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1778"/>
         <source>Enter the new reference resistance from the controller with SI multipler.</source>
-        <translation>請輸入新的參考電阻和它的英語基本單位.</translation>
+        <translation>請輸入新的參考電阻和它的英語基本單位。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1787"/>
         <source>Reference resistance could not be updated, formatting is not correct. Must be (\d+(\.\d+)?)([a-zA-Z ])</source>
-        <translation>參考電阻升級失敗了因為你寫的版式錯了. 請用(\d+(\.\d+)?)([a-zA-Z ])</translation>
+        <translation>參考電阻升級失敗了因為你寫的版式錯了。請用(\d+(\.\d+)?)([a-zA-Z ])</translation>
     </message>
     <message>
         <location filename="../main.py" line="1798"/>
@@ -711,7 +711,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1829"/>
         <source>Enter the new reference voltage from the controller.</source>
-        <translation>請輸入感測器的新參考電壓.</translation>
+        <translation>請輸入感測器的新參考電壓。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1834"/>
@@ -736,7 +736,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1865"/>
         <source>Enter the number of times to apply the noise filter.</source>
-        <translation>請輸入想要的號碼你想用噪音濾波器.</translation>
+        <translation>請輸入想要的號碼你想用噪音濾波器。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1877"/>
@@ -751,12 +751,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="1905"/>
         <source>Select the preferred language of choice.</source>
-        <translation>選擇需要的語言.</translation>
+        <translation>選擇需要的語言。</translation>
     </message>
     <message>
         <location filename="../main.py" line="1924"/>
         <source>Are you sure you want to reset everything? All data not saved will be lost.</source>
-        <translation>你決定要重裝軟件嗎? 所有未儲存的質料會被刪除.</translation>
+        <translation>你決定要重裝軟件嗎？所有未儲存的質料會被刪除。</translation>
     </message>
     <message>
         <location filename="../main.py" line="2048"/>
@@ -771,52 +771,52 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main.py" line="2096"/>
         <source>Warning: Saving Disabled</source>
-        <translation>警報: 儲存停用</translation>
+        <translation>警報：儲存停用</translation>
     </message>
     <message>
         <location filename="../main.py" line="2096"/>
         <source>Are you sure you want to start without saving any data?</source>
-        <translation>你決定不要自動儲存嗎?</translation>
+        <translation>你決定不要自動儲存嗎？</translation>
     </message>
     <message>
         <location filename="../main.py" line="2102"/>
         <source>Warning: Missing QCM Sensor</source>
-        <translation>警報: 沒有QCM感測器</translation>
+        <translation>警報：沒有QCM感測器</translation>
     </message>
     <message>
         <location filename="../main.py" line="2102"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
-        <translation>你沒有QCM感測器. 你決定要開始嗎?</translation>
+        <translation>你沒有QCM感測器。你決定要開始嗎？</translation>
     </message>
     <message>
         <location filename="../main.py" line="2108"/>
         <source>Warning: Missing HTR Sensor</source>
-        <translation>警報: 沒有HTR感測器</translation>
+        <translation>警報：沒有HTR感測器</translation>
     </message>
     <message>
         <location filename="../main.py" line="2108"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
-        <translation>你沒有HTR感測器. 你決定要開始嗎?</translation>
+        <translation>你沒有HTR感測器。你決定要開始嗎？</translation>
     </message>
     <message>
         <location filename="../main.py" line="2114"/>
         <source>Warning: No Calibration</source>
-        <translation>警報: 沒有查刻度</translation>
+        <translation>警報：沒有查刻度</translation>
     </message>
     <message>
         <location filename="../main.py" line="2114"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
-        <translation>你還沒校準QCM感測器. 它不會開始. 你決定要開始嗎?</translation>
+        <translation>你還沒校準QCM感測器。它不會開始。你決定要開始嗎？</translation>
     </message>
     <message>
         <location filename="../main.py" line="2120"/>
         <source>Warning: File Override</source>
-        <translation>警報: 文件凌駕</translation>
+        <translation>警報：文件凌駕</translation>
     </message>
     <message>
         <location filename="../main.py" line="2120"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
-        <translation>你想做的文件都已經有了. 你決定要凌駕它嗎?</translation>
+        <translation>你想做的文件都已經有了。你決定要凌駕它嗎？</translation>
     </message>
     <message>
         <location filename="../main.py" line="2235"/>
