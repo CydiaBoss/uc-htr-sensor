@@ -24,7 +24,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Show Splash
-    pixmap = QPixmap(":/main/uclogo.png")
+    pixmap = QPixmap(":/main/biomed.png")
     splash = QSplashScreen(pixmap)
     splash.show()
 
