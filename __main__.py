@@ -5,6 +5,7 @@ from multiprocessing import freeze_support
 from misc.constants import APPID
 from misc.logger import Logger
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 
@@ -25,6 +26,8 @@ if __name__ == "__main__":
 
     # Show Splash
     pixmap = QPixmap(":/main/biomed.png")
+    pixmap = pixmap.scaledToHeight(400, Qt.TransformationMode.SmoothTransformation)
+
     splash = QSplashScreen(pixmap)
     splash.show()
 
