@@ -370,7 +370,6 @@ class CalibrationProcess(multiprocessing.Process):
                         print(TAG, "Current frequencies phases found:", max_freq_phase)
 
                         # If list do not match in length, attempt to match
-                        # TODO will need to fix this eventually
                         if len(max_freq_mag) < len(max_freq_phase):
                             temp_freq = []
                             print(TAG, "Attempting to match missing frequencies")
@@ -402,6 +401,39 @@ class CalibrationProcess(multiprocessing.Process):
 
                             print(TAG, "Newly discovered frequencies:", temp_freq)
                             max_freq_mag = np.array(temp_freq)
+
+                        # Inverse Issue
+                        elif len(max_freq_phase) < len(max_freq_mag):
+                            temp_freq_phase = []
+                            print(TAG, "Attempting to match missing frequencies in phase")
+                            for i in range(len(max_freq_mag)):
+                                found = False
+                                for j in range(len(max_freq_phase)):
+                                    # Found Match
+                                    if max_freq_phase[j] < max_freq_mag[i] * (
+                                        1 + UNCERTAINTIES
+                                    ) and max_freq_phase[j] > max_freq_mag[i] * (
+                                        1 - UNCERTAINTIES
+                                    ):
+                                        temp_freq_phase.append(max_freq_phase[j])
+                                        found = True
+                                        break
+
+                                    # If too big, assume none
+                                    elif (
+                                        max_freq_mag[i] * (1 + UNCERTAINTIES)
+                                        < max_freq_phase[j]
+                                    ):
+                                        temp_freq_phase.append(max_freq_mag[i])
+                                        found = True
+                                        break
+
+                                # If still not found, just add
+                                if not found:
+                                    temp_freq_phase.append(max_freq_mag[i])
+
+                            print(TAG, "Newly discovered frequencies in phase:", temp_freq_phase)
+                            max_freq_phase = np.array(temp_freq_phase)
 
                         if (
                             self._QCStype_int == 0
@@ -448,11 +480,12 @@ class CalibrationProcess(multiprocessing.Process):
                             ),
                         )
 
-                    except:
+                    except Exception as e:
                         print(
                             TAG,
                             "WARNING: Outed. Error during peak detection, incompatible peaks number or frequencies!",
                         )
+                        print(e)
                         print(TAG, "Please, repeat the calibration!")
                         self._flag2 = 1
 
