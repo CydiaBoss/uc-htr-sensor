@@ -3,7 +3,7 @@
 
 // Address of HT Sensor
 short ht_adr = 40;
-short read_delay = 1000;
+short read_delay = 100;
 
 // Pin of Resistor Sensor
 int resistor_pin = A0;
