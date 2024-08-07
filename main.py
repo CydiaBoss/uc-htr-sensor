@@ -2087,7 +2087,8 @@ class Window(Ui_MainWindow, QMainWindow):
         file_dialog = QFileDialog.getSaveFileName(self, _translate("MainWindow", 'Exportation'), f"{self.data_folder}/", "CSV (*.csv)")
 
         # Save
-        self.file_dest.setText(file_dialog[0])
+        if file_dialog[0].strip() != "":
+            self.file_dest.setText(file_dialog[0])
 
     @QtCore.pyqtSlot()
     def on_start_btn_clicked(self):

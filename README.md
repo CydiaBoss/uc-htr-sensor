@@ -7,14 +7,9 @@ This software is developed to interface with the many sensors in the QCM hydroge
 - Save and export raw data to the a csv file
 - Apply noise filtration to resistance, humidity, and temperature data
 - View plots of the data
-
-## Ongoing Developments
 - Ability to localize software
 - Live translations as the software is running
-
-## Future Features
 - Customize graph view
-- Adjust QCM graphs to filter under multi-measurements
 
 ## Installation Guide
 To install and run this software, you will need a few dependencies. You will need to install the National Instruments' DAQ drivers to be able to comunicate with the R sensor. This can be found <a href=https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html>at the NI site</a>.
