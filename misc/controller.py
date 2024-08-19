@@ -160,6 +160,9 @@ class HTRSensorCtrl(QObject):
         # Loop
         self.loop = False
 
+        # Resistance
+        self.resistance_status = True
+
     def open(self) -> bool:
         """
         Open connection to HTR
@@ -204,11 +207,19 @@ class HTRSensorCtrl(QObject):
         # Opens the connection
         self.open()
 
+        # Update Period
+        self.update_period(READ_DELAY * 1000)
+
         # Adjust references
-        self.update_ref_resist(
-            float(SETTINGS.get_setting("ref_resist")), SETTINGS.get_setting("ref_resist_unit")
-        )
-        self.update_ref_volt(float(SETTINGS.get_setting("ref_volt")))
+        if self.resistance_status:
+            self.update_ref_resist(
+                float(SETTINGS.get_setting("ref_resist")), SETTINGS.get_setting("ref_resist_unit")
+            )
+            self.update_ref_volt(float(SETTINGS.get_setting("ref_volt")))
+        # Disable if not
+        elif self.toggle_resist_sensor():
+            # Run again if returned true the first time
+            self.toggle_resist_sensor()
 
         # Processing Loop
         self.loop = True
@@ -253,7 +264,7 @@ class HTRSensorCtrl(QObject):
         """
         self.serial.write(msg.encode("utf-8"))
 
-    def update_ref_resist(self, resist: float, mult: str) -> bool:
+    def update_ref_resist(self, resist: float, mult: str):
         """
         Updates the reference resistor on the sensor
         """
@@ -269,7 +280,7 @@ class HTRSensorCtrl(QObject):
             tick_to_timeout += 1
             time.sleep(1)
 
-    def update_ref_volt(self, volt: float) -> bool:
+    def update_ref_volt(self, volt: float):
         """
         Updates the reference voltage on the sensor
         """
@@ -284,6 +295,44 @@ class HTRSensorCtrl(QObject):
                 break
             tick_to_timeout += 1
             time.sleep(1)
+
+    def update_period(self, period: int):
+        """
+        Updates the period on the sensor (ms)
+        """
+        self.send_to(f"p{period}")
+
+        # Wait for OK Message
+        tick_to_timeout = 0
+        while "ok" not in self.read_from():
+            # Timeout
+            if tick_to_timeout > READ_TIMEOUT:
+                print(self.tag, "Period failed to update")
+                break
+            tick_to_timeout += 1
+            time.sleep(1)
+
+    def toggle_resist_sensor(self) -> bool:
+        """
+        Toggles the resistance sensor
+        """
+        self.send_to("t")
+
+        # Wait for OK Message
+        tick_to_timeout = 0
+        status = self.read_from()
+        while "ok" not in status:
+            # Timeout
+            if tick_to_timeout > READ_TIMEOUT:
+                print(self.tag, "Resistance sensor failed to toggle")
+                return
+            tick_to_timeout += 1
+            time.sleep(1)
+            # Update
+            status = self.read_from()
+
+        # Toggle
+        return "true" in status
 
     def read_from(self):
         """
