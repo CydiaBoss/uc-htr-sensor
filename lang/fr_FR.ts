@@ -292,7 +292,7 @@
         <translation>Changer le &amp;dossier des données</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2270"/>
+        <location filename="../main.py" line="2271"/>
         <source>Resistance</source>
         <translation>Résistance</translation>
     </message>
@@ -504,7 +504,7 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
         <translation>R est prêt</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Confirmation</source>
         <translation>Confirmation</translation>
     </message>
@@ -599,72 +599,72 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
         <translation>Exportation</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Warning: Saving Disabled</source>
         <translation>Avertissement: sauvegarde désactivée</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Are you sure you want to start without saving any data?</source>
         <translation>Est-ce que vous êtes persuadé que vous vouliez commencer quand la sauvegarde est désactivée?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>Warning: Missing QCM Sensor</source>
         <translation>Avertissement: capteur de QCM perdu</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
         <translation>Vous ratez le capteur de QCM! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>Warning: Missing HTR Sensor</source>
         <translation>Avertissement: capteur d&apos;HTR perdu</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
         <translation>Vous ratez le capteur d&apos;HTR! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>Warning: No Calibration</source>
         <translation>Avertissement: calibrage incomplet</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
         <translation>Vous ne calibrez pas le capteur de QCM! Est-ce que vous êtes persuadé que vous vouliez commencer sans ça?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>Warning: File Override</source>
         <translation>Avertissement: contournement de ficher</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
         <translation>Le ficher que vous voulez créer exister déjà. Est-ce que vous voulez l&apos;outrepasser?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2210"/>
+        <location filename="../main.py" line="2211"/>
         <source>Monitoring Stopped</source>
         <translation>Surveillance arrêtée</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Ready</source>
         <translation>Prêt</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Reset Configuration</source>
         <translation>Réinitialiser la configuration</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Are you sure you want to close the application?</source>
         <translation>Est-ce que vous êtes persuadé que vous vouliez quitter?</translation>
     </message>
@@ -846,7 +846,12 @@ Le capteur de la résistance dans l&apos;HTR va étre désactiver.</translation>
     <message>
         <location filename="../main_gui.py" line="1148"/>
         <source>Hydrogen Multisensory System</source>
-        <translation>Système multi-sensorielle d&apos;hydrogène</translation>
+        <translation type="obsolete">Système multi-sensorielle d&apos;hydrogène</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1148"/>
+        <source>Multisensory System</source>
+        <translation>Système multi-sensorielle</translation>
     </message>
 </context>
 </TS>

@@ -292,7 +292,7 @@
         <translation>데이터의 폴더를 바꾸다 (&amp;C)</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2270"/>
+        <location filename="../main.py" line="2271"/>
         <source>Resistance</source>
         <translation>전기 저항</translation>
     </message>
@@ -504,7 +504,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>R를 준비 다 됐어</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Confirmation</source>
         <translation>확인</translation>
     </message>
@@ -599,72 +599,72 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>적림</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Warning: Saving Disabled</source>
         <translation>경고: 잠긴 적립</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Are you sure you want to start without saving any data?</source>
         <translation>데이터를 저장하지 않고 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>Warning: Missing QCM Sensor</source>
         <translation>경고: 없어진 QCM 센서</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
         <translation>QCM 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>Warning: Missing HTR Sensor</source>
         <translation>경고: 없어진 HTR 센서</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
         <translation>HTR 센서가 없습니다! 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>Warning: No Calibration</source>
         <translation>경고: 없어진 눈금</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
         <translation>QCM 센서를 교정하지 않았습니다. 그것 없이는 시작되지 않습니다. 정말로 그것 없이 시작하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>Warning: File Override</source>
         <translation>경고: 파일 재정의</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
         <translation>생성하려는 파일이 이미 존재합니다. 재정의하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2210"/>
+        <location filename="../main.py" line="2211"/>
         <source>Monitoring Stopped</source>
         <translation>모니터를 그쳤어요</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Ready</source>
         <translation>준비 다 됐어</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Reset Configuration</source>
         <translation>구성 재설정</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Are you sure you want to close the application?</source>
         <translation>정말로 애플리케이션을 닫으시겠습니까?</translation>
     </message>
@@ -846,7 +846,12 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
     <message>
         <location filename="../main_gui.py" line="1148"/>
         <source>Hydrogen Multisensory System</source>
-        <translation>수소 다감각 시스템</translation>
+        <translation type="obsolete">수소 다감각 시스템</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1148"/>
+        <source>Multisensory System</source>
+        <translation>다감각 시스템</translation>
     </message>
 </context>
 </TS>
