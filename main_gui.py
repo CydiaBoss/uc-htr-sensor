@@ -1145,7 +1145,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sensor Fusion"))
-        self.label_12.setText(_translate("MainWindow", "Hydrogen Multisensory System"))
+        self.label_12.setText(_translate("MainWindow", "Multisensory System"))
         self.resist_label.setText(_translate("MainWindow", "Resistance (Ω)"))
         self.label_10.setText(_translate("MainWindow", "Average (<50)"))
         self.label_11.setText(_translate("MainWindow", "Average (<15)"))

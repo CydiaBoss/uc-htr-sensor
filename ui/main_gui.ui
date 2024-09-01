@@ -87,7 +87,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Hydrogen Multisensory System</string>
+         <string>Multisensory System</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

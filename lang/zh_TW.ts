@@ -407,7 +407,7 @@
         <translation>換語言 (&amp;L)</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2270"/>
+        <location filename="../main.py" line="2271"/>
         <source>Resistance</source>
         <translation>電阻</translation>
     </message>
@@ -669,7 +669,7 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>R可以了</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Confirmation</source>
         <translation>批准</translation>
     </message>
@@ -769,79 +769,84 @@ The HTR&apos;s resistor sensor will be disabled if so.</source>
         <translation>跟感測器說話...</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Warning: Saving Disabled</source>
         <translation>警報：儲存停用</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2096"/>
+        <location filename="../main.py" line="2097"/>
         <source>Are you sure you want to start without saving any data?</source>
         <translation>你決定不要自動儲存嗎？</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>Warning: Missing QCM Sensor</source>
         <translation>警報：沒有QCM感測器</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2102"/>
+        <location filename="../main.py" line="2103"/>
         <source>You are missing the QCM sensor! Are you sure you want to start without it?</source>
         <translation>你沒有QCM感測器。你決定要開始嗎？</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>Warning: Missing HTR Sensor</source>
         <translation>警報：沒有HTR感測器</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2108"/>
+        <location filename="../main.py" line="2109"/>
         <source>You are missing the HTR sensor! Are you sure you want to start without it?</source>
         <translation>你沒有HTR感測器。你決定要開始嗎？</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>Warning: No Calibration</source>
         <translation>警報：沒有查刻度</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2114"/>
+        <location filename="../main.py" line="2115"/>
         <source>You have not calibrated the QCM sensor. It will not start without it. Are you sure you want to start without it?</source>
         <translation>你還沒校準QCM感測器。它不會開始。你決定要開始嗎？</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>Warning: File Override</source>
         <translation>警報：文件凌駕</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2120"/>
+        <location filename="../main.py" line="2121"/>
         <source>The file you want to create already exists. Do you want to override it?</source>
         <translation>你想做的文件都已經有了。你決定要凌駕它嗎？</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Ready</source>
         <translation>可以了</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2210"/>
+        <location filename="../main.py" line="2211"/>
         <source>Monitoring Stopped</source>
         <translation>測量停了</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2235"/>
+        <location filename="../main.py" line="2236"/>
         <source>Reset Configuration</source>
         <translation>清零配置</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2240"/>
+        <location filename="../main.py" line="2241"/>
         <source>Are you sure you want to close the application?</source>
         <translation>你決定要關這個軟件嗎?</translation>
     </message>
     <message>
         <location filename="../main_gui.py" line="1148"/>
         <source>Hydrogen Multisensory System</source>
-        <translation>氫氣多感覺系統</translation>
+        <translation type="obsolete">氫氣多感覺系統</translation>
+    </message>
+    <message>
+        <location filename="../main_gui.py" line="1148"/>
+        <source>Multisensory System</source>
+        <translation>多感覺系統</translation>
     </message>
 </context>
 </TS>
